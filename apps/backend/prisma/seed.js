@@ -2,44 +2,43 @@ import "dotenv/config";
 import prisma from "../server/db/prisma.js";
 
 async function main() {
-  await prisma.item.deleteMany();
-  await prisma.category.deleteMany();
+  await prisma.sideQuest.deleteMany();
+  await prisma.spawnPoint.deleteMany();
 
-  const categories = await prisma.category.createMany({
+  const spawnPoints = await prisma.spawnPoint.createMany({
     data: [
-      { name: "Frontend" },
-      { name: "Backend" },
-      { name: "Database" }
-    ]
+      { name: "Battle & Brew", category: "Gaming venue", neighborhood: "Sandy Springs", address: "1489 Dunwoody Village Pkwy, Sandy Springs, GA 30338", is_marta_accessible: false },
+      { name: "Oxford Comics & Games", category: "Comics & cards", neighborhood: "Buckhead", address: "2855 Piedmont Rd NE, Atlanta, GA 30305", is_marta_accessible: false },
+      { name: "Matcha Cafe Maiko", category: "Boba & matcha", neighborhood: "Doraville", address: "5671 Buford Hwy NE, Doraville, GA 30340", is_marta_accessible: false },
+      { name: "Fluffy Fluffy", category: "Cute cafe", neighborhood: "Doraville", address: "5001 Buford Hwy NE, Doraville, GA 30340", is_marta_accessible: false },
+      { name: "Tokyo Kuma", category: "Kawaii shop", neighborhood: "Buford Highway", address: "5150 Buford Hwy NE, Doraville, GA 30340", is_marta_accessible: false },
+      { name: "Giga-Bites Cafe", category: "Comics & cards", neighborhood: "Marietta", address: "1985 Cobb Pkwy SE, Marietta, GA 30060", is_marta_accessible: false },
+      { name: "Joystick Game Bar", category: "Gaming venue", neighborhood: "Old Fourth Ward", address: "427 Edgewood Ave SE, Atlanta, GA 30312", is_marta_accessible: true },
+      { name: "My Parent's Basement", category: "Comics & cards", neighborhood: "Avondale Estates", address: "5 N Avondale Rd, Avondale Estates, GA 30002", is_marta_accessible: false },
+    ],
   });
 
-  if (categories.count === 0) {
-    return;
-  }
+  console.log(`Created ${spawnPoints.count} spawn points`);
 
-  const savedCategories = await prisma.category.findMany({
-    orderBy: { id: "asc" }
+  const savedSpawnPoints = await prisma.spawnPoint.findMany({
+    orderBy: { id: "asc" },
   });
 
-  await prisma.item.createMany({
+  await prisma.sideQuest.createMany({
     data: [
-      {
-        name: "Build a React page",
-        description: "Create a component that fetches data from the Express API.",
-        categoryId: savedCategories[0].id
-      },
-      {
-        name: "Create an Express route",
-        description: "Add a REST endpoint that returns JSON from PostgreSQL.",
-        categoryId: savedCategories[1].id
-      },
-      {
-        name: "Design a table",
-        description: "Practice creating related tables with primary and foreign keys.",
-        categoryId: savedCategories[2].id
-      }
-    ]
+      { spawn_point_id: savedSpawnPoints[1].id, name: "Friday Night Magic — Standard", description: "Weekly MTG tournament open to all skill levels. Bring your standard deck or borrow one at the shop.", date: "2026-05-23", time: "7:00 PM", cost: null, is_free: true, is_beginner_friendly: true, category: "Gaming", tags: "MTG,cards,tournament" },
+      { spawn_point_id: savedSpawnPoints[5].id, name: "Pokémon League — All Skill Levels", description: "Casual Pokémon TCG league night. Beginners welcome, loaner decks available.", date: "2026-05-24", time: "12:00 PM", cost: null, is_free: true, is_beginner_friendly: true, category: "Gaming", tags: "Pokemon,cards,casual" },
+      { spawn_point_id: savedSpawnPoints[2].id, name: "Matcha & Manga Morning", description: "Bring your favorite manga volume and enjoy matcha together. All genres welcome.", date: "2026-05-24", time: "10:00 AM", cost: null, is_free: true, is_beginner_friendly: true, category: "Social", tags: "manga,matcha,chill" },
+      { spawn_point_id: savedSpawnPoints[6].id, name: "Cosplay Meetup @ Joystick", description: "Casual cosplay hangout between con seasons. All fandoms and skill levels welcome.", date: "2026-05-25", time: "2:00 PM", cost: null, is_free: true, is_beginner_friendly: true, category: "Cosplay", tags: "cosplay,casual,social" },
+      { spawn_point_id: savedSpawnPoints[0].id, name: "Tekken 8 Weekly — Warrior Wednesday", description: "Competitive Tekken 8 tournament. Cash prize for top 3. 21+ only.", date: "2026-05-27", time: "8:00 PM", cost: 5.00, is_free: false, is_beginner_friendly: false, category: "Gaming", tags: "FGC,Tekken,competitive" },
+      { spawn_point_id: savedSpawnPoints[2].id, name: "Japanese Language Exchange", description: "Casual Japanese conversation practice for all levels. Native and learner speakers welcome.", date: "2026-05-27", time: "6:30 PM", cost: null, is_free: true, is_beginner_friendly: true, category: "Language", tags: "Japanese,language,social" },
+      { spawn_point_id: savedSpawnPoints[5].id, name: "D&D Open Table — One Shot", description: "Drop-in D&D one-shot adventure. No experience needed, characters provided.", date: "2026-05-28", time: "6:00 PM", cost: null, is_free: true, is_beginner_friendly: true, category: "Tabletop", tags: "DnD,tabletop,beginner" },
+      { spawn_point_id: savedSpawnPoints[1].id, name: "Pokémon Go Community Day", description: "Group up for Community Day at the park nearby. All trainers welcome.", date: "2026-06-01", time: "11:00 AM", cost: null, is_free: true, is_beginner_friendly: true, category: "Gaming", tags: "Pokemon,mobile,outdoors" },
+    ],
   });
+
+  console.log("Created 8 side quests");
+  console.log("🍑 Seed complete!");
 }
 
 main()

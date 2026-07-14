@@ -1,0 +1,146 @@
+import prisma from "../db/prisma.js";
+
+export async function getAllSideQuests(req, res) {
+  const { category, neighborhood, free } = req.query;
+
+  try {
+    const where = {};
+
+    if (category) {
+      where.category = { contains: category, mode: "insensitive" };
+    }
+
+    if (free === "true") {
+      where.is_free = true;
+    }
+
+    if (neighborhood) {
+      where.spawn_point = {
+        neighborhood: { contains: neighborhood, mode: "insensitive" },
+      };
+    }
+
+    const sideQuests = await prisma.sideQuest.findMany({
+      where,
+      orderBy: { date: "asc" },
+      include: {
+        spawn_point: {
+          select: {
+            id: true,
+            name: true,
+            neighborhood: true,
+            category: true,
+            is_marta_accessible: true,
+          },
+        },
+      },
+    });
+
+    res.json({ message: "Side quests retrieved", data: sideQuests });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to retrieve side quests" });
+  }
+}
+
+export async function getSideQuestById(req, res) {
+  const { id } = req.params;
+  try {
+    const sideQuest = await prisma.sideQuest.findUnique({
+      where: { id: parseInt(id) },
+      include: { spawn_point: true },
+    });
+    if (!sideQuest) {
+      return res.status(404).json({ message: "Side quest not found" });
+    }
+    res.json({ message: "Side quest retrieved", data: sideQuest });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to retrieve side quest" });
+  }
+}
+
+export async function createSideQuest(req, res) {
+  const {
+    spawn_point_id, name, description, date, time,
+    cost, is_free, is_beginner_friendly, category, tags,
+  } = req.body;
+
+  if (!spawn_point_id || !name || !description || !date || !time || !category) {
+    return res.status(400).json({
+      message: "Spawn point, name, description, date, time, and category are required",
+    });
+  }
+
+  try {
+    const sideQuest = await prisma.sideQuest.create({
+      data: {
+        spawn_point_id: parseInt(spawn_point_id),
+        name,
+        description,
+        date,
+        time,
+        cost: cost ? parseFloat(cost) : null,
+        is_free: is_free ?? true,
+        is_beginner_friendly: is_beginner_friendly ?? false,
+        category,
+        tags: tags || "",
+      },
+      include: { spawn_point: true },
+    });
+    res.status(201).json({ message: "Side quest created", data: sideQuest });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to create side quest" });
+  }
+}
+
+export async function updateSideQuest(req, res) {
+  const { id } = req.params;
+  const {
+    spawn_point_id, name, description, date, time,
+    cost, is_free, is_beginner_friendly, category, tags,
+  } = req.body;
+
+  if (!name || !description || !date || !time || !category) {
+    return res.status(400).json({
+      message: "Name, description, date, time, and category are required",
+    });
+  }
+
+  try {
+    const sideQuest = await prisma.sideQuest.update({
+      where: { id: parseInt(id) },
+      data: {
+        spawn_point_id: parseInt(spawn_point_id),
+        name,
+        description,
+        date,
+        time,
+        cost: cost ? parseFloat(cost) : null,
+        is_free,
+        is_beginner_friendly,
+        category,
+        tags,
+      },
+      include: { spawn_point: true },
+    });
+    res.json({ message: "Side quest updated", data: sideQuest });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update side quest" });
+  }
+}
+
+export async function deleteSideQuest(req, res) {
+  const { id } = req.params;
+  try {
+    await prisma.sideQuest.delete({
+      where: { id: parseInt(id) },
+    });
+    res.json({ message: "Side quest deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete side quest" });
+  }
+}

@@ -6,23 +6,34 @@ datasource db {
   provider = "postgresql"
 }
 
-model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(100)
-  createdAt DateTime @default(now()) @map("created_at")
-  items     Item[]
+model SpawnPoint {
+  id                  Int         @id @default(autoincrement())
+  name                String
+  category            String
+  neighborhood        String
+  address             String
+  is_marta_accessible Boolean     @default(false)
+  created_at          DateTime    @default(now())
+  side_quests         SideQuest[]
 
-  @@map("categories")
+  @@map("spawn_points")
 }
 
-model Item {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  description String   @db.Text
-  categoryId  Int      @map("category_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+model SideQuest {
+  id                   Int        @id @default(autoincrement())
+  spawn_point_id       Int
+  name                 String
+  description          String
+  date                 String
+  time                 String
+  cost                 Float?
+  is_free              Boolean    @default(true)
+  is_beginner_friendly Boolean    @default(false)
+  category             String
+  tags                 String
+  going_count          Int        @default(0)
+  created_at           DateTime   @default(now())
+  spawn_point          SpawnPoint @relation(fields: [spawn_point_id], references: [id])
 
-  @@index([categoryId])
-  @@map("items")
+  @@map("side_quests")
 }
