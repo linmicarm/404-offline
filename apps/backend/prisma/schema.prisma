@@ -12,6 +12,8 @@ model SpawnPoint {
   category            String
   neighborhood        String
   address             String
+  latitude            Float?
+  longitude           Float?
   is_marta_accessible Boolean     @default(false)
   created_at          DateTime    @default(now())
   side_quests         SideQuest[]
