@@ -2,13 +2,28 @@ import { useState, useEffect } from "react";
 import { getSideQuests, deleteSideQuest } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 
-const CATEGORIES = ["All", "Gaming", "Social", "Cosplay", "Language", "Tabletop"];
+const CATEGORIES = [
+  "All",
+  "Gaming",
+  "Social",
+  "Cosplay",
+  "Language",
+  "Tabletop",
+];
 
 function normalize(str) {
-  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
-export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest, showModal }) {
+export default function SideQuestsPage({
+  setCurrentPage,
+  setSelectedSideQuest,
+  setEditingSideQuest,
+  showModal,
+}) {
   const [sideQuests, setSideQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,6 +31,7 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
   const [showFreeOnly, setShowFreeOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("date-asc");
+  const [activeTag, setActiveTag] = useState("");
 
   useEffect(() => {
     fetchSideQuests();
@@ -39,7 +55,8 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
   async function handleDelete(id) {
     showModal({
       title: "Delete side quest",
-      message: "Are you sure you want to delete this side quest? This action cannot be undone.",
+      message:
+        "Are you sure you want to delete this side quest? This action cannot be undone.",
       confirmLabel: "Delete",
       cancelLabel: "Keep it",
       danger: true,
@@ -55,17 +72,26 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
   }
 
   const filtered = sideQuests
-    .filter((q) =>
-      normalize(q.name).includes(normalize(search)) ||
-      normalize(q.description).includes(normalize(search)) ||
-      (q.spawn_point?.name && normalize(q.spawn_point.name).includes(normalize(search))) ||
-      (q.tags && normalize(q.tags).includes(normalize(search)))
+    .filter(
+      (q) =>
+        (normalize(q.name).includes(normalize(search)) ||
+          normalize(q.description).includes(normalize(search)) ||
+          (q.spawn_point?.name &&
+            normalize(q.spawn_point.name).includes(normalize(search))) ||
+          (q.tags && normalize(q.tags).includes(normalize(search)))) &&
+        (activeTag === "" ||
+          (q.tags &&
+            q.tags
+              .split(",")
+              .map((t) => t.trim())
+              .includes(activeTag))),
     )
     .sort((a, b) => {
       if (sortBy === "date-asc") return new Date(a.date) - new Date(b.date);
       if (sortBy === "date-desc") return new Date(b.date) - new Date(a.date);
       if (sortBy === "name-asc") return a.name.localeCompare(b.name);
-      if (sortBy === "free") return a.is_free === b.is_free ? 0 : a.is_free ? -1 : 1;
+      if (sortBy === "free")
+        return a.is_free === b.is_free ? 0 : a.is_free ? -1 : 1;
       return 0;
     });
 
@@ -73,19 +99,35 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
     <div className="page">
       <div
         className="page-header"
-        style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
       >
         <div>
           <div className="page-eyebrow">Atlanta, GA · 404</div>
           <h1 className="page-title">Side Quests</h1>
-          <p className="page-sub">Local events, meetups, and happenings between con season.</p>
+          <p className="page-sub">
+            Local events, meetups, and happenings between con season.
+          </p>
         </div>
-        <button className="btn-primary" onClick={() => setCurrentPage("side-quest-form")}>
+        <button
+          className="btn-primary"
+          onClick={() => setCurrentPage("side-quest-form")}
+        >
           + Add side quest
         </button>
       </div>
 
-      <div style={{ display: "flex", gap: "10px", marginBottom: "1rem", flexWrap: "wrap" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
         <input
           className="form-input"
           style={{ width: "100%", maxWidth: "340px" }}
@@ -123,11 +165,37 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
           Free only
         </button>
       </div>
-
+      {activeTag && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "1rem",
+          }}
+        >
+          <span
+            className="mono"
+            style={{ fontSize: "11px", color: "var(--ink-2)" }}
+          >
+            Filtering by tag:
+          </span>
+          <span className="tag tag-peach">{activeTag}</span>
+          <button
+            className="btn-secondary"
+            style={{ padding: "4px 10px", fontSize: "10px" }}
+            onClick={() => setActiveTag("")}
+          >
+            ✕ Clear
+          </button>
+        </div>
+      )}
       {loading && <div className="loading">Loading side quests... 🍑</div>}
       {error && <div className="error">{error}</div>}
       {!loading && !error && filtered.length === 0 && (
-        <div className="empty">No side quests found — try a different filter or add one!</div>
+        <div className="empty">
+          No side quests found — try a different filter or add one!
+        </div>
       )}
       {!loading && !error && (
         <div className="grid-2">
@@ -139,6 +207,7 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
                   setSelectedSideQuest(q);
                   setCurrentPage("side-quest-detail");
                 }}
+                onTagClick={(tag) => setActiveTag(tag)}
               />
               <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                 <button
