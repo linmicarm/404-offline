@@ -69,6 +69,13 @@ export default function SpawnPointsPage({
     return matchesCategory && matchesSearch && matchesMarta;
   });
 
+  const grouped = filtered.reduce((acc, spawn) => {
+    const hood = spawn.neighborhood;
+    if (!acc[hood]) acc[hood] = [];
+    acc[hood].push(spawn);
+    return acc;
+  }, {});
+
   return (
     <div className="page">
       <div
@@ -128,38 +135,45 @@ export default function SpawnPointsPage({
         </div>
       )}
       {!loading && !error && (
-        <div className="grid-2">
-          {filtered.map((spawn) => (
-            <div key={spawn.id}>
-              <SpawnPointCard
-                spawnPoint={spawn}
-                onClick={(s) => {
-                  setSelectedSpawnPoint(s);
-                  setCurrentPage("spawn-point-detail");
-                }}
-              />
-              <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
-                <button
-                  className="btn-secondary"
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    setEditingSpawnPoint(spawn);
-                    setCurrentPage("spawn-point-form");
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn-danger"
-                  style={{ flex: 1 }}
-                  onClick={() => handleDelete(spawn.id)}
-                >
-                  Delete
-                </button>
+        <>
+          {Object.entries(grouped).map(([neighborhood, spots]) => (
+            <div key={neighborhood} style={{ marginBottom: "2rem" }}>
+              <div className="section-label">{neighborhood}</div>
+              <div className="grid-2">
+                {spots.map((spawn) => (
+                  <div key={spawn.id}>
+                    <SpawnPointCard
+                      spawnPoint={spawn}
+                      onClick={(s) => {
+                        setSelectedSpawnPoint(s);
+                        setCurrentPage("spawn-point-detail");
+                      }}
+                    />
+                    <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
+                      <button
+                        className="btn-secondary"
+                        style={{ flex: 1 }}
+                        onClick={() => {
+                          setEditingSpawnPoint(spawn);
+                          setCurrentPage("spawn-point-form");
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn-danger"
+                        style={{ flex: 1 }}
+                        onClick={() => handleDelete(spawn.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
-        </div>
+        </>
       )}
     </div>
   );
