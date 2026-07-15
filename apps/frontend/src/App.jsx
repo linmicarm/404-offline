@@ -1,125 +1,127 @@
-import { useEffect, useState } from "react";
-import { createItem, fetchCategories, fetchItems } from "./api/items.js";
-import ItemList from "./components/ItemList.jsx";
-
-const emptyForm = {
-  name: "",
-  description: "",
-  categoryId: ""
-};
+import { useState } from "react";
+import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
+import HomePage from "./components/HomePage.jsx";
+import SpawnPointsPage from "./components/SpawnPointsPage.jsx";
+import SpawnPointDetail from "./components/SpawnPointDetail.jsx";
+import SpawnPointForm from "./components/SpawnPointForm.jsx";
+import SideQuestsPage from "./components/SideQuestsPage.jsx";
+import SideQuestDetail from "./components/SideQuestDetail.jsx";
+import SideQuestForm from "./components/SideQuestForm.jsx";
+import Modal from "./components/Modal.jsx";
+import "./styles.css";
 
 export default function App() {
-  const [items, setItems] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState(emptyForm);
-  const [status, setStatus] = useState("Loading items...");
+  const [currentPage, setCurrentPage] = useState("home");
+  const [selectedSpawnPoint, setSelectedSpawnPoint] = useState(null);
+  const [selectedSideQuest, setSelectedSideQuest] = useState(null);
+  const [editingSpawnPoint, setEditingSpawnPoint] = useState(null);
+  const [editingSideQuest, setEditingSideQuest] = useState(null);
+  const [modal, setModal] = useState(null);
 
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const [itemData, categoryData] = await Promise.all([
-          fetchItems(),
-          fetchCategories()
-        ]);
-
-        setItems(itemData);
-        setCategories(categoryData);
-        setStatus("");
-      } catch (error) {
-        setStatus(error.message);
-      }
-    }
-
-    loadData();
-  }, []);
-
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setForm((currentForm) => ({
-      ...currentForm,
-      [name]: value
-    }));
+  function showModal({ title, message, onConfirm, confirmLabel = "Confirm", cancelLabel = "Cancel", danger = false }) {
+    setModal({ title, message, onConfirm, confirmLabel, cancelLabel, danger });
   }
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-    setStatus("Saving item...");
+  async function handleModalConfirm() {
+    if (modal?.onConfirm) {
+      await modal.onConfirm();
+    }
+    setModal(null);
+  }
 
-    try {
-      const savedItem = await createItem(form);
-      setItems((currentItems) => [...currentItems, savedItem]);
-      setForm(emptyForm);
-      setStatus("Item created successfully.");
-    } catch (error) {
-      setStatus(error.message);
+  function closeModal() {
+    setModal(null);
+  }
+
+  function handleSetPage(page) {
+    if (page === "spawn-points") setEditingSpawnPoint(null);
+    if (page === "side-quests") setEditingSideQuest(null);
+    setCurrentPage(page);
+  }
+
+  function renderPage() {
+    switch (currentPage) {
+      case "home":
+        return (
+          <HomePage
+            setCurrentPage={handleSetPage}
+            setSelectedSideQuest={setSelectedSideQuest}
+            setSelectedSpawnPoint={setSelectedSpawnPoint}
+          />
+        );
+      case "spawn-points":
+        return (
+          <SpawnPointsPage
+            setCurrentPage={handleSetPage}
+            setSelectedSpawnPoint={setSelectedSpawnPoint}
+            setEditingSpawnPoint={setEditingSpawnPoint}
+            showModal={showModal}
+          />
+        );
+      case "spawn-point-detail":
+        return (
+          <SpawnPointDetail
+            spawnPoint={selectedSpawnPoint}
+            setCurrentPage={handleSetPage}
+            setSelectedSideQuest={setSelectedSideQuest}
+            setEditingSpawnPoint={setEditingSpawnPoint}
+            showModal={showModal}
+          />
+        );
+      case "spawn-point-form":
+        return (
+          <SpawnPointForm
+            editingSpawnPoint={editingSpawnPoint}
+            setCurrentPage={handleSetPage}
+          />
+        );
+      case "side-quests":
+        return (
+          <SideQuestsPage
+            setCurrentPage={handleSetPage}
+            setSelectedSideQuest={setSelectedSideQuest}
+            setEditingSideQuest={setEditingSideQuest}
+            showModal={showModal}
+          />
+        );
+      case "side-quest-detail":
+        return (
+          <SideQuestDetail
+            sideQuest={selectedSideQuest}
+            setCurrentPage={handleSetPage}
+            setEditingSideQuest={setEditingSideQuest}
+            showModal={showModal}
+          />
+        );
+      case "side-quest-form":
+        return (
+          <SideQuestForm
+            editingSideQuest={editingSideQuest}
+            setCurrentPage={handleSetPage}
+          />
+        );
+      default:
+        return <HomePage setCurrentPage={handleSetPage} />;
     }
   }
 
   return (
-    <main className="page">
-      <section className="panel">
-        <p className="eyebrow">React + Express + PostgreSQL + Prisma</p>
-        <h1>Student Full Stack Template</h1>
-        <p>
-          This starter includes a small example with categories and items so
-          students can see how the frontend, backend, and database connect.
-        </p>
-      </section>
-
-      <section className="grid">
-        <article className="panel">
-          <h2>Create an item</h2>
-          <form className="form" onSubmit={handleSubmit}>
-            <label>
-              Item name
-              <input
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Build a new feature"
-                required
-              />
-            </label>
-
-            <label>
-              Description
-              <textarea
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                placeholder="Describe the task"
-                rows="4"
-                required
-              />
-            </label>
-
-            <label>
-              Category
-              <select
-                name="categoryId"
-                value={form.categoryId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <button type="submit">Create item</button>
-          </form>
-        </article>
-
-        <article className="panel">
-          <h2>Example items</h2>
-          {status ? <p className="status">{status}</p> : null}
-          <ItemList items={items} />
-        </article>
-      </section>
-    </main>
+    <div>
+      <Navbar currentPage={currentPage} setCurrentPage={handleSetPage} />
+      {renderPage()}
+      <Footer />
+      {modal && (
+        <Modal
+          title={modal.title}
+          message={modal.message}
+          onConfirm={handleModalConfirm}
+          onCancel={closeModal}
+          confirmLabel={modal.confirmLabel}
+          cancelLabel={modal.cancelLabel}
+          danger={modal.danger}
+        />
+      )}
+    </div>
   );
 }

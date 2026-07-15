@@ -2,9 +2,21 @@ import { useState, useEffect } from "react";
 import { getSideQuests, deleteSideQuest } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 
-const CATEGORIES = ["All", "Gaming", "Social", "Cosplay", "Language", "Tabletop"];
+const CATEGORIES = [
+  "All",
+  "Gaming",
+  "Social",
+  "Cosplay",
+  "Language",
+  "Tabletop",
+];
 
-export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest }) {
+export default function SideQuestsPage({
+  setCurrentPage,
+  setSelectedSideQuest,
+  setEditingSideQuest,
+  showModal,
+}) {
   const [sideQuests, setSideQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -29,26 +41,46 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
       setLoading(false);
     }
   }
-
   async function handleDelete(id) {
-    if (!window.confirm("Are you sure you want to delete this side quest?")) return;
-    try {
-      await deleteSideQuest(id);
-      setSideQuests(sideQuests.filter((q) => q.id !== id));
-    } catch (err) {
-      alert("Failed to delete side quest.");
-    }
+    showModal({
+      title: "Delete side quest",
+      message:
+        "Are you sure you want to delete this side quest? This action cannot be undone.",
+      confirmLabel: "Delete",
+      cancelLabel: "Keep it",
+      danger: true,
+      onConfirm: async () => {
+        try {
+          await deleteSideQuest(id);
+          setSideQuests(sideQuests.filter((q) => q.id !== id));
+        } catch (err) {
+          alert("Failed to delete side quest.");
+        }
+      },
+    });
   }
 
   return (
     <div className="page">
-      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+      <div
+        className="page-header"
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+        }}
+      >
         <div>
           <div className="page-eyebrow">Atlanta, GA · 404</div>
           <h1 className="page-title">Side Quests</h1>
-          <p className="page-sub">Local events, meetups, and happenings between con season.</p>
+          <p className="page-sub">
+            Local events, meetups, and happenings between con season.
+          </p>
         </div>
-        <button className="btn-primary" onClick={() => setCurrentPage("side-quest-form")}>
+        <button
+          className="btn-primary"
+          onClick={() => setCurrentPage("side-quest-form")}
+        >
           + Add side quest
         </button>
       </div>
@@ -74,7 +106,9 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
       {loading && <div className="loading">Loading side quests... 🍑</div>}
       {error && <div className="error">{error}</div>}
       {!loading && !error && sideQuests.length === 0 && (
-        <div className="empty">No side quests found — try a different filter or add one!</div>
+        <div className="empty">
+          No side quests found — try a different filter or add one!
+        </div>
       )}
       {!loading && !error && (
         <div className="grid-2">

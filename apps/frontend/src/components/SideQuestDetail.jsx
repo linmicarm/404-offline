@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getSideQuestById } from "../api/index.js";
 
-export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingSideQuest }) {
+export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest, showModal }) {
   const [quest, setQuest] = useState(sideQuest);
   const [loading, setLoading] = useState(!sideQuest);
   const [error, setError] = useState(null);
