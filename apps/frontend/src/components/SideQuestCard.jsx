@@ -1,4 +1,27 @@
+import { useState } from "react";
+import { updateGoingCount } from "../api/index.js";
+
 export default function SideQuestCard({ sideQuest, onClick }) {
+  const [goingCount, setGoingCount] = useState(sideQuest.going_count || 0);
+  const [isGoing, setIsGoing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function handleGoing(e) {
+    e.stopPropagation();
+    if (loading) return;
+    setLoading(true);
+    try {
+      const action = isGoing ? "decrement" : "increment";
+      const result = await updateGoingCount(sideQuest.id, action);
+      setGoingCount(result.data.going_count);
+      setIsGoing(!isGoing);
+    } catch (err) {
+      console.error("Failed to update going count");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="card" onClick={() => onClick && onClick(sideQuest)}>
       <div
@@ -58,24 +81,53 @@ export default function SideQuestCard({ sideQuest, onClick }) {
         🗓 {sideQuest.date} · {sideQuest.time}
       </div>
 
-      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-        <span
-          className={`tag ${sideQuest.is_free ? "tag-sage" : "tag-neutral"}`}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "6px",
+        }}
+      >
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          <span
+            className={`tag ${sideQuest.is_free ? "tag-sage" : "tag-neutral"}`}
+          >
+            {sideQuest.is_free ? "Free" : `$${sideQuest.cost}`}
+          </span>
+          {sideQuest.is_beginner_friendly && (
+            <span className="tag tag-sage">Beginner ok</span>
+          )}
+          {sideQuest.tags &&
+            sideQuest.tags
+              .split(",")
+              .slice(0, 2)
+              .map((tag) => (
+                <span key={tag} className="tag tag-neutral">
+                  {tag.trim()}
+                </span>
+              ))}
+        </div>
+
+        <button
+          onClick={handleGoing}
+          disabled={loading}
+          style={{
+            fontFamily: "'Space Mono', monospace",
+            fontSize: "10px",
+            fontWeight: "700",
+            background: isGoing ? "var(--sage-light)" : "var(--peach-light)",
+            color: isGoing ? "var(--sage-dark)" : "var(--peach-dark)",
+            border: `1.5px solid ${isGoing ? "var(--sage)" : "var(--peach)"}`,
+            padding: "5px 12px",
+            borderRadius: "100px",
+            cursor: loading ? "default" : "pointer",
+            whiteSpace: "nowrap",
+          }}
         >
-          {sideQuest.is_free ? "Free" : `$${sideQuest.cost}`}
-        </span>
-        {sideQuest.is_beginner_friendly && (
-          <span className="tag tag-sage">Beginner ok</span>
-        )}
-        {sideQuest.tags &&
-          sideQuest.tags
-            .split(",")
-            .slice(0, 2)
-            .map((tag) => (
-              <span key={tag} className="tag tag-neutral">
-                {tag.trim()}
-              </span>
-            ))}
+          {isGoing ? `✓ Going (${goingCount})` : `${goingCount} going`}
+        </button>
       </div>
     </div>
   );

@@ -144,3 +144,23 @@ export async function deleteSideQuest(req, res) {
     res.status(500).json({ message: "Failed to delete side quest" });
   }
 }
+
+export async function updateGoingCount(req, res) {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  try {
+    const sideQuest = await prisma.sideQuest.update({
+      where: { id: parseInt(id) },
+      data: {
+        going_count: {
+          increment: action === "decrement" ? -1 : 1,
+        },
+      },
+    });
+    res.json({ message: "Going count updated", data: sideQuest });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update going count" });
+  }
+}

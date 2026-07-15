@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { getSideQuestById } from "../api/index.js";
+import { getSideQuestById, deleteSideQuest } from "../api/index.js";
 
-export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest, showModal }) {
+export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingSideQuest, showModal }) {
   const [quest, setQuest] = useState(sideQuest);
   const [loading, setLoading] = useState(!sideQuest);
   const [error, setError] = useState(null);
@@ -20,6 +20,24 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
     }
     fetchQuest();
   }, [sideQuest]);
+
+  function handleDelete() {
+    showModal({
+      title: "Delete side quest",
+      message: "Are you sure you want to delete this side quest? This action cannot be undone.",
+      confirmLabel: "Delete",
+      cancelLabel: "Keep it",
+      danger: true,
+      onConfirm: async () => {
+        try {
+          await deleteSideQuest(quest.id);
+          setCurrentPage("side-quests");
+        } catch (err) {
+          alert("Failed to delete side quest.");
+        }
+      },
+    });
+  }
 
   if (loading) return <div className="loading">Loading... 🍑</div>;
   if (error) return <div className="error">{error}</div>;
@@ -90,6 +108,9 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
           }}
         >
           Edit side quest
+        </button>
+        <button className="btn-danger" onClick={handleDelete}>
+          Delete side quest
         </button>
       </div>
     </div>

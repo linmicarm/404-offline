@@ -2,26 +2,15 @@ import { useState, useEffect } from "react";
 import { getSideQuests, deleteSideQuest } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 
-const CATEGORIES = [
-  "All",
-  "Gaming",
-  "Social",
-  "Cosplay",
-  "Language",
-  "Tabletop",
-];
+const CATEGORIES = ["All", "Gaming", "Social", "Cosplay", "Language", "Tabletop"];
 
-export default function SideQuestsPage({
-  setCurrentPage,
-  setSelectedSideQuest,
-  setEditingSideQuest,
-  showModal,
-}) {
+export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest, showModal }) {
   const [sideQuests, setSideQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [showFreeOnly, setShowFreeOnly] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchSideQuests();
@@ -41,11 +30,11 @@ export default function SideQuestsPage({
       setLoading(false);
     }
   }
+
   async function handleDelete(id) {
     showModal({
       title: "Delete side quest",
-      message:
-        "Are you sure you want to delete this side quest? This action cannot be undone.",
+      message: "Are you sure you want to delete this side quest? This action cannot be undone.",
       confirmLabel: "Delete",
       cancelLabel: "Keep it",
       danger: true,
@@ -60,30 +49,40 @@ export default function SideQuestsPage({
     });
   }
 
+function normalize(str) {
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+const filtered = sideQuests.filter((q) =>
+  normalize(q.name).includes(normalize(search)) ||
+  normalize(q.description).includes(normalize(search)) ||
+  (q.spawn_point?.name && normalize(q.spawn_point.name).includes(normalize(search))) ||
+  (q.tags && normalize(q.tags).includes(normalize(search)))
+);
+
   return (
     <div className="page">
       <div
         className="page-header"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}
       >
         <div>
           <div className="page-eyebrow">Atlanta, GA · 404</div>
           <h1 className="page-title">Side Quests</h1>
-          <p className="page-sub">
-            Local events, meetups, and happenings between con season.
-          </p>
+          <p className="page-sub">Local events, meetups, and happenings between con season.</p>
         </div>
-        <button
-          className="btn-primary"
-          onClick={() => setCurrentPage("side-quest-form")}
-        >
+        <button className="btn-primary" onClick={() => setCurrentPage("side-quest-form")}>
           + Add side quest
         </button>
       </div>
+
+      <input
+        className="form-input"
+        style={{ marginBottom: "1rem", width: "100%", maxWidth: "400px" }}
+        placeholder="Search by name, description, or venue..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
       <div className="filter-bar">
         {CATEGORIES.map((cat) => (
@@ -105,14 +104,12 @@ export default function SideQuestsPage({
 
       {loading && <div className="loading">Loading side quests... 🍑</div>}
       {error && <div className="error">{error}</div>}
-      {!loading && !error && sideQuests.length === 0 && (
-        <div className="empty">
-          No side quests found — try a different filter or add one!
-        </div>
+      {!loading && !error && filtered.length === 0 && (
+        <div className="empty">No side quests found — try a different filter or add one!</div>
       )}
       {!loading && !error && (
         <div className="grid-2">
-          {sideQuests.map((quest) => (
+          {filtered.map((quest) => (
             <div key={quest.id} style={{ position: "relative" }}>
               <SideQuestCard
                 sideQuest={quest}

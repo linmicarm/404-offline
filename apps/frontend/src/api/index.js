@@ -86,3 +86,13 @@ export async function deleteSideQuest(id) {
   const data = await res.json();
   return data;
 }
+
+export async function updateGoingCount(id, action = "increment") {
+  const res = await fetch(`${BASE_URL}/side-quests/${id}/going`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action }),
+  });
+  const data = await res.json();
+  return data;
+}
