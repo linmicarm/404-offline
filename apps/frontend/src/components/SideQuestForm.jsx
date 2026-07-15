@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createSideQuest, updateSideQuest, getSpawnPoints } from "../api/index.js";
 
 const CATEGORIES = ["Gaming", "Social", "Cosplay", "Language", "Tabletop", "Other"];
+const MAX_DESCRIPTION = 300;
 
 export default function SideQuestForm({ editingSideQuest, setCurrentPage }) {
   const [spawnPoints, setSpawnPoints] = useState([]);
@@ -92,13 +93,16 @@ export default function SideQuestForm({ editingSideQuest, setCurrentPage }) {
       <div className="page-header">
         <div className="page-eyebrow">404 Offline</div>
         <h1 className="page-title">{editingSideQuest ? "Edit Side Quest" : "New Side Quest"}</h1>
+        <p className="page-sub">Fields marked with <span style={{ color: "#991B1B" }}>*</span> are required.</p>
       </div>
 
       {error && <div className="error" style={{ marginBottom: "1rem" }}>{error}</div>}
 
       <form className="form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label className="form-label">Spawn Point *</label>
+          <label className="form-label">
+            Spawn Point <span style={{ color: "#991B1B" }}>*</span>
+          </label>
           <select className="form-select" name="spawn_point_id" value={form.spawn_point_id} onChange={handleChange}>
             <option value="">Select a spawn point...</option>
             {spawnPoints.map((s) => (
@@ -108,28 +112,76 @@ export default function SideQuestForm({ editingSideQuest, setCurrentPage }) {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Name *</label>
-          <input className="form-input" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Friday Night Magic" />
+          <label className="form-label">
+            Name <span style={{ color: "#991B1B" }}>*</span>
+          </label>
+          <input
+            className="form-input"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="e.g. Friday Night Magic"
+            maxLength={100}
+          />
+          <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", textAlign: "right" }}>
+            {form.name.length}/100
+          </span>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Description *</label>
-          <textarea className="form-input" name="description" value={form.description} onChange={handleChange} placeholder="What's this side quest about?" rows={3} style={{ resize: "vertical" }} />
+          <label className="form-label">
+            Description <span style={{ color: "#991B1B" }}>*</span>
+          </label>
+          <textarea
+            className="form-input"
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            placeholder="What's this side quest about?"
+            rows={3}
+            maxLength={MAX_DESCRIPTION}
+            style={{ resize: "vertical" }}
+          />
+          <span className="mono" style={{
+            fontSize: "10px",
+            color: form.description.length >= MAX_DESCRIPTION ? "#991B1B" : "var(--ink-3)",
+            textAlign: "right"
+          }}>
+            {form.description.length}/{MAX_DESCRIPTION}
+          </span>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
           <div className="form-group">
-            <label className="form-label">Date *</label>
-            <input className="form-input" type="date" name="date" value={form.date} onChange={handleChange} />
+            <label className="form-label">
+              Date <span style={{ color: "#991B1B" }}>*</span>
+            </label>
+            <input
+              className="form-input"
+              type="date"
+              name="date"
+              value={form.date}
+              onChange={handleChange}
+            />
           </div>
           <div className="form-group">
-            <label className="form-label">Time *</label>
-            <input className="form-input" name="time" value={form.time} onChange={handleChange} placeholder="e.g. 7:00 PM" />
+            <label className="form-label">
+              Time <span style={{ color: "#991B1B" }}>*</span>
+            </label>
+            <input
+              className="form-input"
+              name="time"
+              value={form.time}
+              onChange={handleChange}
+              placeholder="e.g. 7:00 PM"
+            />
           </div>
         </div>
 
         <div className="form-group">
-          <label className="form-label">Category *</label>
+          <label className="form-label">
+            Category <span style={{ color: "#991B1B" }}>*</span>
+          </label>
           <select className="form-select" name="category" value={form.category} onChange={handleChange}>
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
@@ -138,13 +190,28 @@ export default function SideQuestForm({ editingSideQuest, setCurrentPage }) {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Tags (comma separated)</label>
-          <input className="form-input" name="tags" value={form.tags} onChange={handleChange} placeholder="e.g. MTG,cards,tournament" />
+          <label className="form-label">Tags <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", fontWeight: "400" }}>(comma separated)</span></label>
+          <input
+            className="form-input"
+            name="tags"
+            value={form.tags}
+            onChange={handleChange}
+            placeholder="e.g. MTG,cards,tournament"
+          />
         </div>
 
         <div className="form-group">
-          <label className="form-label">Cost ($)</label>
-          <input className="form-input" name="cost" type="number" value={form.cost} onChange={handleChange} placeholder="Leave blank if free" />
+          <label className="form-label">Cost ($) <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", fontWeight: "400" }}>(leave blank if free)</span></label>
+          <input
+            className="form-input"
+            name="cost"
+            type="number"
+            value={form.cost}
+            onChange={handleChange}
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          />
         </div>
 
         <div style={{ display: "flex", gap: "1.5rem" }}>
