@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getSpawnPointById } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
+import MapView from "./MapView.jsx";
 
 export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelectedSideQuest, setEditingSpawnPoint }) {
   const [spawn, setSpawn] = useState(null);
@@ -72,6 +73,17 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
           No side quests at this spawn point yet.
         </div>
       )}
+
+{spawn.latitude && spawn.longitude && (
+  <>
+    <div className="section-label">Find it</div>
+    <MapView
+      spawnPoints={[spawn]}
+      onSelectSpawnPoint={() => {}}
+      singlePin
+    />
+  </>
+)}
 
       <button
         className="btn-secondary"

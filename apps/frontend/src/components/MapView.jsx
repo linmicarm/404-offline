@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -45,7 +44,7 @@ function createCustomIcon(category) {
   });
 }
 
-export default function MapView({ spawnPoints, onSelectSpawnPoint }) {
+export default function MapView({ spawnPoints, onSelectSpawnPoint, singlePin = false }) {
   const validPoints = spawnPoints.filter((s) => s.latitude && s.longitude);
   const center = validPoints.length > 0
     ? [validPoints[0].latitude, validPoints[0].longitude]
@@ -55,14 +54,14 @@ export default function MapView({ spawnPoints, onSelectSpawnPoint }) {
     <div style={{ height: "420px", borderRadius: "24px", overflow: "hidden", border: "1.5px solid #EAD9C8", marginBottom: "1.5rem" }}>
       <MapContainer
         center={center}
-        zoom={11}
+        zoom={singlePin ? 15 : 11}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={false}
       >
         <TileLayer
-  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-/>
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        />
         {validPoints.map((spawn) => (
           <Marker
             key={spawn.id}
