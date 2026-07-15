@@ -96,3 +96,44 @@ export async function updateGoingCount(id, action = "increment") {
   const data = await res.json();
   return data;
 }
+
+// Cons
+export async function getCons() {
+  const res = await fetch(`${BASE_URL}/cons`);
+  const data = await res.json();
+  return data.data;
+}
+
+export async function getConById(id) {
+  const res = await fetch(`${BASE_URL}/cons/${id}`);
+  const data = await res.json();
+  return data.data;
+}
+
+export async function createCon(con) {
+  const res = await fetch(`${BASE_URL}/cons`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(con),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function updateCon(id, con) {
+  const res = await fetch(`${BASE_URL}/cons/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(con),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function deleteCon(id) {
+  const res = await fetch(`${BASE_URL}/cons/${id}`, {
+    method: "DELETE",
+  });
+  const data = await res.json();
+  return data;
+}

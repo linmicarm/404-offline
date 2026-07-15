@@ -39,3 +39,17 @@ model SideQuest {
 
   @@map("side_quests")
 }
+model Con {
+  id          Int      @id @default(autoincrement())
+  name        String
+  start_date  String
+  end_date    String
+  venue       String
+  neighborhood String
+  size        String
+  type        String
+  ticket_url  String?
+  created_at  DateTime @default(now())
+
+  @@map("cons")
+}

@@ -37,6 +37,55 @@ const spawnPoints = await prisma.spawnPoint.createMany({
     ],
   });
 
+await prisma.con.deleteMany();
+
+await prisma.con.createMany({
+  data: [
+    {
+      name: "MomoCon 2026",
+      start_date: "2026-05-21",
+      end_date: "2026-05-24",
+      venue: "Georgia World Congress Center",
+      neighborhood: "Downtown Atlanta",
+      size: "Large",
+      type: "Anime & Gaming",
+      ticket_url: "https://momocon.com",
+    },
+    {
+      name: "DragonCon 2026",
+      start_date: "2026-09-03",
+      end_date: "2026-09-07",
+      venue: "Multiple Downtown Hotels",
+      neighborhood: "Downtown Atlanta",
+      size: "Massive",
+      type: "Sci-Fi, Fantasy & Gaming",
+      ticket_url: "https://dragoncon.org",
+    },
+    {
+      name: "Anime Weekend Atlanta 2026",
+      start_date: "2026-11-19",
+      end_date: "2026-11-22",
+      venue: "Renaissance Waverly Hotel",
+      neighborhood: "Cobb Galleria",
+      size: "Mid-size",
+      type: "Anime",
+      ticket_url: "https://awa-con.com",
+    },
+    {
+      name: "HeroesCon Atlanta 2026",
+      start_date: "2026-12-05",
+      end_date: "2026-12-06",
+      venue: "Cobb Galleria Centre",
+      neighborhood: "Cobb Galleria",
+      size: "Small",
+      type: "Comics & Artist Alley",
+      ticket_url: null,
+    },
+  ],
+});
+
+console.log("Created 4 cons");
+
   console.log("Created 8 side quests");
   console.log("🍑 Seed complete!");
 }

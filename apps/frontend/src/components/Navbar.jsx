@@ -26,6 +26,12 @@ export default function Navbar({ currentPage, setCurrentPage }) {
         >
           Side Quests
         </button>
+        <button
+          className={`navbar-link ${currentPage === "cons" ? "active" : ""}`}
+          onClick={() => setCurrentPage("cons")}
+        >
+          Con Calendar
+        </button>
       </div>
     </nav>
   );

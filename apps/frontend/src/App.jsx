@@ -8,6 +8,8 @@ import SpawnPointForm from "./components/SpawnPointForm.jsx";
 import SideQuestsPage from "./components/SideQuestsPage.jsx";
 import SideQuestDetail from "./components/SideQuestDetail.jsx";
 import SideQuestForm from "./components/SideQuestForm.jsx";
+import ConsPage from "./components/ConsPage.jsx";
+import ConForm from "./components/ConForm.jsx";
 import Modal from "./components/Modal.jsx";
 import "./styles.css";
 
@@ -17,6 +19,7 @@ export default function App() {
   const [selectedSideQuest, setSelectedSideQuest] = useState(null);
   const [editingSpawnPoint, setEditingSpawnPoint] = useState(null);
   const [editingSideQuest, setEditingSideQuest] = useState(null);
+  const [editingCon, setEditingCon] = useState(null);
   const [modal, setModal] = useState(null);
 
   function showModal({ title, message, onConfirm, confirmLabel = "Confirm", cancelLabel = "Cancel", danger = false }) {
@@ -37,6 +40,7 @@ export default function App() {
   function handleSetPage(page) {
     if (page === "spawn-points") setEditingSpawnPoint(null);
     if (page === "side-quests") setEditingSideQuest(null);
+    if (page === "cons") setEditingCon(null);
     setCurrentPage(page);
   }
 
@@ -98,6 +102,21 @@ export default function App() {
         return (
           <SideQuestForm
             editingSideQuest={editingSideQuest}
+            setCurrentPage={handleSetPage}
+          />
+        );
+      case "cons":
+        return (
+          <ConsPage
+            setCurrentPage={handleSetPage}
+            setEditingCon={setEditingCon}
+            showModal={showModal}
+          />
+        );
+      case "con-form":
+        return (
+          <ConForm
+            editingCon={editingCon}
             setCurrentPage={handleSetPage}
           />
         );
