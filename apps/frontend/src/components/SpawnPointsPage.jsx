@@ -22,6 +22,7 @@ export default function SpawnPointsPage({
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
+  const [martaOnly, setMartaOnly] = useState(false);
 
   useEffect(() => {
     fetchSpawnPoints();
@@ -64,7 +65,8 @@ export default function SpawnPointsPage({
     const matchesSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.neighborhood.toLowerCase().includes(search.toLowerCase());
-    return matchesCategory && matchesSearch;
+    const matchesMarta = !martaOnly || s.is_marta_accessible;
+    return matchesCategory && matchesSearch && matchesMarta;
   });
 
   return (
@@ -110,6 +112,12 @@ export default function SpawnPointsPage({
             {cat}
           </button>
         ))}
+        <button
+          className={`filter-pill ${martaOnly ? "active" : ""}`}
+          onClick={() => setMartaOnly(!martaOnly)}
+        >
+          🚇 MARTA accessible
+        </button>
       </div>
 
       {loading && <div className="loading">Loading spawn points... 🍑</div>}

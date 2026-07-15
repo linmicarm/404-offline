@@ -4,6 +4,10 @@ import SideQuestCard from "./SideQuestCard.jsx";
 
 const CATEGORIES = ["All", "Gaming", "Social", "Cosplay", "Language", "Tabletop"];
 
+function normalize(str) {
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
 export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest, showModal }) {
   const [sideQuests, setSideQuests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,6 +15,7 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
   const [activeCategory, setActiveCategory] = useState("All");
   const [showFreeOnly, setShowFreeOnly] = useState(false);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("date-asc");
 
   useEffect(() => {
     fetchSideQuests();
@@ -49,16 +54,20 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
     });
   }
 
-function normalize(str) {
-  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-const filtered = sideQuests.filter((q) =>
-  normalize(q.name).includes(normalize(search)) ||
-  normalize(q.description).includes(normalize(search)) ||
-  (q.spawn_point?.name && normalize(q.spawn_point.name).includes(normalize(search))) ||
-  (q.tags && normalize(q.tags).includes(normalize(search)))
-);
+  const filtered = sideQuests
+    .filter((q) =>
+      normalize(q.name).includes(normalize(search)) ||
+      normalize(q.description).includes(normalize(search)) ||
+      (q.spawn_point?.name && normalize(q.spawn_point.name).includes(normalize(search))) ||
+      (q.tags && normalize(q.tags).includes(normalize(search)))
+    )
+    .sort((a, b) => {
+      if (sortBy === "date-asc") return new Date(a.date) - new Date(b.date);
+      if (sortBy === "date-desc") return new Date(b.date) - new Date(a.date);
+      if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+      if (sortBy === "free") return a.is_free === b.is_free ? 0 : a.is_free ? -1 : 1;
+      return 0;
+    });
 
   return (
     <div className="page">
@@ -76,13 +85,26 @@ const filtered = sideQuests.filter((q) =>
         </button>
       </div>
 
-      <input
-        className="form-input"
-        style={{ marginBottom: "1rem", width: "100%", maxWidth: "400px" }}
-        placeholder="Search by name, description, or venue..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <div style={{ display: "flex", gap: "10px", marginBottom: "1rem", flexWrap: "wrap" }}>
+        <input
+          className="form-input"
+          style={{ width: "100%", maxWidth: "340px" }}
+          placeholder="Search by name, description, or venue..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="form-select"
+          style={{ maxWidth: "180px" }}
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="date-asc">Date ↑ earliest</option>
+          <option value="date-desc">Date ↓ latest</option>
+          <option value="name-asc">Name A–Z</option>
+          <option value="free">Free first</option>
+        </select>
+      </div>
 
       <div className="filter-bar">
         {CATEGORIES.map((cat) => (
