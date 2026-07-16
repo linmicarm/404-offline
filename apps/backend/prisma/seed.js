@@ -8,14 +8,14 @@ async function main() {
 
   const spawnPoints = await prisma.spawnPoint.createMany({
     data: [
-      { name: "Battle & Brew", category: "Gaming venue", neighborhood: "Sandy Springs", address: "1489 Dunwoody Village Pkwy, Sandy Springs, GA 30338", latitude: 33.9265, longitude: -84.3505, is_marta_accessible: false },
-      { name: "Oxford Comics & Games", category: "Comics & cards", neighborhood: "Buckhead", address: "2855 Piedmont Rd NE, Atlanta, GA 30305", latitude: 33.8384, longitude: -84.3642, is_marta_accessible: false },
-      { name: "Matcha Cafe Maiko", category: "Boba & matcha", neighborhood: "Doraville", address: "5671 Buford Hwy NE, Doraville, GA 30340", latitude: 33.8986, longitude: -84.2915, is_marta_accessible: false },
-      { name: "Fluffy Fluffy", category: "Cute cafe", neighborhood: "Doraville", address: "5001 Buford Hwy NE, Doraville, GA 30340", latitude: 33.8942, longitude: -84.2923, is_marta_accessible: false },
-      { name: "Tokyo Kuma", category: "Kawaii shop", neighborhood: "Buford Highway", address: "5150 Buford Hwy NE, Doraville, GA 30340", latitude: 33.8958, longitude: -84.2918, is_marta_accessible: false },
-      { name: "Giga-Bites Cafe", category: "Comics & cards", neighborhood: "Marietta", address: "1985 Cobb Pkwy SE, Marietta, GA 30060", latitude: 33.9382, longitude: -84.5218, is_marta_accessible: false },
-      { name: "Joystick Game Bar", category: "Gaming venue", neighborhood: "Old Fourth Ward", address: "427 Edgewood Ave SE, Atlanta, GA 30312", latitude: 33.7537, longitude: -84.3762, is_marta_accessible: true },
-      { name: "My Parent's Basement", category: "Comics & cards", neighborhood: "Avondale Estates", address: "5 N Avondale Rd, Avondale Estates, GA 30002", latitude: 33.7706, longitude: -84.2699, is_marta_accessible: false },
+      { name: "Battle & Brew", category: "Gaming venue", neighborhood: "Sandy Springs", address: "1489 Dunwoody Village Pkwy, Sandy Springs, GA 30338", latitude: 33.9265, longitude: -84.3505, hours: "Mon-Thu 4pm-12am, Fri 4pm-2am, Sat 12pm-2am, Sun 12pm-12am", is_marta_accessible: false },
+      { name: "Oxford Comics & Games", category: "Comics & cards", neighborhood: "Buckhead", address: "2855 Piedmont Rd NE, Atlanta, GA 30305", latitude: 33.8384, longitude: -84.3642, hours: "Mon-Sat 10am-8pm, Sun 12pm-6pm", is_marta_accessible: false },
+      { name: "Matcha Cafe Maiko", category: "Boba & matcha", neighborhood: "Doraville", address: "5671 Buford Hwy NE, Doraville, GA 30340", latitude: 33.8986, longitude: -84.2915, hours: "Tue-Thu 11am-9pm, Fri 11am-10pm, Sat 10am-10pm, Sun 10am-8pm", is_marta_accessible: false },
+      { name: "Fluffy Fluffy", category: "Cute cafe", neighborhood: "Doraville", address: "5001 Buford Hwy NE, Doraville, GA 30340", latitude: 33.8942, longitude: -84.2923, hours: "Mon-Sun 12pm-10pm", is_marta_accessible: false },
+      { name: "Tokyo Kuma", category: "Kawaii shop", neighborhood: "Buford Highway", address: "5150 Buford Hwy NE, Doraville, GA 30340", latitude: 33.8958, longitude: -84.2918, hours: "Mon-Sat 11am-7pm, Sun 12pm-6pm", is_marta_accessible: false },
+      { name: "Giga-Bites Cafe", category: "Comics & cards", neighborhood: "Marietta", address: "1985 Cobb Pkwy SE, Marietta, GA 30060", latitude: 33.9382, longitude: -84.5218, hours: "Mon-Thu 11am-11pm, Fri-Sat 11am-1am, Sun 12pm-10pm", is_marta_accessible: false },
+      { name: "Joystick Game Bar", category: "Gaming venue", neighborhood: "Old Fourth Ward", address: "427 Edgewood Ave SE, Atlanta, GA 30312", latitude: 33.7537, longitude: -84.3762, hours: "Mon-Fri 5pm-2am, Sat-Sun 2pm-2am", is_marta_accessible: true },
+      { name: "My Parent's Basement", category: "Comics & cards", neighborhood: "Avondale Estates", address: "5 N Avondale Rd, Avondale Estates, GA 30002", latitude: 33.7706, longitude: -84.2699, hours: "Mon-Thu 12pm-10pm, Fri-Sat 12pm-12am, Sun 12pm-8pm", is_marta_accessible: false },
     ],
   });
 
