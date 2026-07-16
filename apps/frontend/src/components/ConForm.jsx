@@ -4,7 +4,7 @@ import { createCon, updateCon } from "../api/index.js";
 const SIZES = ["Small", "Mid-size", "Large", "Massive"];
 const TYPES = ["Anime", "Gaming", "Comics & Artist Alley", "Sci-Fi, Fantasy & Gaming", "Anime & Gaming", "General Pop Culture", "Other"];
 
-export default function ConForm({ editingCon, setCurrentPage }) {
+export default function ConForm({ editingCon, setCurrentPage, showToast }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
@@ -54,6 +54,7 @@ export default function ConForm({ editingCon, setCurrentPage }) {
       } else {
         await createCon(form);
       }
+      showToast(editingCon ? "Con updated! ✓" : "Con added! ✓");
       setCurrentPage("cons");
     } catch (err) {
       setError("Failed to save con.");
@@ -64,11 +65,7 @@ export default function ConForm({ editingCon, setCurrentPage }) {
 
   return (
     <div className="page">
-      <button
-        className="btn-secondary"
-        style={{ marginBottom: "1.5rem" }}
-        onClick={() => setCurrentPage("cons")}
-      >
+      <button className="btn-secondary" style={{ marginBottom: "1.5rem" }} onClick={() => setCurrentPage("cons")}>
         ← Back
       </button>
 
@@ -131,9 +128,7 @@ export default function ConForm({ editingCon, setCurrentPage }) {
           <button className="btn-primary" type="submit" disabled={loading}>
             {loading ? "Saving..." : editingCon ? "Update con" : "Create con"}
           </button>
-          <button className="btn-secondary" type="button" onClick={() => setCurrentPage("cons")}>
-            Cancel
-          </button>
+          <button className="btn-secondary" type="button" onClick={() => setCurrentPage("cons")}>Cancel</button>
         </div>
       </form>
     </div>

@@ -11,6 +11,7 @@ import SideQuestForm from "./components/SideQuestForm.jsx";
 import ConsPage from "./components/ConsPage.jsx";
 import ConForm from "./components/ConForm.jsx";
 import Modal from "./components/Modal.jsx";
+import Toast from "./components/Toast.jsx";
 import "./styles.css";
 
 export default function App() {
@@ -21,9 +22,14 @@ export default function App() {
   const [editingSideQuest, setEditingSideQuest] = useState(null);
   const [editingCon, setEditingCon] = useState(null);
   const [modal, setModal] = useState(null);
+  const [toast, setToast] = useState(null);
 
   function showModal({ title, message, onConfirm, confirmLabel = "Confirm", cancelLabel = "Cancel", danger = false }) {
     setModal({ title, message, onConfirm, confirmLabel, cancelLabel, danger });
+  }
+
+  function showToast(message, type = "success") {
+    setToast({ message, type });
   }
 
   async function handleModalConfirm() {
@@ -61,6 +67,7 @@ export default function App() {
             setSelectedSpawnPoint={setSelectedSpawnPoint}
             setEditingSpawnPoint={setEditingSpawnPoint}
             showModal={showModal}
+            showToast={showToast}
           />
         );
       case "spawn-point-detail":
@@ -71,6 +78,7 @@ export default function App() {
             setSelectedSideQuest={setSelectedSideQuest}
             setEditingSpawnPoint={setEditingSpawnPoint}
             showModal={showModal}
+            showToast={showToast}
           />
         );
       case "spawn-point-form":
@@ -78,6 +86,7 @@ export default function App() {
           <SpawnPointForm
             editingSpawnPoint={editingSpawnPoint}
             setCurrentPage={handleSetPage}
+            showToast={showToast}
           />
         );
       case "side-quests":
@@ -87,6 +96,7 @@ export default function App() {
             setSelectedSideQuest={setSelectedSideQuest}
             setEditingSideQuest={setEditingSideQuest}
             showModal={showModal}
+            showToast={showToast}
           />
         );
       case "side-quest-detail":
@@ -96,6 +106,7 @@ export default function App() {
             setCurrentPage={handleSetPage}
             setEditingSideQuest={setEditingSideQuest}
             showModal={showModal}
+            showToast={showToast}
           />
         );
       case "side-quest-form":
@@ -103,6 +114,7 @@ export default function App() {
           <SideQuestForm
             editingSideQuest={editingSideQuest}
             setCurrentPage={handleSetPage}
+            showToast={showToast}
           />
         );
       case "cons":
@@ -111,6 +123,7 @@ export default function App() {
             setCurrentPage={handleSetPage}
             setEditingCon={setEditingCon}
             showModal={showModal}
+            showToast={showToast}
           />
         );
       case "con-form":
@@ -118,6 +131,7 @@ export default function App() {
           <ConForm
             editingCon={editingCon}
             setCurrentPage={handleSetPage}
+            showToast={showToast}
           />
         );
       default:
@@ -139,6 +153,13 @@ export default function App() {
           confirmLabel={modal.confirmLabel}
           cancelLabel={modal.cancelLabel}
           danger={modal.danger}
+        />
+      )}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>
