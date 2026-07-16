@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getSpawnPoints, getSideQuests } from "../api/index.js";
+import { formatDateShort } from "../utils/formatDate.js";
 
 export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint, setSelectedSideQuest }) {
   const [spawnPoints, setSpawnPoints] = useState([]);
@@ -29,9 +30,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
 
   const neighborhoods = spawnPoints.reduce((acc, spawn) => {
     const hood = spawn.neighborhood;
-    if (!acc[hood]) {
-      acc[hood] = { spawnPoints: [], sideQuests: [] };
-    }
+    if (!acc[hood]) acc[hood] = { spawnPoints: [], sideQuests: [] };
     acc[hood].spawnPoints.push(spawn);
     return acc;
   }, {});
@@ -60,18 +59,8 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem" }}>
-        <button
-          className={`filter-pill ${sortBy === "activity" ? "active" : ""}`}
-          onClick={() => setSortBy("activity")}
-        >
-          Most active
-        </button>
-        <button
-          className={`filter-pill ${sortBy === "alpha" ? "active" : ""}`}
-          onClick={() => setSortBy("alpha")}
-        >
-          A–Z
-        </button>
+        <button className={`filter-pill ${sortBy === "activity" ? "active" : ""}`} onClick={() => setSortBy("activity")}>Most active</button>
+        <button className={`filter-pill ${sortBy === "alpha" ? "active" : ""}`} onClick={() => setSortBy("alpha")}>A–Z</button>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -85,9 +74,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
                 {String(index + 1).padStart(2, "0")}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "15px", fontWeight: "700", color: "var(--ink)", marginBottom: "4px" }}>
-                  {neighborhood}
-                </div>
+                <div style={{ fontSize: "15px", fontWeight: "700", color: "var(--ink)", marginBottom: "4px" }}>{neighborhood}</div>
                 <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   <span className="tag tag-peach">{data.spawnPoints.length} spawn point{data.spawnPoints.length !== 1 ? "s" : ""}</span>
                   <span className="tag tag-sage">{data.sideQuests.length} side quest{data.sideQuests.length !== 1 ? "s" : ""}</span>
@@ -129,7 +116,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
                         >
                           <div>
                             <div style={{ fontSize: "13px", fontWeight: "700", color: "var(--ink)" }}>{quest.name}</div>
-                            <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>{quest.date} · {quest.time}</div>
+                            <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)} · {quest.time}</div>
                           </div>
                           <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", color: "var(--ink-3)" }}>→</span>
                         </div>

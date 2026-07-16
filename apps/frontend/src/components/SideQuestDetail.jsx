@@ -1,16 +1,7 @@
 import { useState, useEffect } from "react";
 import { getSideQuestById, deleteSideQuest } from "../api/index.js";
 import CommentSection from "./CommentSection.jsx";
-
-function formatDate(dateStr) {
-  const date = new Date(dateStr + "T00:00:00");
-  return date.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+import { formatDate } from "../utils/formatDate.js";
 
 const CATEGORY_COLORS = {
   Gaming: { bg: "#FFF4EE", border: "#FFAA7F", text: "#6B3218" },
@@ -74,8 +65,7 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
 
   return (
     <div>
-      {/* Hero banner */}
-      <div style={{ background: colors.bg, borderBottom: `2px solid ${colors.border}`, padding: "2.5rem 2.5rem 2rem", marginBottom: "0" }}>
+      <div style={{ background: colors.bg, borderBottom: `2px solid ${colors.border}`, padding: "2.5rem 2.5rem 2rem" }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           <button className="btn-secondary" style={{ marginBottom: "1.5rem" }} onClick={() => setCurrentPage("side-quests")}>
             ← Back to side quests
@@ -107,7 +97,6 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
               </div>
             </div>
 
-            {/* Date + going count box */}
             <div style={{ background: "var(--bg)", border: `1.5px solid ${colors.border}`, borderRadius: "var(--radius-xl)", padding: "1.5rem", minWidth: "240px", display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
                 <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "6px" }}>Date</div>
@@ -125,7 +114,6 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
       </div>
 
       <div className="page">
-        {/* Spawn point info */}
         {quest.spawn_point && (
           <div className="card" style={{ marginBottom: "1.5rem" }}>
             <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "8px" }}>Location</div>
@@ -138,10 +126,8 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
           </div>
         )}
 
-        {/* Comments */}
         <CommentSection sideQuestId={quest.id} showToast={showToast} />
 
-        {/* Actions */}
         <div style={{ display: "flex", gap: "10px", marginTop: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--border)" }}>
           <button className="btn-secondary" onClick={() => { setEditingSideQuest(quest); setCurrentPage("side-quest-form"); }}>
             Edit side quest

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { updateGoingCount } from "../api/index.js";
+import { formatDateShort } from "../utils/formatDate.js";
 
 const RECURRENCE_LABELS = {
   weekly: "🔁 Weekly",
@@ -48,7 +49,7 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
       )}
 
       <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", marginBottom: "10px" }}>
-        🗓 {sideQuest.date} · {sideQuest.time}
+        🗓 {formatDateShort(sideQuest.date)} · {sideQuest.time}
         {sideQuest.is_recurring && sideQuest.recurrence && (
           <span style={{ marginLeft: "8px", color: "var(--peach-dark)", background: "var(--peach-light)", border: "1.5px solid var(--peach)", borderRadius: "100px", padding: "1px 8px", fontSize: "9px" }}>
             {RECURRENCE_LABELS[sideQuest.recurrence] || "🔁 Recurring"}

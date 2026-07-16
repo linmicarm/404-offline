@@ -1,3 +1,5 @@
+import { formatDateShort } from "../utils/formatDate.js";
+
 function isOpenNow(hoursStr) {
   if (!hoursStr) return null;
   const now = new Date();
@@ -98,7 +100,7 @@ export default function SpawnPointCard({ spawnPoint, onClick }) {
                     {RECURRENCE_LABELS[quest.recurrence] || "🔁"}
                   </span>
                 )}
-                <span className="mono" style={{ fontSize: "9px", color: "var(--ink-3)" }}>{quest.date}</span>
+                <span className="mono" style={{ fontSize: "9px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)}</span>
               </div>
             </div>
           ))}
