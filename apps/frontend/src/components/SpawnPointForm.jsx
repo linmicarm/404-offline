@@ -13,6 +13,7 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
     address: "",
     latitude: "",
     longitude: "",
+    hours: "",
     is_marta_accessible: false,
   });
 
@@ -25,6 +26,7 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
         address: editingSpawnPoint.address || "",
         latitude: editingSpawnPoint.latitude || "",
         longitude: editingSpawnPoint.longitude || "",
+        hours: editingSpawnPoint.hours || "",
         is_marta_accessible: editingSpawnPoint.is_marta_accessible ?? false,
       });
     }
@@ -98,6 +100,22 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
           <label className="form-label">Address <span style={{ color: "#991B1B" }}>*</span></label>
           <input className="form-input" name="address" value={form.address} onChange={handleChange} placeholder="e.g. 427 Edgewood Ave SE, Atlanta, GA 30312" maxLength={255} />
           <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", textAlign: "right" }}>{form.address.length}/255</span>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">
+            Hours <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", fontWeight: "400" }}>(optional)</span>
+          </label>
+          <input
+            className="form-input"
+            name="hours"
+            value={form.hours}
+            onChange={handleChange}
+            placeholder="e.g. Mon-Fri 5pm-2am, Sat-Sun 2pm-2am"
+          />
+          <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>
+            Format: Mon-Fri 5pm-2am, Sat-Sun 2pm-2am
+          </span>
         </div>
 
         <div className="form-group">

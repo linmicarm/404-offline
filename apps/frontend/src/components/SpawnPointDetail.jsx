@@ -3,7 +3,62 @@ import { getSpawnPointById } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 import MapView from "./MapView.jsx";
 
-export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelectedSideQuest, setEditingSpawnPoint }) {
+function isOpenNow(hoursStr) {
+  if (!hoursStr) return null;
+
+  const now = new Date();
+  const day = now.getDay();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const segments = hoursStr.split(", ");
+
+  for (const segment of segments) {
+    const [daysPart, timePart] = segment.split(" ");
+    if (!daysPart || !timePart) continue;
+
+    const days = daysPart.split("-");
+    const startDay = days[0];
+    const endDay = days[1] || days[0];
+    const startIdx = dayNames.indexOf(startDay);
+    const endIdx = dayNames.indexOf(endDay);
+
+    let inRange = false;
+    if (startIdx <= endIdx) {
+      inRange = day >= startIdx && day <= endIdx;
+    } else {
+      inRange = day >= startIdx || day <= endIdx;
+    }
+
+    if (!inRange) continue;
+
+    const times = timePart.split("-");
+    if (times.length < 2) continue;
+
+    function parseTime(t) {
+      const isPM = t.includes("pm");
+      const isAM = t.includes("am");
+      const clean = t.replace("pm", "").replace("am", "");
+      const [h, m] = clean.split(":").map(Number);
+      let hours = h;
+      if (isPM && hours !== 12) hours += 12;
+      if (isAM && hours === 12) hours = 0;
+      return hours * 60 + (m || 0);
+    }
+
+    const openMin = parseTime(times[0]);
+    const closeMin = parseTime(times[1]);
+
+    if (closeMin < openMin) {
+      if (currentMinutes >= openMin || currentMinutes < closeMin) return true;
+    } else {
+      if (currentMinutes >= openMin && currentMinutes < closeMin) return true;
+    }
+  }
+
+  return false;
+}
+
+export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelectedSideQuest, setEditingSpawnPoint, showModal, showToast }) {
   const [spawn, setSpawn] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,13 +82,11 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
   if (error) return <div className="error">{error}</div>;
   if (!spawn) return <div className="error">Spawn point not found.</div>;
 
+  const openStatus = isOpenNow(spawn.hours);
+
   return (
     <div className="page">
-      <button
-        className="btn-secondary"
-        style={{ marginBottom: "1.5rem" }}
-        onClick={() => setCurrentPage("spawn-points")}
-      >
+      <button className="btn-secondary" style={{ marginBottom: "1.5rem" }} onClick={() => setCurrentPage("spawn-points")}>
         ← Back to spawn points
       </button>
 
@@ -45,10 +98,31 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
 
       <div style={{ display: "flex", gap: "6px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
         <span className="tag tag-peach">{spawn.category}</span>
-        {spawn.is_marta_accessible && (
-          <span className="tag tag-sage">MARTA accessible</span>
-        )}
+        {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
+        {openStatus === false && <span className="tag tag-neutral">🔴 Closed</span>}
+        {spawn.is_marta_accessible && <span className="tag tag-sage">🚇 MARTA accessible</span>}
       </div>
+
+      {spawn.latitude && spawn.longitude && (
+        <>
+          <div className="section-label">Find it</div>
+          <MapView spawnPoints={[spawn]} onSelectSpawnPoint={() => {}} singlePin />
+        </>
+      )}
+
+      {spawn.hours && (
+        <div className="card" style={{ marginBottom: "1.5rem" }}>
+          <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "8px" }}>Hours</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+            {spawn.hours.split(", ").map((segment, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: i < spawn.hours.split(", ").length - 1 ? "1px solid var(--border)" : "none" }}>
+                <span className="mono" style={{ fontSize: "11px", color: "var(--ink-2)" }}>{segment.split(" ")[0]}</span>
+                <span className="mono" style={{ fontSize: "11px", color: "var(--ink)", fontWeight: "700" }}>{segment.split(" ")[1]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {spawn.side_quests && spawn.side_quests.length > 0 && (
         <>
@@ -58,10 +132,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
               <SideQuestCard
                 key={quest.id}
                 sideQuest={{ ...quest, spawn_point: spawn }}
-                onClick={(q) => {
-                  setSelectedSideQuest(q);
-                  setCurrentPage("side-quest-detail");
-                }}
+                onClick={(q) => { setSelectedSideQuest(q); setCurrentPage("side-quest-detail"); }}
               />
             ))}
           </div>
@@ -69,31 +140,14 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
       )}
 
       {spawn.side_quests && spawn.side_quests.length === 0 && (
-        <div className="empty" style={{ marginBottom: "1.5rem" }}>
-          No side quests at this spawn point yet.
-        </div>
+        <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests at this spawn point yet.</div>
       )}
 
-{spawn.latitude && spawn.longitude && (
-  <>
-    <div className="section-label">Find it</div>
-    <MapView
-      spawnPoints={[spawn]}
-      onSelectSpawnPoint={() => {}}
-      singlePin
-    />
-  </>
-)}
-
-      <button
-        className="btn-secondary"
-        onClick={() => {
-          setEditingSpawnPoint(spawn);
-          setCurrentPage("spawn-point-form");
-        }}
-      >
-        Edit spawn point
-      </button>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button className="btn-secondary" onClick={() => { setEditingSpawnPoint(spawn); setCurrentPage("spawn-point-form"); }}>
+          Edit spawn point
+        </button>
+      </div>
     </div>
   );
 }
