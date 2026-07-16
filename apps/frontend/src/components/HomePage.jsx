@@ -67,7 +67,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         <p className="page-sub">Game bars, boba, card shops, kawaii finds — everything between con season.</p>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", maxWidth: "480px", marginBottom: "1.5rem", background: "#FFF8F1", border: "1.5px solid #EAD9C8", borderRadius: "100px", padding: "8px 8px 8px 16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", maxWidth: "560px", marginBottom: "1.5rem", background: "#FFF8F1", border: "1.5px solid #EAD9C8", borderRadius: "100px", padding: "8px 8px 8px 16px" }}>
         <span style={{ color: "#B89880", fontSize: "16px" }}>🔍</span>
         <input
           style={{ flex: 1, border: "none", background: "transparent", fontFamily: "'Space Mono', monospace", fontSize: "12px", color: "#2C1810", outline: "none" }}
@@ -81,10 +81,12 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
       </div>
 
       {!search && spawnPoints.length > 0 && (
-        <MapView
-          spawnPoints={spawnPoints}
-          onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
-        />
+        <div style={{ width: "100%", marginBottom: "0.5rem" }}>
+          <MapView
+            spawnPoints={spawnPoints}
+            onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
+          />
+        </div>
       )}
 
       {search ? (

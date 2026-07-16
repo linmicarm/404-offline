@@ -35,8 +35,7 @@ function createCustomIcon(category) {
         align-items: center;
         justify-content: center;
         font-size: 13px;
-      ">
-      </div>
+      "></div>
     `,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
@@ -51,7 +50,7 @@ export default function MapView({ spawnPoints, onSelectSpawnPoint, singlePin = f
     : [33.749, -84.388];
 
   return (
-    <div style={{ height: "420px", borderRadius: "24px", overflow: "hidden", border: "1.5px solid #EAD9C8", marginBottom: "1.5rem" }}>
+    <div style={{ height: "420px", width: "100%", borderRadius: "24px", overflow: "hidden", border: "1.5px solid #EAD9C8", marginBottom: "1.5rem", position: "relative", zIndex: 1 }}>
       <MapContainer
         center={center}
         zoom={singlePin ? 15 : 11}
@@ -76,34 +75,13 @@ export default function MapView({ spawnPoints, onSelectSpawnPoint, singlePin = f
                 <div style={{ fontSize: "11px", color: "#B89880", marginBottom: "8px" }}>
                   {spawn.neighborhood}
                 </div>
-                <div style={{
-                  display: "inline-block",
-                  fontFamily: "monospace",
-                  fontSize: "10px",
-                  background: "#FFF4EE",
-                  color: "#6B3218",
-                  border: "1.5px solid #FFAA7F",
-                  padding: "2px 8px",
-                  borderRadius: "100px",
-                  marginBottom: "8px"
-                }}>
+                <div style={{ display: "inline-block", fontFamily: "monospace", fontSize: "10px", background: "#FFF4EE", color: "#6B3218", border: "1.5px solid #FFAA7F", padding: "2px 8px", borderRadius: "100px", marginBottom: "8px" }}>
                   {spawn.category}
                 </div>
                 <br />
                 <button
                   onClick={() => onSelectSpawnPoint(spawn)}
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: "10px",
-                    fontWeight: "700",
-                    background: "#FFAA7F",
-                    color: "#6B3218",
-                    border: "none",
-                    padding: "6px 12px",
-                    borderRadius: "100px",
-                    cursor: "pointer",
-                    marginTop: "4px",
-                  }}
+                  style={{ fontFamily: "monospace", fontSize: "10px", fontWeight: "700", background: "#FFAA7F", color: "#6B3218", border: "none", padding: "6px 12px", borderRadius: "100px", cursor: "pointer", marginTop: "4px" }}
                 >
                   View spot →
                 </button>
