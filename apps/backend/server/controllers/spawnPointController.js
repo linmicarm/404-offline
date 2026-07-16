@@ -8,6 +8,15 @@ export async function getAllSpawnPoints(req, res) {
         _count: {
           select: { side_quests: true },
         },
+        side_quests: {
+          where: {
+            date: {
+              gte: new Date().toISOString().split("T")[0],
+            },
+          },
+          orderBy: { date: "asc" },
+          take: 2,
+        },
       },
     });
     res.json({ message: "Spawn points retrieved", data: spawnPoints });
