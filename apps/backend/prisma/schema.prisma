@@ -31,6 +31,8 @@ model SideQuest {
   cost                 Float?
   is_free              Boolean    @default(true)
   is_beginner_friendly Boolean    @default(false)
+  is_recurring         Boolean    @default(false)
+  recurrence           String?
   category             String
   tags                 String
   going_count          Int        @default(0)

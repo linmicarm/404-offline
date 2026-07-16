@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { updateGoingCount } from "../api/index.js";
 
+const RECURRENCE_LABELS = {
+  weekly: "🔁 Weekly",
+  biweekly: "🔁 Biweekly",
+  monthly: "🔁 Monthly",
+};
+
 export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
   const [goingCount, setGoingCount] = useState(sideQuest.going_count || 0);
   const [isGoing, setIsGoing] = useState(false);
@@ -43,6 +49,11 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
 
       <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", marginBottom: "10px" }}>
         🗓 {sideQuest.date} · {sideQuest.time}
+        {sideQuest.is_recurring && sideQuest.recurrence && (
+          <span style={{ marginLeft: "8px", color: "var(--peach-dark)", background: "var(--peach-light)", border: "1.5px solid var(--peach)", borderRadius: "100px", padding: "1px 8px", fontSize: "9px" }}>
+            {RECURRENCE_LABELS[sideQuest.recurrence] || "🔁 Recurring"}
+          </span>
+        )}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
@@ -54,15 +65,7 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
             <span className="tag tag-sage">Beginner ok</span>
           )}
           {sideQuest.tags && sideQuest.tags.split(",").slice(0, 2).map((tag) => (
-            <span
-              key={tag}
-              className="tag tag-neutral"
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onTagClick && onTagClick(tag.trim());
-              }}
-            >
+            <span key={tag} className="tag tag-neutral" style={{ cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag.trim()); }}>
               {tag.trim()}
             </span>
           ))}
