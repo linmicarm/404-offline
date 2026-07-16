@@ -7,6 +7,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expanded, setExpanded] = useState(null);
+  const [sortBy, setSortBy] = useState("activity");
 
   useEffect(() => {
     async function fetchData() {
@@ -42,9 +43,10 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
     }
   });
 
-  const sorted = Object.entries(neighborhoods).sort((a, b) =>
-    b[1].spawnPoints.length + b[1].sideQuests.length - (a[1].spawnPoints.length + a[1].sideQuests.length)
-  );
+  const sorted = Object.entries(neighborhoods).sort((a, b) => {
+    if (sortBy === "alpha") return a[0].localeCompare(b[0]);
+    return b[1].spawnPoints.length + b[1].sideQuests.length - (a[1].spawnPoints.length + a[1].sideQuests.length);
+  });
 
   if (loading) return <div className="loading">Loading neighborhoods... 🍑</div>;
   if (error) return <div className="error">{error}</div>;
@@ -57,6 +59,21 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
         <p className="page-sub">Discover which Atlanta neighborhoods have the most going on.</p>
       </div>
 
+      <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem" }}>
+        <button
+          className={`filter-pill ${sortBy === "activity" ? "active" : ""}`}
+          onClick={() => setSortBy("activity")}
+        >
+          Most active
+        </button>
+        <button
+          className={`filter-pill ${sortBy === "alpha" ? "active" : ""}`}
+          onClick={() => setSortBy("alpha")}
+        >
+          A–Z
+        </button>
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {sorted.map(([neighborhood, data], index) => (
           <div key={neighborhood} className="card" style={{ padding: 0, overflow: "hidden" }}>
@@ -64,7 +81,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
               style={{ display: "flex", alignItems: "center", gap: "14px", padding: "1.125rem", cursor: "pointer" }}
               onClick={() => setExpanded(expanded === neighborhood ? null : neighborhood)}
             >
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "18px", fontWeight: "700", color: index < 3 ? "var(--peach)" : "var(--border)", minWidth: "32px" }}>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "18px", fontWeight: "700", color: sortBy === "activity" && index < 3 ? "var(--peach)" : "var(--border)", minWidth: "32px" }}>
                 {String(index + 1).padStart(2, "0")}
               </div>
               <div style={{ flex: 1 }}>

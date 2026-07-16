@@ -137,3 +137,13 @@ export async function deleteCon(id) {
   const data = await res.json();
   return data;
 }
+
+export async function rateSpawnPoint(id, rating, previousRating = null) {
+  const res = await fetch(`${BASE_URL}/spawn-points/${id}/rate`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rating, previousRating }),
+  });
+  const data = await res.json();
+  return data;
+}

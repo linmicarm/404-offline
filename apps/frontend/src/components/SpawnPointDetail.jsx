@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getSpawnPointById } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 import MapView from "./MapView.jsx";
+import StarRating from "./StarRating.jsx";
 
 function isOpenNow(hoursStr) {
   if (!hoursStr) return null;
@@ -58,7 +59,14 @@ function isOpenNow(hoursStr) {
   return false;
 }
 
-export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelectedSideQuest, setEditingSpawnPoint, showModal, showToast }) {
+export default function SpawnPointDetail({
+  spawnPoint,
+  setCurrentPage,
+  setSelectedSideQuest,
+  setEditingSpawnPoint,
+  showModal,
+  showToast,
+}) {
   const [spawn, setSpawn] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -86,38 +94,117 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
 
   return (
     <div className="page">
-      <button className="btn-secondary" style={{ marginBottom: "1.5rem" }} onClick={() => setCurrentPage("spawn-points")}>
+      <button
+        className="btn-secondary"
+        style={{ marginBottom: "1.5rem" }}
+        onClick={() => setCurrentPage("spawn-points")}
+      >
         ← Back to spawn points
       </button>
 
       <div className="page-header">
         <div className="page-eyebrow">{spawn.category}</div>
         <h1 className="page-title">{spawn.name}</h1>
-        <p className="page-sub">{spawn.neighborhood} · {spawn.address}</p>
+        <p className="page-sub">
+          {spawn.neighborhood} · {spawn.address}
+        </p>
       </div>
 
-      <div style={{ display: "flex", gap: "6px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: "6px",
+          marginBottom: "1.5rem",
+          flexWrap: "wrap",
+        }}
+      >
         <span className="tag tag-peach">{spawn.category}</span>
-        {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
-        {openStatus === false && <span className="tag tag-neutral">🔴 Closed</span>}
-        {spawn.is_marta_accessible && <span className="tag tag-sage">🚇 MARTA accessible</span>}
+        {openStatus === true && (
+          <span className="tag tag-sage">🟢 Open now</span>
+        )}
+        {openStatus === false && (
+          <span className="tag tag-neutral">🔴 Closed</span>
+        )}
+        {spawn.is_marta_accessible && (
+          <span className="tag tag-sage">🚇 MARTA accessible</span>
+        )}
+      </div>
+
+      <div className="card" style={{ marginBottom: "1.5rem" }}>
+        <div
+          className="mono"
+          style={{
+            fontSize: "9px",
+            color: "var(--ink-3)",
+            textTransform: "uppercase",
+            letterSpacing: "2px",
+            marginBottom: "10px",
+          }}
+        >
+          Community Rating
+        </div>
+        <StarRating
+          spawnPoint={spawn}
+          onRated={(updated) => setSpawn({ ...spawn, ...updated })}
+        />
       </div>
 
       {spawn.latitude && spawn.longitude && (
         <>
           <div className="section-label">Find it</div>
-          <MapView spawnPoints={[spawn]} onSelectSpawnPoint={() => {}} singlePin />
+          <MapView
+            spawnPoints={[spawn]}
+            onSelectSpawnPoint={() => {}}
+            singlePin
+          />
         </>
       )}
 
       {spawn.hours && (
         <div className="card" style={{ marginBottom: "1.5rem" }}>
-          <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "8px" }}>Hours</div>
+          <div
+            className="mono"
+            style={{
+              fontSize: "9px",
+              color: "var(--ink-3)",
+              textTransform: "uppercase",
+              letterSpacing: "2px",
+              marginBottom: "8px",
+            }}
+          >
+            Hours
+          </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
             {spawn.hours.split(", ").map((segment, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: i < spawn.hours.split(", ").length - 1 ? "1px solid var(--border)" : "none" }}>
-                <span className="mono" style={{ fontSize: "11px", color: "var(--ink-2)" }}>{segment.split(" ")[0]}</span>
-                <span className="mono" style={{ fontSize: "11px", color: "var(--ink)", fontWeight: "700" }}>{segment.split(" ")[1]}</span>
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "5px 0",
+                  borderBottom:
+                    i < spawn.hours.split(", ").length - 1
+                      ? "1px solid var(--border)"
+                      : "none",
+                }}
+              >
+                <span
+                  className="mono"
+                  style={{ fontSize: "11px", color: "var(--ink-2)" }}
+                >
+                  {segment.split(" ")[0]}
+                </span>
+                <span
+                  className="mono"
+                  style={{
+                    fontSize: "11px",
+                    color: "var(--ink)",
+                    fontWeight: "700",
+                  }}
+                >
+                  {segment.split(" ")[1]}
+                </span>
               </div>
             ))}
           </div>
@@ -132,7 +219,10 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
               <SideQuestCard
                 key={quest.id}
                 sideQuest={{ ...quest, spawn_point: spawn }}
-                onClick={(q) => { setSelectedSideQuest(q); setCurrentPage("side-quest-detail"); }}
+                onClick={(q) => {
+                  setSelectedSideQuest(q);
+                  setCurrentPage("side-quest-detail");
+                }}
               />
             ))}
           </div>
@@ -140,11 +230,19 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
       )}
 
       {spawn.side_quests && spawn.side_quests.length === 0 && (
-        <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests at this spawn point yet.</div>
+        <div className="empty" style={{ marginBottom: "1.5rem" }}>
+          No side quests at this spawn point yet.
+        </div>
       )}
 
       <div style={{ display: "flex", gap: "10px" }}>
-        <button className="btn-secondary" onClick={() => { setEditingSpawnPoint(spawn); setCurrentPage("spawn-point-form"); }}>
+        <button
+          className="btn-secondary"
+          onClick={() => {
+            setEditingSpawnPoint(spawn);
+            setCurrentPage("spawn-point-form");
+          }}
+        >
           Edit spawn point
         </button>
       </div>
