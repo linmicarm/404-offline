@@ -50,6 +50,30 @@ export async function createComment(req, res) {
   }
 }
 
+export async function updateComment(req, res) {
+  const { id } = req.params;
+  const { body } = req.body;
+
+  if (!body || body.trim().length === 0) {
+    return res.status(400).json({ message: "Comment body is required" });
+  }
+
+  if (body.length > 500) {
+    return res.status(400).json({ message: "Comment must be under 500 characters" });
+  }
+
+  try {
+    const comment = await prisma.comment.update({
+      where: { id: parseInt(id) },
+      data: { body: body.trim() },
+    });
+    res.json({ message: "Comment updated", data: comment });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update comment" });
+  }
+}
+
 export async function deleteComment(req, res) {
   const { id } = req.params;
   try {

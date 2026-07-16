@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getComments, createComment, deleteComment } from "../api/index.js";
+import { getComments, createComment, deleteComment, updateComment } from "../api/index.js";
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -86,11 +86,31 @@ function ReplyForm({ sideQuestId, parentId, authorName, setAuthorName, onSubmit,
   );
 }
 
-function CommentCard({ comment, sideQuestId, authorName, setAuthorName, onDelete, onReplyAdded, showToast }) {
+function CommentCard({ comment, sideQuestId, authorName, setAuthorName, onDelete, onReplyAdded, onEdit, showToast, isReply = false }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editBody, setEditBody] = useState(comment.body);
+  const [saving, setSaving] = useState(false);
+
+  const isOwner = authorName.trim().toLowerCase() === comment.author_name.trim().toLowerCase();
+
+  async function handleSaveEdit() {
+    if (!editBody.trim()) return;
+    setSaving(true);
+    try {
+      const result = await updateComment(comment.id, editBody.trim());
+      onEdit(comment.id, result.data.body);
+      setEditing(false);
+      showToast("Comment updated! ✓");
+    } catch (err) {
+      showToast("Failed to update comment.", "error");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
-    <div className="card" style={{ cursor: "default" }}>
+    <div className="card" style={{ cursor: "default", background: isReply ? "var(--bg)" : "var(--surface)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "8px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <Avatar name={comment.author_name} />
@@ -99,40 +119,81 @@ function CommentCard({ comment, sideQuestId, authorName, setAuthorName, onDelete
             <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)" }}>{formatDate(comment.created_at)}</div>
           </div>
         </div>
-        <button onClick={() => onDelete(comment.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ink-3)", fontSize: "12px", padding: "0", fontFamily: "'Space Mono', monospace" }}>✕</button>
-      </div>
-
-      <div style={{ fontSize: "13px", color: "var(--ink-2)", lineHeight: "1.6", paddingLeft: "42px", marginBottom: "10px" }}>
-        {comment.body}
+        {isOwner && (
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            {!editing && (
+              <button
+                onClick={() => { setEditing(true); setEditBody(comment.body); }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ink-3)", fontSize: "10px", padding: "0", fontFamily: "'Space Mono', monospace" }}
+              >
+                Edit
+              </button>
+            )}
+            <button
+              onClick={() => onDelete(comment.id)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ink-3)", fontSize: "12px", padding: "0", fontFamily: "'Space Mono', monospace" }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
       </div>
 
       <div style={{ paddingLeft: "42px" }}>
-        <button
-          onClick={() => setShowReplyForm(!showReplyForm)}
-          style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "var(--ink-3)", padding: "0" }}
-        >
-          {showReplyForm ? "Cancel" : `↩ Reply${comment.replies?.length > 0 ? ` · ${comment.replies.length}` : ""}`}
-        </button>
+        {editing ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <textarea
+              className="form-input"
+              value={editBody}
+              onChange={(e) => setEditBody(e.target.value)}
+              rows={3}
+              maxLength={500}
+              style={{ resize: "vertical" }}
+              autoFocus
+            />
+            <div className="mono" style={{ fontSize: "10px", color: editBody.length >= 450 ? "#991B1B" : "var(--ink-3)", textAlign: "right" }}>
+              {editBody.length}/500
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button className="btn-primary" onClick={handleSaveEdit} disabled={saving} style={{ fontSize: "10px", padding: "6px 14px" }}>
+                {saving ? "Saving..." : "Save"}
+              </button>
+              <button className="btn-secondary" onClick={() => setEditing(false)} style={{ fontSize: "10px", padding: "6px 14px" }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ fontSize: "13px", color: "var(--ink-2)", lineHeight: "1.6", marginBottom: "10px" }}>
+            {comment.body}
+          </div>
+        )}
+
+        {!editing && !isReply && (
+          <button
+            onClick={() => setShowReplyForm(!showReplyForm)}
+            style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "var(--ink-3)", padding: "0" }}
+          >
+            {showReplyForm ? "Cancel" : `↩ Reply${comment.replies?.length > 0 ? ` · ${comment.replies.length}` : ""}`}
+          </button>
+        )}
       </div>
 
       {comment.replies && comment.replies.length > 0 && (
         <div style={{ marginTop: "12px", marginLeft: "42px", display: "flex", flexDirection: "column", gap: "8px", borderLeft: "2px solid var(--border)", paddingLeft: "12px" }}>
           {comment.replies.map((reply) => (
-            <div key={reply.id} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <Avatar name={reply.author_name} />
-                  <div>
-                    <div style={{ fontWeight: "700", fontSize: "12px", color: "var(--ink)" }}>{reply.author_name}</div>
-                    <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)" }}>{formatDate(reply.created_at)}</div>
-                  </div>
-                </div>
-                <button onClick={() => onDelete(reply.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ink-3)", fontSize: "11px", padding: "0", fontFamily: "'Space Mono', monospace" }}>✕</button>
-              </div>
-              <div style={{ fontSize: "12px", color: "var(--ink-2)", lineHeight: "1.6", paddingLeft: "40px" }}>
-                {reply.body}
-              </div>
-            </div>
+            <CommentCard
+              key={reply.id}
+              comment={reply}
+              sideQuestId={sideQuestId}
+              authorName={authorName}
+              setAuthorName={setAuthorName}
+              onDelete={onDelete}
+              onReplyAdded={onReplyAdded}
+              onEdit={onEdit}
+              showToast={showToast}
+              isReply={true}
+            />
           ))}
         </div>
       )}
@@ -215,6 +276,14 @@ export default function CommentSection({ sideQuestId, showToast }) {
     }
   }
 
+  function handleEdit(id, newBody) {
+    setComments(comments.map((c) =>
+      c.id === id
+        ? { ...c, body: newBody }
+        : { ...c, replies: c.replies?.map((r) => r.id === id ? { ...r, body: newBody } : r) || [] }
+    ));
+  }
+
   function handleReplyAdded(parentId, reply) {
     setComments(comments.map((c) =>
       c.id === parentId
@@ -275,6 +344,7 @@ export default function CommentSection({ sideQuestId, showToast }) {
               setAuthorName={setAuthorName}
               onDelete={handleDelete}
               onReplyAdded={handleReplyAdded}
+              onEdit={handleEdit}
               showToast={showToast}
             />
           ))}

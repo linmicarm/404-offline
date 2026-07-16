@@ -165,6 +165,16 @@ export async function createComment(sideQuestId, comment) {
   return data;
 }
 
+export async function updateComment(id, body) {
+  const res = await fetch(`${BASE_URL}/side-quests/comments/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ body }),
+  });
+  const data = await res.json();
+  return data;
+}
+
 export async function deleteComment(id) {
   const res = await fetch(`${BASE_URL}/side-quests/comments/${id}`, {
     method: "DELETE",
