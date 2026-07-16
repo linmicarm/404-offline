@@ -147,3 +147,28 @@ export async function rateSpawnPoint(id, rating, previousRating = null) {
   const data = await res.json();
   return data;
 }
+
+// Comments
+export async function getComments(sideQuestId) {
+  const res = await fetch(`${BASE_URL}/side-quests/${sideQuestId}/comments`);
+  const data = await res.json();
+  return data.data;
+}
+
+export async function createComment(sideQuestId, comment) {
+  const res = await fetch(`${BASE_URL}/side-quests/${sideQuestId}/comments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(comment),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function deleteComment(id) {
+  const res = await fetch(`${BASE_URL}/side-quests/comments/${id}`, {
+    method: "DELETE",
+  });
+  const data = await res.json();
+  return data;
+}

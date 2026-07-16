@@ -40,6 +40,7 @@ model SideQuest {
   going_count          Int        @default(0)
   created_at           DateTime   @default(now())
   spawn_point          SpawnPoint @relation(fields: [spawn_point_id], references: [id])
+  comments             Comment[]
 
   @@map("side_quests")
 }
@@ -56,4 +57,18 @@ model Con {
   created_at  DateTime @default(now())
 
   @@map("cons")
+}
+
+model Comment {
+  id            Int       @id @default(autoincrement())
+  side_quest_id Int
+  author_name   String
+  body          String
+  parent_id     Int?
+  parent        Comment?  @relation("CommentReplies", fields: [parent_id], references: [id], onDelete: Cascade)
+  replies       Comment[] @relation("CommentReplies")
+  created_at    DateTime  @default(now())
+  side_quest    SideQuest @relation(fields: [side_quest_id], references: [id], onDelete: Cascade)
+
+  @@map("comments")
 }
