@@ -10,6 +10,7 @@ import SideQuestDetail from "./components/SideQuestDetail.jsx";
 import SideQuestForm from "./components/SideQuestForm.jsx";
 import ConsPage from "./components/ConsPage.jsx";
 import ConForm from "./components/ConForm.jsx";
+import NeighborhoodPage from "./components/NeighborhoodPage.jsx";
 import Modal from "./components/Modal.jsx";
 import Toast from "./components/Toast.jsx";
 import "./styles.css";
@@ -132,6 +133,14 @@ export default function App() {
             editingCon={editingCon}
             setCurrentPage={handleSetPage}
             showToast={showToast}
+          />
+        );
+      case "neighborhoods":
+        return (
+          <NeighborhoodPage
+            setCurrentPage={handleSetPage}
+            setSelectedSpawnPoint={setSelectedSpawnPoint}
+            setSelectedSideQuest={setSelectedSideQuest}
           />
         );
       default:

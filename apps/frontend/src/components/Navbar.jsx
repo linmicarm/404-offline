@@ -27,6 +27,12 @@ export default function Navbar({ currentPage, setCurrentPage }) {
           Side Quests
         </button>
         <button
+          className={`navbar-link ${currentPage === "neighborhoods" ? "active" : ""}`}
+          onClick={() => setCurrentPage("neighborhoods")}
+        >
+          Neighborhoods
+        </button>
+        <button
           className={`navbar-link ${currentPage === "cons" ? "active" : ""}`}
           onClick={() => setCurrentPage("cons")}
         >
