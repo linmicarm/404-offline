@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCons, deleteCon } from "../api/index.js";
+import { SkeletonList } from "./Skeleton.jsx";
 
 const SIZE_COLORS = {
   Massive: "tag-peach",
@@ -94,7 +95,7 @@ export default function ConsPage({
         </button>
       </div>
 
-      {loading && <div className="loading">Loading cons... 🍑</div>}
+      {loading && <SkeletonList count={3} />}
       {error && <div className="error">{error}</div>}
 
       {!loading && !error && upcoming.length === 0 && (

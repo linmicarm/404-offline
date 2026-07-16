@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getSpawnPoints, deleteSpawnPoint } from "../api/index.js";
 import SpawnPointCard from "./SpawnPointCard.jsx";
+import { SkeletonGrid } from "./Skeleton.jsx";
 
 const CATEGORIES = ["All", "Gaming venue", "Comics & cards", "Boba & matcha", "Cute cafe", "Kawaii shop"];
 
@@ -81,7 +82,7 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
         <button className={`filter-pill ${martaOnly ? "active" : ""}`} onClick={() => setMartaOnly(!martaOnly)}>🚇 MARTA accessible</button>
       </div>
 
-      {loading && <div className="loading">Loading spawn points... 🍑</div>}
+      {loading && <SkeletonGrid count={4} />}
       {error && <div className="error">{error}</div>}
       {!loading && !error && filtered.length === 0 && (
         <div className="empty">No spawn points found — try a different filter or add one!</div>

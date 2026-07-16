@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { getSideQuests, deleteSideQuest } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
+import { SkeletonGrid } from "./Skeleton.jsx";
 
 const CATEGORIES = ["All", "Gaming", "Social", "Cosplay", "Language", "Tabletop"];
 
@@ -108,7 +109,7 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
         </div>
       )}
 
-      {loading && <div className="loading">Loading side quests... 🍑</div>}
+      {loading && <SkeletonGrid count={4} />}
       {error && <div className="error">{error}</div>}
       {!loading && !error && filtered.length === 0 && (
         <div className="empty">No side quests found — try a different filter or add one!</div>
