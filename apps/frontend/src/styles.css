@@ -27,6 +27,27 @@
   --radius-xl: 32px;
 }
 
+[data-theme="dark"] {
+  --bg: #12100E;
+  --surface: #1C1814;
+  --surface2: #25201A;
+  --border: #352C24;
+  --border-strong: #4A3D32;
+  --ink: #F5EDE4;
+  --ink-2: #C4A882;
+  --ink-3: #8A6D55;
+  --peach: #FFAA7F;
+  --peach-light: #3D2318;
+  --peach-dark: #FFCBA4;
+  --sage: #85C9A0;
+  --sage-light: #132D1E;
+  --sage-dark: #A8E4BC;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+}
+
 body {
   font-family: 'M PLUS Rounded 1c', sans-serif;
   background: var(--bg);
@@ -346,6 +367,74 @@ body {
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* Dark mode overrides */
+[data-theme="dark"] .btn-primary {
+  background: var(--peach);
+  color: #12100E;
+  border-color: var(--peach);
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: var(--surface2);
+  color: var(--ink-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .btn-danger {
+  background: #4A1A1A;
+  color: #FFAA7F;
+  border-color: #6B2A2A;
+}
+
+[data-theme="dark"] .filter-pill {
+  background: var(--surface);
+  color: var(--ink-2);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .filter-pill.active {
+  background: var(--peach-light);
+  color: var(--peach-dark);
+  border-color: var(--peach);
+}
+
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .navbar {
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .card {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .error {
+  background: #3D1515;
+  color: #FFAA7F;
+  border-color: #6B2A2A;
+}
+
+[data-theme="dark"] .empty {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+/* Dark mode map */
+[data-theme="dark"] .leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.75) contrast(0.9);
+}
+
+[data-theme="dark"] .leaflet-container {
+  background: #12100E;
 }
 
 /* ─── Mobile ─────────────────────────────── */
