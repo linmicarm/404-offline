@@ -4,12 +4,12 @@ import CommentSection from "./CommentSection.jsx";
 import { formatDate } from "../utils/formatDate.js";
 
 const CATEGORY_COLORS = {
-  Gaming: { bg: "#FFF4EE", border: "#FFAA7F", text: "#6B3218" },
-  Social: { bg: "#EDF8F2", border: "#85C9A0", text: "#1A4D32" },
-  Cosplay: { bg: "#FFF4EE", border: "#FFAA7F", text: "#6B3218" },
-  Language: { bg: "#EDF8F2", border: "#85C9A0", text: "#1A4D32" },
-  Tabletop: { bg: "#FFF4EE", border: "#FFAA7F", text: "#6B3218" },
-  Other: { bg: "#FFF0E3", border: "#EAD9C8", text: "#7A5C48" },
+  Gaming: { bg: "var(--peach-light)", border: "var(--peach)", text: "var(--peach-dark)" },
+  Social: { bg: "var(--sage-light)", border: "var(--sage)", text: "var(--sage-dark)" },
+  Cosplay: { bg: "var(--peach-light)", border: "var(--peach)", text: "var(--peach-dark)" },
+  Language: { bg: "var(--sage-light)", border: "var(--sage)", text: "var(--sage-dark)" },
+  Tabletop: { bg: "var(--peach-light)", border: "var(--peach)", text: "var(--peach-dark)" },
+  Other: { bg: "var(--surface2)", border: "var(--border)", text: "var(--ink-2)" },
 };
 
 const RECURRENCE_LABELS = {
