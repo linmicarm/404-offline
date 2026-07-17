@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { updateGoingCount } from "../api/index.js";
 import { formatDateShort } from "../utils/formatDate.js";
+import { highlight } from "../utils/highlight.jsx";
 
 const RECURRENCE_LABELS = {
   weekly: "🔁 Weekly",
@@ -8,7 +9,7 @@ const RECURRENCE_LABELS = {
   monthly: "🔁 Monthly",
 };
 
-export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
+export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQuery }) {
   const [goingCount, setGoingCount] = useState(sideQuest.going_count || 0);
   const [isGoing, setIsGoing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,18 +34,18 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
     <div className="card" onClick={() => onClick && onClick(sideQuest)}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "8px" }}>
         <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--ink)", flex: 1, marginRight: "10px" }}>
-          {sideQuest.name}
+          {searchQuery ? highlight(sideQuest.name, searchQuery) : sideQuest.name}
         </div>
         <span className="tag tag-peach">{sideQuest.category}</span>
       </div>
 
       <div style={{ fontSize: "13px", color: "var(--ink-2)", marginBottom: "10px", lineHeight: "1.5" }}>
-        {sideQuest.description}
+        {searchQuery ? highlight(sideQuest.description, searchQuery) : sideQuest.description}
       </div>
 
       {sideQuest.spawn_point && (
         <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", marginBottom: "8px" }}>
-          📍 {sideQuest.spawn_point.name} · {sideQuest.spawn_point.neighborhood}
+          📍 {searchQuery ? highlight(sideQuest.spawn_point.name, searchQuery) : sideQuest.spawn_point.name} · {sideQuest.spawn_point.neighborhood}
         </div>
       )}
 
@@ -66,8 +67,13 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick }) {
             <span className="tag tag-sage">Beginner ok</span>
           )}
           {sideQuest.tags && sideQuest.tags.split(",").slice(0, 2).map((tag) => (
-            <span key={tag} className="tag tag-neutral" style={{ cursor: "pointer" }} onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag.trim()); }}>
-              {tag.trim()}
+            <span
+              key={tag}
+              className="tag tag-neutral"
+              style={{ cursor: "pointer" }}
+              onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag.trim()); }}
+            >
+              {searchQuery ? highlight(tag.trim(), searchQuery) : tag.trim()}
             </span>
           ))}
         </div>

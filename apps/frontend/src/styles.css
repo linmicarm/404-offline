@@ -437,6 +437,11 @@ body {
   background: #12100E;
 }
 
+[data-theme="dark"] mark {
+  background: var(--peach);
+  color: #12100E;
+}
+
 /* ─── Mobile ─────────────────────────────── */
 @media (max-width: 768px) {
   .navbar {

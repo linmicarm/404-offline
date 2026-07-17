@@ -7,7 +7,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
 
   return (
     <nav className="navbar">
-      <div>
+      <div style={{ cursor: "pointer" }} onClick={() => setCurrentPage("home")}>
         <div className="navbar-logo-title">404 <span>Offline</span></div>
         <div className="navbar-logo-sub">Atlanta's nerd scene, found</div>
       </div>

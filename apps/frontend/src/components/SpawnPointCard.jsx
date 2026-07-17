@@ -1,4 +1,5 @@
 import { formatDateShort } from "../utils/formatDate.js";
+import { highlight } from "../utils/highlight.jsx";
 
 function isOpenNow(hoursStr) {
   if (!hoursStr) return null;
@@ -44,7 +45,7 @@ const RECURRENCE_LABELS = {
   monthly: "🔁 Monthly",
 };
 
-export default function SpawnPointCard({ spawnPoint, onClick }) {
+export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
   const openStatus = isOpenNow(spawnPoint.hours);
   const upcomingQuests = spawnPoint.side_quests || [];
 
@@ -53,10 +54,10 @@ export default function SpawnPointCard({ spawnPoint, onClick }) {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "8px" }}>
         <div>
           <div style={{ fontSize: "15px", fontWeight: "700", color: "var(--ink)", marginBottom: "3px" }}>
-            {spawnPoint.name}
+            {searchQuery ? highlight(spawnPoint.name, searchQuery) : spawnPoint.name}
           </div>
           <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>
-            {spawnPoint.neighborhood}
+            {searchQuery ? highlight(spawnPoint.neighborhood, searchQuery) : spawnPoint.neighborhood}
           </div>
         </div>
         <span className="tag tag-peach">{spawnPoint.category}</span>
