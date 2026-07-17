@@ -140,3 +140,23 @@ export async function rateSpawnPoint(req, res) {
     res.status(500).json({ message: "Failed to submit rating" });
   }
 }
+
+export async function checkinSpawnPoint(req, res) {
+  const { id } = req.params;
+  const { action } = req.body;
+
+  try {
+    const spawnPoint = await prisma.spawnPoint.update({
+      where: { id: parseInt(id) },
+      data: {
+        checkin_count: {
+          increment: action === "decrement" ? -1 : 1,
+        },
+      },
+    });
+    res.json({ message: "Check-in updated", data: spawnPoint });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update check-in" });
+  }
+}

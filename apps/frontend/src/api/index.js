@@ -182,3 +182,13 @@ export async function deleteComment(id) {
   const data = await res.json();
   return data;
 }
+
+export async function checkinSpawnPoint(id, action = "increment") {
+  const res = await fetch(`${BASE_URL}/spawn-points/${id}/checkin`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action }),
+  });
+  const data = await res.json();
+  return data;
+}

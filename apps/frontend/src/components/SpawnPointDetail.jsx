@@ -3,6 +3,7 @@ import { getSpawnPointById } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 import MapView from "./MapView.jsx";
 import StarRating from "./StarRating.jsx";
+import CheckInButton from "./CheckInButton.jsx";
 import { formatDateShort } from "../utils/formatDate.js";
 
 function isOpenNow(hoursStr) {
@@ -92,7 +93,20 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
         <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>
           Community Rating
         </div>
-        <StarRating spawnPoint={spawn} onRated={(updated) => setSpawn({ ...spawn, ...updated })} />
+        <StarRating
+          spawnPoint={spawn}
+          onRated={(updated) => setSpawn({ ...spawn, ...updated })}
+        />
+      </div>
+
+      <div className="card" style={{ marginBottom: "1.5rem" }}>
+        <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>
+          Check In
+        </div>
+        <CheckInButton
+          spawnPoint={spawn}
+          onCheckedIn={(updated) => setSpawn({ ...spawn, ...updated })}
+        />
       </div>
 
       {spawn.latitude && spawn.longitude && (

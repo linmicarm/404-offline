@@ -19,6 +19,7 @@ model SpawnPoint {
   is_marta_accessible Boolean     @default(false)
   created_at          DateTime    @default(now())
   side_quests         SideQuest[]
+  checkin_count       Int         @default(0)
 
   @@map("spawn_points")
 }
