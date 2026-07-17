@@ -9,12 +9,28 @@ function normalize(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+function isThisWeekend(dateStr) {
+  const today = new Date();
+  const date = new Date(dateStr + "T00:00:00");
+  const day = today.getDay();
+  const daysUntilSat = (6 - day + 7) % 7;
+  const daysUntilSun = (0 - day + 7) % 7 || 7;
+  const saturday = new Date(today);
+  saturday.setDate(today.getDate() + daysUntilSat);
+  saturday.setHours(0, 0, 0, 0);
+  const sunday = new Date(today);
+  sunday.setDate(today.getDate() + daysUntilSun);
+  sunday.setHours(23, 59, 59, 999);
+  return date >= saturday && date <= sunday;
+}
+
 export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, setEditingSideQuest, showModal, showToast }) {
   const [sideQuests, setSideQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [showFreeOnly, setShowFreeOnly] = useState(false);
+  const [weekendOnly, setWeekendOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("date-asc");
   const [activeTag, setActiveTag] = useState("");
@@ -63,7 +79,8 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
       normalize(q.description).includes(normalize(search)) ||
       (q.spawn_point?.name && normalize(q.spawn_point.name).includes(normalize(search))) ||
       (q.tags && normalize(q.tags).includes(normalize(search)))) &&
-      (activeTag === "" || (q.tags && q.tags.split(",").map((t) => t.trim()).includes(activeTag)))
+      (activeTag === "" || (q.tags && q.tags.split(",").map((t) => t.trim()).includes(activeTag))) &&
+      (!weekendOnly || isThisWeekend(q.date))
     )
     .sort((a, b) => {
       if (sortBy === "date-asc") return new Date(a.date) - new Date(b.date);
@@ -85,8 +102,19 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
       </div>
 
       <div style={{ display: "flex", gap: "10px", marginBottom: "1rem", flexWrap: "wrap" }}>
-        <input className="form-input" style={{ width: "100%", maxWidth: "340px" }} placeholder="Search by name, description, or venue..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select className="form-select" style={{ maxWidth: "180px" }} value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+        <input
+          className="form-input"
+          style={{ width: "100%", maxWidth: "340px" }}
+          placeholder="Search by name, description, or venue..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="form-select"
+          style={{ maxWidth: "180px" }}
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
           <option value="date-asc">Date ↑ earliest</option>
           <option value="date-desc">Date ↓ latest</option>
           <option value="name-asc">Name A–Z</option>
@@ -96,9 +124,20 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
 
       <div className="filter-bar">
         {CATEGORIES.map((cat) => (
-          <button key={cat} className={`filter-pill ${activeCategory === cat ? "active" : ""}`} onClick={() => setActiveCategory(cat)}>{cat}</button>
+          <button
+            key={cat}
+            className={`filter-pill ${activeCategory === cat ? "active" : ""}`}
+            onClick={() => setActiveCategory(cat)}
+          >
+            {cat}
+          </button>
         ))}
-        <button className={`filter-pill ${showFreeOnly ? "active" : ""}`} onClick={() => setShowFreeOnly(!showFreeOnly)}>Free only</button>
+        <button className={`filter-pill ${showFreeOnly ? "active" : ""}`} onClick={() => setShowFreeOnly(!showFreeOnly)}>
+          Free only
+        </button>
+        <button className={`filter-pill ${weekendOnly ? "active" : ""}`} onClick={() => setWeekendOnly(!weekendOnly)}>
+          🗓 This weekend
+        </button>
       </div>
 
       {activeTag && (
