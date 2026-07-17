@@ -8,7 +8,9 @@ export default function Navbar({ currentPage, setCurrentPage }) {
   return (
     <nav className="navbar">
       <div style={{ cursor: "pointer" }} onClick={() => setCurrentPage("home")}>
-        <div className="navbar-logo-title">404 <span>Offline</span></div>
+        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "14px", fontWeight: "700", color: "var(--ink)", letterSpacing: "1px" }}>
+          <span style={{ color: "var(--peach)" }}>[</span>404<span style={{ color: "var(--peach)" }}>]</span> Offline
+        </div>
         <div className="navbar-logo-sub">Atlanta's nerd scene, found</div>
       </div>
       <div className="navbar-links">

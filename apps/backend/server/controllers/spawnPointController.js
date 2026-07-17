@@ -44,7 +44,7 @@ export async function getSpawnPointById(req, res) {
 }
 
 export async function createSpawnPoint(req, res) {
-  const { name, category, neighborhood, address, latitude, longitude, hours, is_marta_accessible } = req.body;
+  const { name, category, neighborhood, address, latitude, longitude, hours, is_marta_accessible, image_url } = req.body;
 
   if (!name || !category || !neighborhood || !address) {
     return res.status(400).json({ message: "Name, category, neighborhood, and address are required" });
@@ -60,6 +60,7 @@ export async function createSpawnPoint(req, res) {
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
         hours: hours || null,
+        image_url: image_url || null,
         is_marta_accessible: is_marta_accessible || false,
       },
     });
@@ -72,7 +73,7 @@ export async function createSpawnPoint(req, res) {
 
 export async function updateSpawnPoint(req, res) {
   const { id } = req.params;
-  const { name, category, neighborhood, address, latitude, longitude, hours, is_marta_accessible } = req.body;
+  const { name, category, neighborhood, address, latitude, longitude, hours, is_marta_accessible, image_url } = req.body;
 
   if (!name || !category || !neighborhood || !address) {
     return res.status(400).json({ message: "Name, category, neighborhood, and address are required" });
@@ -89,6 +90,7 @@ export async function updateSpawnPoint(req, res) {
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
         hours: hours || null,
+        image_url: image_url || null,
         is_marta_accessible,
       },
     });

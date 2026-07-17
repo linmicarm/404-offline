@@ -61,15 +61,10 @@ export async function getSideQuestById(req, res) {
 }
 
 export async function createSideQuest(req, res) {
-  const {
-    spawn_point_id, name, description, date, time,
-    cost, is_free, is_beginner_friendly, category, tags,
-  } = req.body;
+  const { spawn_point_id, name, description, date, time, cost, is_free, is_beginner_friendly, is_recurring, recurrence, category, tags, image_url } = req.body;
 
   if (!spawn_point_id || !name || !description || !date || !time || !category) {
-    return res.status(400).json({
-      message: "Spawn point, name, description, date, time, and category are required",
-    });
+    return res.status(400).json({ message: "Spawn point, name, description, date, time, and category are required" });
   }
 
   try {
@@ -83,8 +78,11 @@ export async function createSideQuest(req, res) {
         cost: cost ? parseFloat(cost) : null,
         is_free: is_free ?? true,
         is_beginner_friendly: is_beginner_friendly ?? false,
+        is_recurring: is_recurring ?? false,
+        recurrence: recurrence || null,
         category,
         tags: tags || "",
+        image_url: image_url || null,
       },
       include: { spawn_point: true },
     });
@@ -97,15 +95,10 @@ export async function createSideQuest(req, res) {
 
 export async function updateSideQuest(req, res) {
   const { id } = req.params;
-  const {
-    spawn_point_id, name, description, date, time,
-    cost, is_free, is_beginner_friendly, category, tags,
-  } = req.body;
+  const { spawn_point_id, name, description, date, time, cost, is_free, is_beginner_friendly, is_recurring, recurrence, category, tags, image_url } = req.body;
 
   if (!name || !description || !date || !time || !category) {
-    return res.status(400).json({
-      message: "Name, description, date, time, and category are required",
-    });
+    return res.status(400).json({ message: "Name, description, date, time, and category are required" });
   }
 
   try {
@@ -120,8 +113,11 @@ export async function updateSideQuest(req, res) {
         cost: cost ? parseFloat(cost) : null,
         is_free,
         is_beginner_friendly,
+        is_recurring,
+        recurrence: recurrence || null,
         category,
         tags,
+        image_url: image_url || null,
       },
       include: { spawn_point: true },
     });
