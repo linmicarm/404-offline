@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -109,6 +109,7 @@ body {
   background: none;
   border: none;
   font-family: 'M PLUS Rounded 1c', sans-serif;
+  transition: color 0.15s;
 }
 
 .navbar-link:hover { color: var(--ink); }
@@ -118,6 +119,7 @@ body {
   font-weight: 700;
 }
 
+/* Buttons */
 .btn-primary {
   font-family: 'Space Mono', monospace;
   font-size: 11px;
@@ -128,7 +130,11 @@ body {
   padding: 8px 16px;
   border-radius: 100px;
   cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
 }
+
+.btn-primary:hover { box-shadow: 0 4px 12px rgba(255,170,127,0.3); }
+.btn-primary:active { transform: scale(0.97); }
 
 .btn-secondary {
   font-family: 'Space Mono', monospace;
@@ -140,7 +146,11 @@ body {
   padding: 8px 16px;
   border-radius: 100px;
   cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s;
 }
+
+.btn-secondary:hover { border-color: var(--border-strong); }
+.btn-secondary:active { transform: scale(0.97); }
 
 .btn-danger {
   font-family: 'Space Mono', monospace;
@@ -152,6 +162,16 @@ body {
   padding: 8px 16px;
   border-radius: 100px;
   cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn-danger:active { transform: scale(0.97); }
+
+/* Hero */
+.hero {
+  background: var(--peach-light);
+  border-bottom: 2px solid var(--peach);
+  padding: 3rem 2.5rem 2.5rem;
 }
 
 /* Page layout */
@@ -202,7 +222,7 @@ body {
   line-height: 1.6;
 }
 
-/* Section label */
+/* Section label with brackets */
 .section-label {
   font-family: 'Space Mono', monospace;
   font-size: 9px;
@@ -215,11 +235,18 @@ body {
   gap: 8px;
 }
 
+.section-label::before {
+  content: '[';
+  color: var(--peach);
+  font-weight: 700;
+  font-size: 11px;
+}
+
 .section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
+  content: ']';
+  color: var(--peach);
+  font-weight: 700;
+  font-size: 11px;
 }
 
 /* Cards */
@@ -229,10 +256,30 @@ body {
   border-radius: var(--radius-lg);
   padding: 1.125rem;
   cursor: pointer;
-  transition: border-color 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  position: relative;
+  overflow: hidden;
 }
 
-.card:hover { border-color: var(--border-strong); }
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--peach);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(44,24,16,0.08);
+  border-color: var(--border-strong);
+}
+
+.card.sage-card::before { background: var(--sage); }
+.card.sage-card:hover { border-color: var(--sage); }
 
 /* Grid */
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 10px; }
@@ -246,6 +293,7 @@ body {
   border-radius: 100px;
   border: 1.5px solid;
   display: inline-block;
+  font-weight: 700;
 }
 
 .tag-peach { background: var(--peach-light); color: var(--peach-dark); border-color: var(--peach); }
@@ -266,6 +314,7 @@ body {
   color: var(--ink);
   outline: none;
   width: 100%;
+  transition: border-color 0.15s;
 }
 .form-input:focus { border-color: var(--peach); }
 .form-select {
@@ -299,7 +348,10 @@ body {
   color: var(--ink-2);
   cursor: pointer;
   white-space: nowrap;
+  transition: all 0.15s;
 }
+
+.filter-pill:hover { border-color: var(--border-strong); }
 
 .filter-pill.active {
   background: var(--peach-light);
@@ -428,6 +480,11 @@ body {
   border-color: var(--border);
 }
 
+[data-theme="dark"] .hero {
+  background: var(--peach-light);
+  border-color: var(--peach);
+}
+
 /* Dark mode map */
 [data-theme="dark"] .leaflet-tile {
   filter: invert(1) hue-rotate(180deg) brightness(0.75) contrast(0.9);
@@ -455,6 +512,10 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
+  }
+
+  .hero {
+    padding: 2rem 1rem 1.5rem;
   }
 
   .page {

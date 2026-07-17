@@ -9,6 +9,8 @@ const RECURRENCE_LABELS = {
   monthly: "🔁 Monthly",
 };
 
+const SAGE_CATEGORIES = ["Social", "Language"];
+
 export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQuery }) {
   const [goingCount, setGoingCount] = useState(sideQuest.going_count || 0);
   const [isGoing, setIsGoing] = useState(false);
@@ -31,7 +33,10 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
   }
 
   return (
-    <div className="card" onClick={() => onClick && onClick(sideQuest)}>
+    <div
+      className={`card ${SAGE_CATEGORIES.includes(sideQuest.category) ? "sage-card" : ""}`}
+      onClick={() => onClick && onClick(sideQuest)}
+    >
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "8px" }}>
         <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--ink)", flex: 1, marginRight: "10px" }}>
           {searchQuery ? highlight(sideQuest.name, searchQuery) : sideQuest.name}

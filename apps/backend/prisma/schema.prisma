@@ -20,6 +20,7 @@ model SpawnPoint {
   created_at          DateTime    @default(now())
   side_quests         SideQuest[]
   checkin_count       Int         @default(0)
+  suggestions         Suggestion[]
 
   @@map("spawn_points")
 }
@@ -73,4 +74,19 @@ model Comment {
   side_quest    SideQuest @relation(fields: [side_quest_id], references: [id], onDelete: Cascade)
 
   @@map("comments")
+}
+
+model Suggestion {
+  id             Int        @id @default(autoincrement())
+  spawn_point_id Int
+  author_name    String
+  field          String
+  current_value  String?
+  suggested_value String
+  note           String?
+  status         String     @default("pending")
+  created_at     DateTime   @default(now())
+  spawn_point    SpawnPoint @relation(fields: [spawn_point_id], references: [id], onDelete: Cascade)
+
+  @@map("suggestions")
 }

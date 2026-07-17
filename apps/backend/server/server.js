@@ -4,6 +4,7 @@ import spawnPointRoutes from "./routes/spawnPoints.js";
 import sideQuestRoutes from "./routes/sideQuests.js";
 import conRoutes from "./routes/cons.js";
 import commentRoutes from "./routes/comments.js";
+import suggestionRoutes from "./routes/suggestions.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +20,7 @@ app.use("/api/spawn-points", spawnPointRoutes);
 app.use("/api/side-quests", sideQuestRoutes);
 app.use("/api/cons", conRoutes);
 app.use("/api/side-quests", commentRoutes);
+app.use("/api/suggestions", suggestionRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -200,3 +200,30 @@ export async function toggleFeatured(id) {
   const data = await res.json();
   return data;
 }
+
+// Suggestions
+export async function getSuggestions() {
+  const res = await fetch(`${BASE_URL}/suggestions`);
+  const data = await res.json();
+  return data.data;
+}
+
+export async function createSuggestion(suggestion) {
+  const res = await fetch(`${BASE_URL}/suggestions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(suggestion),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function updateSuggestionStatus(id, status) {
+  const res = await fetch(`${BASE_URL}/suggestions/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status }),
+  });
+  const data = await res.json();
+  return data;
+}

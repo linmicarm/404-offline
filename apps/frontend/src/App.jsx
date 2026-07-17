@@ -11,6 +11,7 @@ import SideQuestForm from "./components/SideQuestForm.jsx";
 import ConsPage from "./components/ConsPage.jsx";
 import ConForm from "./components/ConForm.jsx";
 import NeighborhoodPage from "./components/NeighborhoodPage.jsx";
+import SuggestionsPage from "./components/SuggestionsPage.jsx";
 import Modal from "./components/Modal.jsx";
 import Toast from "./components/Toast.jsx";
 import "./styles.css";
@@ -34,9 +35,7 @@ export default function App() {
   }
 
   async function handleModalConfirm() {
-    if (modal?.onConfirm) {
-      await modal.onConfirm();
-    }
+    if (modal?.onConfirm) await modal.onConfirm();
     setModal(null);
   }
 
@@ -54,95 +53,27 @@ export default function App() {
   function renderPage() {
     switch (currentPage) {
       case "home":
-        return (
-          <HomePage
-            setCurrentPage={handleSetPage}
-            setSelectedSideQuest={setSelectedSideQuest}
-            setSelectedSpawnPoint={setSelectedSpawnPoint}
-          />
-        );
+        return <HomePage setCurrentPage={handleSetPage} setSelectedSideQuest={setSelectedSideQuest} setSelectedSpawnPoint={setSelectedSpawnPoint} />;
       case "spawn-points":
-        return (
-          <SpawnPointsPage
-            setCurrentPage={handleSetPage}
-            setSelectedSpawnPoint={setSelectedSpawnPoint}
-            setEditingSpawnPoint={setEditingSpawnPoint}
-            showModal={showModal}
-            showToast={showToast}
-          />
-        );
+        return <SpawnPointsPage setCurrentPage={handleSetPage} setSelectedSpawnPoint={setSelectedSpawnPoint} setEditingSpawnPoint={setEditingSpawnPoint} showModal={showModal} showToast={showToast} />;
       case "spawn-point-detail":
-        return (
-          <SpawnPointDetail
-            spawnPoint={selectedSpawnPoint}
-            setCurrentPage={handleSetPage}
-            setSelectedSideQuest={setSelectedSideQuest}
-            setEditingSpawnPoint={setEditingSpawnPoint}
-            showModal={showModal}
-            showToast={showToast}
-          />
-        );
+        return <SpawnPointDetail spawnPoint={selectedSpawnPoint} setCurrentPage={handleSetPage} setSelectedSideQuest={setSelectedSideQuest} setEditingSpawnPoint={setEditingSpawnPoint} showModal={showModal} showToast={showToast} />;
       case "spawn-point-form":
-        return (
-          <SpawnPointForm
-            editingSpawnPoint={editingSpawnPoint}
-            setCurrentPage={handleSetPage}
-            showToast={showToast}
-          />
-        );
+        return <SpawnPointForm editingSpawnPoint={editingSpawnPoint} setCurrentPage={handleSetPage} showToast={showToast} />;
       case "side-quests":
-        return (
-          <SideQuestsPage
-            setCurrentPage={handleSetPage}
-            setSelectedSideQuest={setSelectedSideQuest}
-            setEditingSideQuest={setEditingSideQuest}
-            showModal={showModal}
-            showToast={showToast}
-          />
-        );
+        return <SideQuestsPage setCurrentPage={handleSetPage} setSelectedSideQuest={setSelectedSideQuest} setEditingSideQuest={setEditingSideQuest} showModal={showModal} showToast={showToast} />;
       case "side-quest-detail":
-        return (
-          <SideQuestDetail
-            sideQuest={selectedSideQuest}
-            setCurrentPage={handleSetPage}
-            setEditingSideQuest={setEditingSideQuest}
-            showModal={showModal}
-            showToast={showToast}
-          />
-        );
+        return <SideQuestDetail sideQuest={selectedSideQuest} setCurrentPage={handleSetPage} setEditingSideQuest={setEditingSideQuest} showModal={showModal} showToast={showToast} />;
       case "side-quest-form":
-        return (
-          <SideQuestForm
-            editingSideQuest={editingSideQuest}
-            setCurrentPage={handleSetPage}
-            showToast={showToast}
-          />
-        );
+        return <SideQuestForm editingSideQuest={editingSideQuest} setCurrentPage={handleSetPage} showToast={showToast} />;
       case "cons":
-        return (
-          <ConsPage
-            setCurrentPage={handleSetPage}
-            setEditingCon={setEditingCon}
-            showModal={showModal}
-            showToast={showToast}
-          />
-        );
+        return <ConsPage setCurrentPage={handleSetPage} setEditingCon={setEditingCon} showModal={showModal} showToast={showToast} />;
       case "con-form":
-        return (
-          <ConForm
-            editingCon={editingCon}
-            setCurrentPage={handleSetPage}
-            showToast={showToast}
-          />
-        );
+        return <ConForm editingCon={editingCon} setCurrentPage={handleSetPage} showToast={showToast} />;
       case "neighborhoods":
-        return (
-          <NeighborhoodPage
-            setCurrentPage={handleSetPage}
-            setSelectedSpawnPoint={setSelectedSpawnPoint}
-            setSelectedSideQuest={setSelectedSideQuest}
-          />
-        );
+        return <NeighborhoodPage setCurrentPage={handleSetPage} setSelectedSpawnPoint={setSelectedSpawnPoint} setSelectedSideQuest={setSelectedSideQuest} />;
+      case "suggestions":
+        return <SuggestionsPage showToast={showToast} />;
       default:
         return <HomePage setCurrentPage={handleSetPage} />;
     }
@@ -165,11 +96,7 @@ export default function App() {
         />
       )}
       {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
     </div>
   );

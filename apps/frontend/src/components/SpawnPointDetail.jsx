@@ -4,6 +4,7 @@ import SideQuestCard from "./SideQuestCard.jsx";
 import MapView from "./MapView.jsx";
 import StarRating from "./StarRating.jsx";
 import CheckInButton from "./CheckInButton.jsx";
+import SuggestEdit from "./SuggestEdit.jsx";
 import { formatDateShort } from "../utils/formatDate.js";
 
 function isOpenNow(hoursStr) {
@@ -93,20 +94,14 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
         <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>
           Community Rating
         </div>
-        <StarRating
-          spawnPoint={spawn}
-          onRated={(updated) => setSpawn({ ...spawn, ...updated })}
-        />
+        <StarRating spawnPoint={spawn} onRated={(updated) => setSpawn({ ...spawn, ...updated })} />
       </div>
 
       <div className="card" style={{ marginBottom: "1.5rem" }}>
         <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>
           Check In
         </div>
-        <CheckInButton
-          spawnPoint={spawn}
-          onCheckedIn={(updated) => setSpawn({ ...spawn, ...updated })}
-        />
+        <CheckInButton spawnPoint={spawn} onCheckedIn={(updated) => setSpawn({ ...spawn, ...updated })} />
       </div>
 
       {spawn.latitude && spawn.longitude && (
@@ -149,11 +144,13 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
         <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests at this spawn point yet.</div>
       )}
 
-      <div style={{ display: "flex", gap: "10px" }}>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "0.5rem" }}>
         <button className="btn-secondary" onClick={() => { setEditingSpawnPoint(spawn); setCurrentPage("spawn-point-form"); }}>
           Edit spawn point
         </button>
       </div>
+
+      <SuggestEdit spawnPoint={spawn} showToast={showToast} />
     </div>
   );
 }
