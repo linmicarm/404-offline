@@ -42,6 +42,7 @@ model SideQuest {
   created_at           DateTime   @default(now())
   spawn_point          SpawnPoint @relation(fields: [spawn_point_id], references: [id])
   comments             Comment[]
+  is_featured          Boolean    @default(false)
 
   @@map("side_quests")
 }

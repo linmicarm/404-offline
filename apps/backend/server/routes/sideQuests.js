@@ -6,6 +6,7 @@ import {
   updateSideQuest,
   deleteSideQuest,
   updateGoingCount,
+  toggleFeatured,
 } from "../controllers/sideQuestController.js";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/", createSideQuest);
 router.put("/:id", updateSideQuest);
 router.delete("/:id", deleteSideQuest);
 router.patch("/:id/going", updateGoingCount);
+router.patch("/:id/feature", toggleFeatured);
 
 export default router;

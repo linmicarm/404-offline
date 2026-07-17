@@ -4,6 +4,7 @@ import SideQuestCard from "./SideQuestCard.jsx";
 import SpawnPointCard from "./SpawnPointCard.jsx";
 import MapView from "./MapView.jsx";
 import { SkeletonGrid } from "./Skeleton.jsx";
+import { formatDateShort } from "../utils/formatDate.js";
 
 function normalize(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -33,6 +34,8 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
     }
     fetchData();
   }, []);
+
+  const featuredQuest = sideQuests.find((q) => q.is_featured);
 
   const filteredQuests = sideQuests.filter((q) =>
     normalize(q.name).includes(normalize(search)) ||
@@ -124,6 +127,38 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         </>
       ) : (
         <>
+          {featuredQuest && (
+            <div style={{ marginBottom: "2rem" }}>
+              <div className="section-label">Featured</div>
+              <div
+                style={{ background: "var(--peach-light)", border: "2px solid var(--peach)", borderRadius: "var(--radius-xl)", padding: "1.5rem", position: "relative", cursor: "pointer" }}
+                onClick={() => { setSelectedSideQuest(featuredQuest); setCurrentPage("side-quest-detail"); }}
+              >
+                <div style={{ position: "absolute", top: "1rem", right: "1rem", fontSize: "20px", color: "var(--peach)" }}>★</div>
+                <div className="mono" style={{ fontSize: "9px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "6px" }}>
+                  {featuredQuest.category}
+                </div>
+                <div style={{ fontSize: "22px", fontWeight: "800", color: "var(--ink)", marginBottom: "8px" }}>
+                  {featuredQuest.name}
+                </div>
+                <div style={{ fontSize: "14px", color: "var(--ink-2)", marginBottom: "12px", lineHeight: "1.6" }}>
+                  {featuredQuest.description}
+                </div>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+                  <span className="tag tag-peach">{featuredQuest.is_free ? "Free" : `$${featuredQuest.cost}`}</span>
+                  {featuredQuest.spawn_point && (
+                    <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>
+                      📍 {featuredQuest.spawn_point.name} · {featuredQuest.spawn_point.neighborhood}
+                    </span>
+                  )}
+                  <span className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>
+                    🗓 {formatDateShort(featuredQuest.date)} · {featuredQuest.time}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="section-label">Happening soon</div>
           {sideQuests.length === 0 ? (
             <div className="empty">No side quests yet — add one!</div>
@@ -138,9 +173,11 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               ))}
             </div>
           )}
+
           <div style={{ marginBottom: "1rem", textAlign: "right" }}>
             <button className="btn-secondary" onClick={() => setCurrentPage("side-quests")}>View all side quests →</button>
           </div>
+
           <div className="section-label">Spawn Points</div>
           {spawnPoints.length === 0 ? (
             <div className="empty">No spawn points yet — add one!</div>
@@ -155,6 +192,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               ))}
             </div>
           )}
+
           <div style={{ marginTop: "1rem", textAlign: "right" }}>
             <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")}>View all spawn points →</button>
           </div>

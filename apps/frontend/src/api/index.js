@@ -192,3 +192,11 @@ export async function checkinSpawnPoint(id, action = "increment") {
   const data = await res.json();
   return data;
 }
+
+export async function toggleFeatured(id) {
+  const res = await fetch(`${BASE_URL}/side-quests/${id}/feature`, {
+    method: "PATCH",
+  });
+  const data = await res.json();
+  return data;
+}

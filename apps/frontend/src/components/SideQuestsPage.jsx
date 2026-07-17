@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSideQuests, deleteSideQuest } from "../api/index.js";
+import { getSideQuests, deleteSideQuest, toggleFeatured } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 import { SkeletonGrid } from "./Skeleton.jsx";
 
@@ -73,6 +73,20 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
     });
   }
 
+  async function handleFeature(id) {
+    try {
+      const result = await toggleFeatured(id);
+      setSideQuests(sideQuests.map((q) =>
+        q.id === id
+          ? { ...q, is_featured: result.data.is_featured }
+          : { ...q, is_featured: false }
+      ));
+      showToast(result.data.is_featured ? "Side quest featured! ★" : "Removed from featured.", "info");
+    } catch (err) {
+      showToast("Failed to update featured.", "error");
+    }
+  }
+
   const filtered = sideQuests
     .filter((q) =>
       (normalize(q.name).includes(normalize(search)) ||
@@ -124,20 +138,10 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
 
       <div className="filter-bar">
         {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            className={`filter-pill ${activeCategory === cat ? "active" : ""}`}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat}
-          </button>
+          <button key={cat} className={`filter-pill ${activeCategory === cat ? "active" : ""}`} onClick={() => setActiveCategory(cat)}>{cat}</button>
         ))}
-        <button className={`filter-pill ${showFreeOnly ? "active" : ""}`} onClick={() => setShowFreeOnly(!showFreeOnly)}>
-          Free only
-        </button>
-        <button className={`filter-pill ${weekendOnly ? "active" : ""}`} onClick={() => setWeekendOnly(!weekendOnly)}>
-          🗓 This weekend
-        </button>
+        <button className={`filter-pill ${showFreeOnly ? "active" : ""}`} onClick={() => setShowFreeOnly(!showFreeOnly)}>Free only</button>
+        <button className={`filter-pill ${weekendOnly ? "active" : ""}`} onClick={() => setWeekendOnly(!weekendOnly)}>🗓 This weekend</button>
       </div>
 
       {activeTag && (
@@ -164,6 +168,18 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
               />
               <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                 <button className="btn-secondary" style={{ flex: 1 }} onClick={() => { setEditingSideQuest(quest); setCurrentPage("side-quest-form"); }}>Edit</button>
+                <button
+                  className="btn-secondary"
+                  style={{
+                    flex: 1,
+                    background: quest.is_featured ? "var(--peach-light)" : "",
+                    borderColor: quest.is_featured ? "var(--peach)" : "",
+                    color: quest.is_featured ? "var(--peach-dark)" : "",
+                  }}
+                  onClick={() => handleFeature(quest.id)}
+                >
+                  {quest.is_featured ? "★ Featured" : "☆ Feature"}
+                </button>
                 <button className="btn-danger" style={{ flex: 1 }} onClick={() => handleDelete(quest.id)}>Delete</button>
               </div>
             </div>

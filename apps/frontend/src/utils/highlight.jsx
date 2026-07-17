@@ -2,7 +2,10 @@ export function highlight(text, query) {
   if (!query || !text) return text;
 
   const normalize = (str) =>
-    str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
 
   const normalizedText = normalize(text);
   const normalizedQuery = normalize(query);
@@ -19,13 +22,15 @@ export function highlight(text, query) {
   return (
     <>
       {before}
-      <mark style={{
-        background: "var(--peach)",
-        color: isDark ? "#12100E" : "var(--peach-dark)",
-        borderRadius: "3px",
-        padding: "0 2px",
-        fontWeight: "700",
-      }}>
+      <mark
+        style={{
+          background: "var(--peach)",
+          color: isDark ? "#12100E" : "var(--peach-dark)",
+          borderRadius: "3px",
+          padding: "0 2px",
+          fontWeight: "700",
+        }}
+      >
         {match}
       </mark>
       {after}

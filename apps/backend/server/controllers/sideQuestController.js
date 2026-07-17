@@ -164,3 +164,34 @@ export async function updateGoingCount(req, res) {
     res.status(500).json({ message: "Failed to update going count" });
   }
 }
+
+export async function toggleFeatured(req, res) {
+  const { id } = req.params;
+  try {
+    const current = await prisma.sideQuest.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    await prisma.sideQuest.updateMany({
+      where: { is_featured: true },
+      data: { is_featured: false },
+    });
+
+    if (!current.is_featured) {
+      await prisma.sideQuest.update({
+        where: { id: parseInt(id) },
+        data: { is_featured: true },
+      });
+    }
+
+    const updated = await prisma.sideQuest.findUnique({
+      where: { id: parseInt(id) },
+      include: { spawn_point: true },
+    });
+
+    res.json({ message: "Featured updated", data: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update featured" });
+  }
+}
