@@ -65,11 +65,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
         {/* Left — copy */}
         <div style={{ padding: "4rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "4px", textTransform: "uppercase", color: "var(--peach)", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ width: "24px", height: "1.5px", background: "var(--peach)", display: "inline-block" }} />
-            Atlanta, GA · 404
-          </div>
-
+         
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "58px", fontWeight: "400", color: "#FFFCF7", lineHeight: 1.05, marginBottom: "0.4rem" }}>
             404:
           </h1>
@@ -138,8 +134,19 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
       <div className="page">
         {!search && spawnPoints.length > 0 && (
-          <div style={{ width: "100%", marginBottom: "2rem", marginTop: "0.5rem" }}>
-            <MapView
+  <div style={{ width: "100%", marginBottom: "2rem", marginTop: "0.5rem" }}>
+    <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "8px" }}>
+      <div>
+        <div className="section-label" style={{ marginBottom: "4px" }}>Atlanta Spawn Points</div>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6 }}>
+  Your next side quest starts here. Roll initiative and discover where Atlanta's nerd community comes together.
+</p>
+      </div>
+      <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")} style={{ whiteSpace: "nowrap" }}>
+        View all →
+      </button>
+    </div>
+    <MapView
               spawnPoints={spawnPoints}
               onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
             />

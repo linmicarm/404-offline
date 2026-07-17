@@ -7,8 +7,8 @@ export default function Footer({ setCurrentPage }) {
     <>
       <footer className="footer">
         <div className="footer-logo">
-          <span>[</span>404<span>]</span> Offline · Atlanta, GA
-        </div>
+  <span>[</span>404<span>]</span> Offline
+</div>
         <div className="footer-logo">
           Logged off. Went outside.
         </div>
