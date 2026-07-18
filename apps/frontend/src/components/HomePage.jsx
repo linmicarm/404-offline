@@ -64,7 +64,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
   return (
     <div>
       {/* Hero */}
-      <div style={{ background: "#1C1008", minHeight: "580px", display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
+      <div className="hero hero-grid" style={{ minHeight: "580px", display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
 
         {/* Left */}
         <div style={{ background: "#1C1008", padding: "4rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -100,20 +100,18 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
           </div>
 
           <div style={{ display: "flex", gap: "12px", marginTop: "1.5rem" }}>
-            <button className="btn-primary" onClick={() => setCurrentPage("side-quests")}>
-              Find side quests
-            </button>
+            <button className="btn-primary" onClick={() => setCurrentPage("side-quests")}>Find side quests</button>
             <button
               onClick={() => setCurrentPage("spawn-points")}
-              style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: "700", background: "transparent", color: "rgba(255,252,247,0.6)", border: "1.5px solid rgba(255,252,247,0.2)", padding: "10px 20px", borderRadius: "100px", cursor: "pointer" }}
+              style={{ fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: "700", background: "transparent", color: "rgba(255,252,247,0.6)", border: "1.5px solid rgba(255,252,247,0.2)", padding: "11px 22px", borderRadius: "100px", cursor: "pointer" }}
             >
               Spawn Points →
             </button>
           </div>
         </div>
 
-        {/* Right — fixed height, consistent crop */}
-        <div style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "580px" }}>
+        {/* Right — hero image */}
+        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "580px" }}>
           {heroSpawn?.image_url ? (
             <img
               src={heroSpawn.image_url}
@@ -125,7 +123,10 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
           )}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, #1C1008 0%, transparent 35%)" }} />
           {heroSpawn && (
-            <div style={{ position: "absolute", bottom: "1.5rem", right: "1.5rem", background: "rgba(28,16,8,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-md)", padding: "10px 14px" }}>
+            <div
+              style={{ position: "absolute", bottom: "1.5rem", right: "1.5rem", background: "rgba(28,16,8,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-md)", padding: "10px 14px", cursor: "pointer" }}
+              onClick={() => { setSelectedSpawnPoint(heroSpawn); setCurrentPage("spawn-point-detail"); }}
+            >
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "rgba(255,252,247,0.5)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "3px" }}>Featuring</div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: "14px", color: "#FFFCF7" }}>{heroSpawn.name}</div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.5)" }}>{heroSpawn.neighborhood}</div>
@@ -159,7 +160,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
           <>
             <div className="section-label">Side quests matching "{search}" ({filteredQuests.length})</div>
             {filteredQuests.length === 0 ? (
-              <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests found.</div>
+              <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests found for "{search}" — try something else.</div>
             ) : (
               <div className="grid-2" style={{ marginBottom: "2rem" }}>
                 {filteredQuests.map((quest) => (
@@ -169,7 +170,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
             )}
             <div className="section-label">Spawn points matching "{search}" ({filteredSpawns.length})</div>
             {filteredSpawns.length === 0 ? (
-              <div className="empty">No spawn points found.</div>
+              <div className="empty">No spawn points found for "{search}".</div>
             ) : (
               <div className="grid-2">
                 {filteredSpawns.map((spawn) => (
@@ -196,7 +197,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
                   <div style={{ fontFamily: "var(--font-display)", fontSize: "28px", color: "var(--ink)", marginBottom: "8px" }}>
                     {featuredQuest.name}
                   </div>
-                  <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", marginBottom: "14px", lineHeight: "1.6", maxWidth: "560px" }}>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", marginBottom: "14px", lineHeight: "1.6" }}>
                     {featuredQuest.description}
                   </div>
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
@@ -216,7 +217,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
             <div className="section-label">Happening soon</div>
             {sideQuests.length === 0 ? (
-              <div className="empty">No side quests yet — add one!</div>
+              <div className="empty">No quests logged yet. The adventure is out there — add the first one.</div>
             ) : (
               <div className="grid-2" style={{ marginBottom: "2rem" }}>
                 {sideQuests.slice(0, 4).map((quest) => (
@@ -231,7 +232,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
             <div className="section-label">Spawn Points</div>
             {spawnPoints.length === 0 ? (
-              <div className="empty">No spawn points yet — add one!</div>
+              <div className="empty">No spawn points yet. Know a great spot? Add it to the map.</div>
             ) : (
               <div className="grid-2">
                 {spawnPoints.slice(0, 4).map((spawn) => (

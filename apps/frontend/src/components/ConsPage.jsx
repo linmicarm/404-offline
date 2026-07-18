@@ -73,7 +73,6 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
     });
   }
 
-  // Get unique types from data
   const types = ["All types", ...new Set(cons.map((c) => c.type).filter(Boolean))];
 
   const filterCons = (list) => list.filter((c) =>
@@ -98,7 +97,6 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
         <button className="btn-primary" style={{ whiteSpace: "nowrap", marginTop: "0.5rem" }} onClick={() => { setEditingCon(null); setCurrentPage("con-form"); }}>+ Add a convention</button>
       </div>
 
-      {/* Search + filters */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "1rem", flexWrap: "wrap" }}>
         <input
           className="form-input"
@@ -111,31 +109,19 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
 
       <div className="filter-bar">
         {SIZES.map((size) => (
-          <button
-            key={size}
-            className={`filter-pill ${activeSize === size ? "active" : ""}`}
-            onClick={() => setActiveSize(size)}
-          >
+          <button key={size} className={`filter-pill ${activeSize === size ? "active" : ""}`} onClick={() => setActiveSize(size)}>
             {size}
           </button>
         ))}
         <div style={{ width: "1px", background: "var(--border)", margin: "0 4px" }} />
         {types.map((type) => (
-          <button
-            key={type}
-            className={`filter-pill ${activeType === type ? "active" : ""}`}
-            onClick={() => setActiveType(type)}
-          >
+          <button key={type} className={`filter-pill ${activeType === type ? "active" : ""}`} onClick={() => setActiveType(type)}>
             {type}
           </button>
         ))}
         {hasActiveFilter && (
-          <button
-            className="filter-pill"
-            onClick={() => { setSearch(""); setActiveSize("All sizes"); setActiveType("All types"); }}
-            style={{ color: "var(--peach-dark)", borderColor: "var(--peach)" }}
-          >
-            ✕ Clear filters
+          <button className="filter-pill" onClick={() => { setSearch(""); setActiveSize("All sizes"); setActiveType("All types"); }} style={{ color: "var(--peach-dark)", borderColor: "var(--peach)" }}>
+            ✕ Clear
           </button>
         )}
       </div>
@@ -144,27 +130,20 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
       {error && <div className="error">{error}</div>}
 
       {!loading && !error && upcoming.length === 0 && past.length === 0 && (
-        <div className="empty">No cons match your filters.</div>
+        <div className="empty">No cons match your filters. Try clearing them or add a new one.</div>
       )}
 
       {!loading && !error && upcoming.length > 0 && (
         <>
           <div className="section-label">Upcoming</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))", gap: "16px", marginBottom: "2rem" }}>
+          <div className="con-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))", gap: "16px", marginBottom: "2rem" }}>
             {upcoming.map((con) => {
               const countdown = daysUntil(con.start_date);
               const image = CON_IMAGES[con.name];
               const sizeStyle = SIZE_COLORS[con.size] || SIZE_COLORS.Small;
-
               return (
                 <div key={con.id} style={{ borderRadius: "var(--radius-xl)", overflow: "hidden", border: "1.5px solid var(--border)", background: "var(--surface)" }}>
-                  <div style={{
-                    height: "220px",
-                    background: image ? `url(${image}) center/cover` : "linear-gradient(135deg, #2C1810 0%, #6B3218 100%)",
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "flex-end",
-                  }}>
+                  <div style={{ height: "220px", background: image ? `url(${image}) center/cover` : "linear-gradient(135deg, #2C1810 0%, #6B3218 100%)", position: "relative", display: "flex", alignItems: "flex-end" }}>
                     <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(28,16,8,0.98) 0%, rgba(28,16,8,0.7) 50%, rgba(28,16,8,0.4) 100%)" }} />
                     {countdown && (
                       <div style={{ position: "absolute", top: "1rem", right: "1rem", fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: "700", background: "rgba(255,170,127,0.95)", color: "#1C1008", padding: "5px 12px", borderRadius: "100px" }}>
@@ -173,12 +152,8 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
                     )}
                     <div style={{ position: "relative", zIndex: 1, padding: "1.25rem 1.5rem", width: "100%" }}>
                       <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap" }}>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: sizeStyle.bg, color: sizeStyle.color, border: `1px solid ${sizeStyle.border}`, padding: "4px 12px", borderRadius: "100px" }}>
-                          {con.size}
-                        </span>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,252,247,0.2)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.3)", padding: "4px 12px", borderRadius: "100px" }}>
-                          {con.type}
-                        </span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: sizeStyle.bg, color: sizeStyle.color, border: `1px solid ${sizeStyle.border}`, padding: "4px 12px", borderRadius: "100px" }}>{con.size}</span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,252,247,0.2)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.3)", padding: "4px 12px", borderRadius: "100px" }}>{con.type}</span>
                       </div>
                       <div style={{ fontFamily: "var(--font-display)", fontSize: "28px", color: "#FFFCF7", lineHeight: 1.1, marginBottom: "8px" }}>{con.name}</div>
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,252,247,0.7)", display: "flex", gap: "16px", flexWrap: "wrap" }}>

@@ -7,15 +7,16 @@ export default function Footer({ setCurrentPage }) {
     <>
       <footer className="footer">
         <div className="footer-logo">
-  <span>[</span>404<span>]</span> Offline
-</div>
+          <span>[</span>404<span>]</span> Offline
+        </div>
         <div className="footer-logo">
           Logged off. Went outside.
         </div>
-        <div className="footer-logo" style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-          <button onClick={() => setCurrentPage("home")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)", letterSpacing: "1px" }}>Home</button>
-          <button onClick={() => setCurrentPage("spawn-points")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)", letterSpacing: "1px" }}>Spawn Points</button>
-          <button onClick={() => setCurrentPage("cons")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)", letterSpacing: "1px" }}>Con Calendar</button>
+        <div className="footer-logo" style={{ display: "flex", gap: "1.25rem", alignItems: "center", flexWrap: "wrap" }}>
+          <button onClick={() => setCurrentPage("home")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)" }}>Home</button>
+          <button onClick={() => setCurrentPage("spawn-points")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)" }}>Spawn Points</button>
+          <button onClick={() => setCurrentPage("cons")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)" }}>Con Calendar</button>
+          <button onClick={() => setCurrentPage("suggestions")} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.4)" }}>Suggestions</button>
         </div>
       </footer>
 

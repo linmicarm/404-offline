@@ -21,9 +21,12 @@ const CATEGORY_GRADIENTS = {
 };
 
 export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQuery }) {
+  const storageKey = `going-${sideQuest.id}`;
   const [goingCount, setGoingCount] = useState(sideQuest.going_count || 0);
-  const [isGoing, setIsGoing] = useState(false);
+  const [isGoing, setIsGoing] = useState(() => !!localStorage.getItem(storageKey));
   const [loading, setLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const gradient = CATEGORY_GRADIENTS[sideQuest.category] || CATEGORY_GRADIENTS.Other;
 
   async function handleGoing(e) {
     e.stopPropagation();
@@ -33,7 +36,13 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
       const action = isGoing ? "decrement" : "increment";
       const result = await updateGoingCount(sideQuest.id, action);
       setGoingCount(result.data.going_count);
-      setIsGoing(!isGoing);
+      if (isGoing) {
+        localStorage.removeItem(storageKey);
+        setIsGoing(false);
+      } else {
+        localStorage.setItem(storageKey, "true");
+        setIsGoing(true);
+      }
     } catch (err) {
       console.error("Failed to update going count");
     } finally {
@@ -41,22 +50,23 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
     }
   }
 
-  const gradient = CATEGORY_GRADIENTS[sideQuest.category] || CATEGORY_GRADIENTS.Other;
-
   return (
     <div
       className={`card ${SAGE_CATEGORIES.includes(sideQuest.category) ? "sage-card" : ""}`}
       onClick={() => onClick && onClick(sideQuest)}
       style={{ padding: 0, overflow: "hidden" }}
     >
-      <div style={{
-        height: "160px",
-        background: sideQuest.image_url ? `url(${sideQuest.image_url}) center/cover` : gradient,
-        position: "relative",
-        display: "flex",
-        alignItems: "flex-end",
-        padding: "0.75rem",
-      }}>
+      <div style={{ height: "160px", position: "relative", display: "flex", alignItems: "flex-end", padding: "0.75rem", overflow: "hidden" }}>
+        {/* Gradient placeholder — always visible, image fades in over it */}
+        <div style={{ position: "absolute", inset: 0, background: gradient }} />
+        {sideQuest.image_url && (
+          <img
+            src={sideQuest.image_url}
+            alt={sideQuest.name}
+            onLoad={() => setImageLoaded(true)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: imageLoaded ? 1 : 0, transition: "opacity 0.3s ease" }}
+          />
+        )}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.85) 0%, rgba(44,24,16,0.0) 60%)" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.7)", textTransform: "uppercase", letterSpacing: "2px" }}>
@@ -64,7 +74,7 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
           </div>
         </div>
         {sideQuest.is_recurring && sideQuest.recurrence && (
-          <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,170,127,0.9)", color: "#6B3218", padding: "4px 10px", borderRadius: "100px" }}>
+          <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,170,127,0.9)", color: "#6B3218", padding: "4px 10px", borderRadius: "100px", zIndex: 1 }}>
             {RECURRENCE_LABELS[sideQuest.recurrence]}
           </span>
         )}
@@ -94,9 +104,7 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
             <span className={`tag ${sideQuest.is_free ? "tag-sage" : "tag-neutral"}`}>
               {sideQuest.is_free ? "Free" : `$${sideQuest.cost}`}
             </span>
-            {sideQuest.is_beginner_friendly && (
-              <span className="tag tag-sage">Beginner ok</span>
-            )}
+            {sideQuest.is_beginner_friendly && <span className="tag tag-sage">Beginner ok</span>}
             {sideQuest.tags && sideQuest.tags.split(",").slice(0, 2).map((tag) => (
               <span
                 key={tag}
@@ -123,6 +131,7 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
               borderRadius: "100px",
               cursor: loading ? "default" : "pointer",
               whiteSpace: "nowrap",
+              transition: "all 0.15s",
             }}
           >
             {isGoing ? `✓ Going (${goingCount})` : `${goingCount} going`}

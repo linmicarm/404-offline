@@ -19,12 +19,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
         <button className={`navbar-link ${currentPage === "side-quests" ? "active" : ""}`} onClick={() => setCurrentPage("side-quests")}>Side Quests</button>
         <button className={`navbar-link ${currentPage === "neighborhoods" ? "active" : ""}`} onClick={() => setCurrentPage("neighborhoods")}>Neighborhoods</button>
         <button className={`navbar-link ${currentPage === "cons" ? "active" : ""}`} onClick={() => setCurrentPage("cons")}>Con Calendar</button>
-        <button className={`navbar-link ${currentPage === "suggestions" ? "active" : ""}`} onClick={() => setCurrentPage("suggestions")} style={{ fontSize: "11px", color: currentPage === "suggestions" ? "var(--peach-dark)" : "var(--ink-3)" }}>
-          Suggestions
-        </button>
-        <button className="btn-secondary" onClick={toggleDark} style={{ fontSize: "12px", padding: "6px 12px" }}>
-          🌙 / ☀️
-        </button>
+        <button className="btn-secondary" onClick={toggleDark} style={{ fontSize: "12px", padding: "6px 12px" }}>🌙 / ☀️</button>
       </div>
     </nav>
   );

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { formatDateShort } from "../utils/formatDate.js";
 import { highlight } from "../utils/highlight.jsx";
 
@@ -58,17 +59,20 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
   const openStatus = isOpenNow(spawnPoint.hours);
   const upcomingQuests = spawnPoint.side_quests || [];
   const gradient = CATEGORY_GRADIENTS[spawnPoint.category] || CATEGORY_GRADIENTS.Other;
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <div className="card" onClick={() => onClick && onClick(spawnPoint)} style={{ padding: 0, overflow: "hidden" }}>
-      <div style={{
-        height: "180px",
-        background: spawnPoint.image_url ? `url(${spawnPoint.image_url}) center/cover` : gradient,
-        position: "relative",
-        display: "flex",
-        alignItems: "flex-end",
-        padding: "0.875rem",
-      }}>
+      <div style={{ height: "180px", position: "relative", display: "flex", alignItems: "flex-end", padding: "0.875rem", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, background: gradient }} />
+        {spawnPoint.image_url && (
+          <img
+            src={spawnPoint.image_url}
+            alt={spawnPoint.name}
+            onLoad={() => setImageLoaded(true)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", opacity: imageLoaded ? 1 : 0, transition: "opacity 0.3s ease" }}
+          />
+        )}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.88) 0%, rgba(44,24,16,0.05) 60%)" }} />
         <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
           <div style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "#FFFCF7", marginBottom: "3px", lineHeight: 1.2 }}>
@@ -108,9 +112,7 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
 
         {upcomingQuests.length > 0 && (
           <div style={{ borderTop: "1px solid var(--border)", paddingTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "2px" }}>
-              Upcoming
-            </div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "2px" }}>Upcoming</div>
             {upcomingQuests.map((quest) => (
               <div key={quest.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                 <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "600", color: "var(--ink)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>

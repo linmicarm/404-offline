@@ -1,28 +1,12 @@
 import { useState, useEffect } from "react";
-import {
-  createSideQuest,
-  updateSideQuest,
-  getSpawnPoints,
-} from "../api/index.js";
+import { createSideQuest, updateSideQuest, getSpawnPoints } from "../api/index.js";
 
-const CATEGORIES = [
-  "Gaming",
-  "Social",
-  "Cosplay",
-  "Language",
-  "Tabletop",
-  "Other",
-];
-const MAX_DESCRIPTION = 300;
+const CATEGORIES = ["Gaming", "Social", "Cosplay", "Language", "Tabletop", "Other"];
+const RECURRENCES = ["weekly", "biweekly", "monthly"];
 
-export default function SideQuestForm({
-  editingSideQuest,
-  setCurrentPage,
-  showToast,
-}) {
+export default function SideQuestForm({ editingSideQuest, setCurrentPage, showToast }) {
+  const isEditing = !!editingSideQuest;
   const [spawnPoints, setSpawnPoints] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [form, setForm] = useState({
     spawn_point_id: "",
     name: "",
@@ -33,22 +17,30 @@ export default function SideQuestForm({
     is_free: true,
     is_beginner_friendly: false,
     is_recurring: false,
-    recurrence: "weekly",
+    recurrence: "",
     category: "Gaming",
     tags: "",
+    image_url: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     async function fetchSpawnPoints() {
       try {
         const data = await getSpawnPoints();
         setSpawnPoints(data);
+        if (!isEditing && data.length > 0) {
+          setForm((prev) => ({ ...prev, spawn_point_id: data[0].id }));
+        }
       } catch (err) {
-        setError("Failed to load spawn points.");
+        console.error("Failed to load spawn points");
       }
     }
     fetchSpawnPoints();
+  }, []);
 
+  useEffect(() => {
     if (editingSideQuest) {
       setForm({
         spawn_point_id: editingSideQuest.spawn_point_id || "",
@@ -58,343 +50,220 @@ export default function SideQuestForm({
         time: editingSideQuest.time || "",
         cost: editingSideQuest.cost || "",
         is_free: editingSideQuest.is_free ?? true,
-        is_beginner_friendly: editingSideQuest.is_beginner_friendly ?? false,
-        is_recurring: editingSideQuest.is_recurring ?? false,
-        recurrence: editingSideQuest.recurrence || "weekly",
+        is_beginner_friendly: editingSideQuest.is_beginner_friendly || false,
+        is_recurring: editingSideQuest.is_recurring || false,
+        recurrence: editingSideQuest.recurrence || "",
         category: editingSideQuest.category || "Gaming",
         tags: editingSideQuest.tags || "",
+        image_url: editingSideQuest.image_url || "",
       });
     }
   }, [editingSideQuest]);
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
+  }
+
+  function validate() {
+    const newErrors = {};
+    if (!form.spawn_point_id) newErrors.spawn_point_id = "Please select a spawn point";
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.description.trim()) newErrors.description = "Description is required";
+    if (!form.date) newErrors.date = "Date is required";
+    if (!form.time.trim()) newErrors.time = "Time is required";
+    return newErrors;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError(null);
-
-    if (
-      !form.spawn_point_id ||
-      !form.name ||
-      !form.description ||
-      !form.date ||
-      !form.time ||
-      !form.category
-    ) {
-      setError("Please fill in all required fields.");
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
     setLoading(true);
     try {
-      if (editingSideQuest) {
-        await updateSideQuest(editingSideQuest.id, form);
+      const payload = {
+        ...form,
+        cost: form.is_free ? null : parseFloat(form.cost) || null,
+        spawn_point_id: parseInt(form.spawn_point_id),
+      };
+
+      if (isEditing) {
+        await updateSideQuest(editingSideQuest.id, payload);
+        showToast("Side quest updated! 🍑", "success");
       } else {
-        await createSideQuest(form);
+        await createSideQuest(payload);
+        showToast("Side quest added! 🍑", "success");
       }
-      showToast(
-        editingSideQuest ? "Side quest updated! ✓" : "Side quest created! ✓",
-      );
       setCurrentPage("side-quests");
     } catch (err) {
-      setError("Failed to save side quest.");
+      showToast("Failed to save side quest.", "error");
     } finally {
       setLoading(false);
     }
   }
 
+  const selectedSpawn = spawnPoints.find((s) => s.id === parseInt(form.spawn_point_id));
+
   return (
     <div className="page">
-      <button
-        className="btn-secondary"
-        style={{ marginBottom: "1.5rem" }}
-        onClick={() => setCurrentPage("side-quests")}
-      >
-        ← Back
-      </button>
-
-      <div className="page-header">
-        <div className="page-eyebrow">404 Offline</div>
-        <h1 className="page-title">
-          {editingSideQuest ? "Edit Side Quest" : "New Side Quest"}
-        </h1>
-        <p className="page-sub">
-          Fields marked with <span style={{ color: "#991B1B" }}>*</span> are
-          required.
-        </p>
+      <div style={{ marginBottom: "2rem" }}>
+        <button className="btn-secondary" style={{ marginBottom: "1.5rem" }} onClick={() => setCurrentPage("side-quests")}>
+          ← Cancel
+        </button>
+        <h1 className="page-title">{isEditing ? `Edit ${editingSideQuest.name}` : "Add a Side Quest"}</h1>
+        <p className="page-sub">{isEditing ? "Update the details for this side quest." : "Add a new event, meetup, or happening to the community calendar."}</p>
       </div>
 
-      {error && (
-        <div className="error" style={{ marginBottom: "1rem" }}>
-          {error}
-        </div>
-      )}
+      <form onSubmit={handleSubmit} style={{ maxWidth: "720px" }}>
+        {/* Location */}
+        <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Where is it?</div>
 
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label className="form-label">
-            Spawn Point <span style={{ color: "#991B1B" }}>*</span>
-          </label>
-          <select
-            className="form-select"
-            name="spawn_point_id"
-            value={form.spawn_point_id}
-            onChange={handleChange}
-          >
-            <option value="">Select a spawn point...</option>
-            {spawnPoints.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} — {s.neighborhood}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Name <span style={{ color: "#991B1B" }}>*</span>
-          </label>
-          <input
-            className="form-input"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="e.g. Friday Night Magic"
-            maxLength={100}
-          />
-          <span
-            className="mono"
-            style={{
-              fontSize: "10px",
-              color: "var(--ink-3)",
-              textAlign: "right",
-            }}
-          >
-            {form.name.length}/100
-          </span>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Description <span style={{ color: "#991B1B" }}>*</span>
-          </label>
-          <textarea
-            className="form-input"
-            name="description"
-            value={form.description}
-            onChange={handleChange}
-            placeholder="What's this side quest about?"
-            rows={3}
-            maxLength={MAX_DESCRIPTION}
-            style={{ resize: "vertical" }}
-          />
-          <span
-            className="mono"
-            style={{
-              fontSize: "10px",
-              color:
-                form.description.length >= MAX_DESCRIPTION
-                  ? "#991B1B"
-                  : "var(--ink-3)",
-              textAlign: "right",
-            }}
-          >
-            {form.description.length}/{MAX_DESCRIPTION}
-          </span>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "10px",
-          }}
-        >
           <div className="form-group">
-            <label className="form-label">
-              Date <span style={{ color: "#991B1B" }}>*</span>
-            </label>
-            <input
-              className="form-input"
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">
-              Time <span style={{ color: "#991B1B" }}>*</span>
-            </label>
-            <input
-              className="form-input"
-              name="time"
-              value={form.time}
-              onChange={handleChange}
-              placeholder="e.g. 7:00 PM"
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Category <span style={{ color: "#991B1B" }}>*</span>
-          </label>
-          <select
-            className="form-select"
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Tags{" "}
-            <span
-              className="mono"
-              style={{
-                fontSize: "10px",
-                color: "var(--ink-3)",
-                fontWeight: "400",
-              }}
-            >
-              (comma separated)
-            </span>
-          </label>
-          <input
-            className="form-input"
-            name="tags"
-            value={form.tags}
-            onChange={handleChange}
-            placeholder="e.g. MTG,cards,tournament"
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="form-label">
-            Cost ($){" "}
-            <span
-              className="mono"
-              style={{
-                fontSize: "10px",
-                color: "var(--ink-3)",
-                fontWeight: "400",
-              }}
-            >
-              (leave blank if free)
-            </span>
-          </label>
-          <input
-            className="form-input"
-            name="cost"
-            type="number"
-            value={form.cost}
-            onChange={handleChange}
-            placeholder="0.00"
-            min="0"
-            step="0.01"
-          />
-        </div>
-
-        <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              name="is_free"
-              checked={form.is_free}
-              onChange={handleChange}
-            />
-            <span className="form-label" style={{ margin: 0 }}>
-              Free event
-            </span>
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              name="is_beginner_friendly"
-              checked={form.is_beginner_friendly}
-              onChange={handleChange}
-            />
-            <span className="form-label" style={{ margin: 0 }}>
-              Beginner friendly
-            </span>
-          </label>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              name="is_recurring"
-              checked={form.is_recurring}
-              onChange={handleChange}
-            />
-            <span className="form-label" style={{ margin: 0 }}>
-              Recurring event
-            </span>
-          </label>
-        </div>
-
-        {form.is_recurring && (
-          <div className="form-group">
-            <label className="form-label">How often?</label>
-            <select
-              className="form-select"
-              name="recurrence"
-              value={form.recurrence}
-              onChange={handleChange}
-            >
-              <option value="weekly">Weekly</option>
-              <option value="biweekly">Biweekly</option>
-              <option value="monthly">Monthly</option>
+            <label className="form-label">Spawn Point *</label>
+            <select className="form-select" name="spawn_point_id" value={form.spawn_point_id} onChange={handleChange}>
+              {spawnPoints.map((s) => (
+                <option key={s.id} value={s.id}>{s.name} — {s.neighborhood}</option>
+              ))}
             </select>
+            {errors.spawn_point_id && <span className="form-error">{errors.spawn_point_id}</span>}
           </div>
-        )}
 
-        <div style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
-          <button className="btn-primary" type="submit" disabled={loading}>
-            {loading
-              ? "Saving..."
-              : editingSideQuest
-                ? "Update side quest"
-                : "Create side quest"}
+          {selectedSpawn && (
+            <div style={{ marginTop: "10px", padding: "10px 14px", background: "var(--surface2)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", display: "flex", gap: "10px", alignItems: "center" }}>
+              {selectedSpawn.image_url && (
+                <div style={{ width: "48px", height: "48px", borderRadius: "var(--radius-sm)", overflow: "hidden", flexShrink: 0 }}>
+                  <img src={selectedSpawn.image_url} alt={selectedSpawn.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              )}
+              <div>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--ink)" }}>{selectedSpawn.name}</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)" }}>{selectedSpawn.neighborhood} · {selectedSpawn.category}</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Basic info */}
+        <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Event Details</div>
+
+          <div className="form-group" style={{ marginBottom: "1rem" }}>
+            <label className="form-label">Name *</label>
+            <input className="form-input" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Friday Night Magic — Standard" />
+            {errors.name && <span className="form-error">{errors.name}</span>}
+          </div>
+
+          <div className="form-group" style={{ marginBottom: "1rem" }}>
+            <label className="form-label">Description *</label>
+            <textarea
+              className="form-input"
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="What should people expect? Who is it for? What should they bring?"
+              rows={4}
+              style={{ resize: "vertical" }}
+            />
+            {errors.description && <span className="form-error">{errors.description}</span>}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "1rem" }}>
+            <div className="form-group">
+              <label className="form-label">Category *</label>
+              <select className="form-select" name="category" value={form.category} onChange={handleChange}>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Tags</label>
+              <input className="form-input" name="tags" value={form.tags} onChange={handleChange} placeholder="e.g. MTG,cards,beginner" />
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", marginTop: "4px", display: "block" }}>Comma separated</span>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            <div className="form-group">
+              <label className="form-label">Date *</label>
+              <input className="form-input" type="date" name="date" value={form.date} onChange={handleChange} />
+              {errors.date && <span className="form-error">{errors.date}</span>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Time *</label>
+              <input className="form-input" name="time" value={form.time} onChange={handleChange} placeholder="e.g. 7:00 PM" />
+              {errors.time && <span className="form-error">{errors.time}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Cost & accessibility */}
+        <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Cost & Accessibility</div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px", background: "var(--surface2)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)" }}>
+              <input type="checkbox" id="is_free" name="is_free" checked={form.is_free} onChange={handleChange} style={{ width: "16px", height: "16px", accentColor: "var(--sage)", cursor: "pointer" }} />
+              <label htmlFor="is_free" style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink)", cursor: "pointer" }}>Free event</label>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px", background: "var(--surface2)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)" }}>
+              <input type="checkbox" id="is_beginner_friendly" name="is_beginner_friendly" checked={form.is_beginner_friendly} onChange={handleChange} style={{ width: "16px", height: "16px", accentColor: "var(--sage)", cursor: "pointer" }} />
+              <label htmlFor="is_beginner_friendly" style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink)", cursor: "pointer" }}>Beginner friendly</label>
+            </div>
+          </div>
+
+          {!form.is_free && (
+            <div className="form-group">
+              <label className="form-label">Cost ($)</label>
+              <input className="form-input" name="cost" value={form.cost} onChange={handleChange} placeholder="e.g. 5" type="number" min="0" step="0.01" />
+            </div>
+          )}
+        </div>
+
+        {/* Recurring */}
+        <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Recurring?</div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px", background: "var(--surface2)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", marginBottom: "1rem" }}>
+            <input type="checkbox" id="is_recurring" name="is_recurring" checked={form.is_recurring} onChange={handleChange} style={{ width: "16px", height: "16px", accentColor: "var(--peach)", cursor: "pointer" }} />
+            <label htmlFor="is_recurring" style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink)", cursor: "pointer" }}>This event repeats</label>
+          </div>
+
+          {form.is_recurring && (
+            <div className="form-group">
+              <label className="form-label">How often?</label>
+              <select className="form-select" name="recurrence" value={form.recurrence} onChange={handleChange}>
+                <option value="">Select frequency</option>
+                {RECURRENCES.map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+              </select>
+            </div>
+          )}
+        </div>
+
+        {/* Image */}
+        <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1.5rem" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Cover Image</div>
+
+          <div className="form-group">
+            <label className="form-label">Image URL</label>
+            <input className="form-input" name="image_url" value={form.image_url} onChange={handleChange} placeholder="https://images.unsplash.com/..." />
+            {form.image_url && (
+              <div style={{ marginTop: "8px", height: "120px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "1.5px solid var(--border)" }}>
+                <img src={form.image_url} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => e.target.style.display = "none"} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button className="btn-primary" type="submit" disabled={loading} style={{ fontSize: "13px", padding: "12px 28px" }}>
+            {loading ? "Saving..." : isEditing ? "Save changes" : "Add side quest"}
           </button>
-          <button
-            className="btn-secondary"
-            type="button"
-            onClick={() => setCurrentPage("side-quests")}
-          >
+          <button className="btn-secondary" type="button" onClick={() => setCurrentPage("side-quests")}>
             Cancel
           </button>
         </div>
