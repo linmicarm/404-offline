@@ -57,6 +57,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
   const [spawn, setSpawn] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!spawnPoint) return;
@@ -73,6 +74,13 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
     fetchSpawn();
   }, [spawnPoint]);
 
+  function handleShare() {
+    const text = `Check out ${spawn.name} on 404 Offline — ${spawn.address}`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   if (loading) return <div className="loading">Loading... 🍑</div>;
   if (error) return <div className="error">{error}</div>;
   if (!spawn) return <div className="error">Spawn point not found.</div>;
@@ -84,7 +92,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
     <div>
       {/* Hero */}
       <div style={{
-        height: "360px",
+        height: "380px",
         background: spawn.image_url ? `url(${spawn.image_url}) center/cover` : gradient,
         position: "relative",
         display: "flex",
@@ -111,12 +119,30 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
       </div>
 
       <div className="page">
-        {/* Status tags */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
-          {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
-          {openStatus === false && <span className="tag tag-neutral">🔴 Closed</span>}
-          {spawn.is_marta_accessible && <span className="tag tag-sage">🚇 MARTA accessible</span>}
+        {/* Status + share */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "8px" }}>
+          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+            {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
+            {openStatus === false && <span className="tag tag-neutral">🔴 Closed</span>}
+            {spawn.is_marta_accessible && <span className="tag tag-sage">🚇 MARTA accessible</span>}
+          </div>
+          <button
+            onClick={handleShare}
+            style={{ fontFamily: "var(--font-mono)", fontSize: "11px", background: "var(--surface)", color: copied ? "var(--sage-dark)" : "var(--ink-2)", border: `1.5px solid ${copied ? "var(--sage)" : "var(--border)"}`, padding: "8px 16px", borderRadius: "100px", cursor: "pointer", transition: "all 0.2s" }}
+          >
+            {copied ? "✓ Copied!" : "Share this spot"}
+          </button>
         </div>
+
+        {/* Description */}
+        {spawn.description && (
+          <div style={{ marginBottom: "2rem" }}>
+            <div className="section-label">About this place</div>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: "17px", color: "var(--ink-2)", lineHeight: 1.8 }}>
+              {spawn.description}
+            </p>
+          </div>
+        )}
 
         {/* Three cards: hours, rating, check-in */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "1.5rem" }}>

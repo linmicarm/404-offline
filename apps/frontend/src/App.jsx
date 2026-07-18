@@ -115,6 +115,7 @@ export default function App() {
       showModal={showModal}
       showToast={showToast}
       setSelectedSpawnPoint={setSelectedSpawnPoint}
+      setSelectedSideQuest={setSelectedSideQuest}
     />
   );
       case "side-quest-form":

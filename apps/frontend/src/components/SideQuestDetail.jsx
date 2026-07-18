@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { getSideQuestById, deleteSideQuest } from "../api/index.js";
+import { getSideQuestById, deleteSideQuest, updateGoingCount } from "../api/index.js";
 import CommentSection from "./CommentSection.jsx";
 import MapView from "./MapView.jsx";
+import SideQuestCard from "./SideQuestCard.jsx";
 import { formatDate } from "../utils/formatDate.js";
 
 const CATEGORY_GRADIENTS = {
@@ -19,10 +20,13 @@ const RECURRENCE_LABELS = {
   monthly: "🔁 Every month",
 };
 
-export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingSideQuest, showModal, showToast, setSelectedSpawnPoint }) {
+export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingSideQuest, showModal, showToast, setSelectedSpawnPoint, setSelectedSideQuest }) {
   const [quest, setQuest] = useState(sideQuest);
   const [loading, setLoading] = useState(!sideQuest);
   const [error, setError] = useState(null);
+  const [isGoing, setIsGoing] = useState(false);
+  const [goingLoading, setGoingLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!sideQuest) return;
@@ -38,6 +42,28 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
     }
     fetchQuest();
   }, [sideQuest]);
+
+  async function handleGoing() {
+    if (goingLoading) return;
+    setGoingLoading(true);
+    try {
+      const action = isGoing ? "decrement" : "increment";
+      const result = await updateGoingCount(quest.id, action);
+      setQuest({ ...quest, going_count: result.data.going_count });
+      setIsGoing(!isGoing);
+    } catch (err) {
+      showToast("Failed to update going count.", "error");
+    } finally {
+      setGoingLoading(false);
+    }
+  }
+
+  function handleShare() {
+    const text = `${quest.name} — ${formatDate(quest.date)} at ${quest.time}${quest.spawn_point ? ` @ ${quest.spawn_point.name}` : ""}. Found on 404 Offline.`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   function handleDelete() {
     showModal({
@@ -63,12 +89,13 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
   if (!quest) return <div className="error">Side quest not found.</div>;
 
   const gradient = CATEGORY_GRADIENTS[quest.category] || CATEGORY_GRADIENTS.Other;
+  const relatedQuests = quest.spawn_point?.side_quests?.filter((q) => q.id !== quest.id) || [];
 
   return (
     <div>
       {/* Hero */}
       <div style={{
-        minHeight: "360px",
+        minHeight: "380px",
         background: quest.image_url ? `url(${quest.image_url}) center/cover` : gradient,
         position: "relative",
         display: "flex",
@@ -92,7 +119,7 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
             {quest.name}
           </h1>
 
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "1.25rem" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: "700", background: quest.is_free ? "rgba(133,201,160,0.3)" : "rgba(255,252,247,0.15)", color: quest.is_free ? "#A8E4BC" : "#FFFCF7", border: `1px solid ${quest.is_free ? "rgba(133,201,160,0.5)" : "rgba(255,252,247,0.25)"}`, padding: "4px 12px", borderRadius: "100px" }}>
               {quest.is_free ? "Free" : `$${quest.cost}`}
             </span>
@@ -106,15 +133,38 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
                 {RECURRENCE_LABELS[quest.recurrence]}
               </span>
             )}
-            {quest.tags && quest.tags.split(",").map((tag) => (
-              <span key={tag} style={{ fontFamily: "var(--font-mono)", fontSize: "11px", background: "rgba(255,252,247,0.12)", color: "rgba(255,252,247,0.8)", border: "1px solid rgba(255,252,247,0.2)", padding: "4px 12px", borderRadius: "100px" }}>
-                {tag.trim()}
-              </span>
-            ))}
+          </div>
+
+          {/* Going button in hero */}
+          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+            <button
+              onClick={handleGoing}
+              disabled={goingLoading}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "13px",
+                fontWeight: "700",
+                background: isGoing ? "var(--sage)" : "var(--peach)",
+                color: isGoing ? "#1A4D32" : "#6B3218",
+                border: "none",
+                padding: "12px 24px",
+                borderRadius: "100px",
+                cursor: goingLoading ? "default" : "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {isGoing ? `✓ Going (${quest.going_count})` : `I'm going — ${quest.going_count} interested`}
+            </button>
+            <button
+              onClick={handleShare}
+              style={{ fontFamily: "var(--font-mono)", fontSize: "11px", background: "rgba(255,252,247,0.12)", color: copied ? "#A8E4BC" : "rgba(255,252,247,0.7)", border: `1px solid ${copied ? "rgba(133,201,160,0.5)" : "rgba(255,252,247,0.2)"}`, padding: "10px 18px", borderRadius: "100px", cursor: "pointer", transition: "all 0.2s" }}
+            >
+              {copied ? "✓ Copied!" : "Share"}
+            </button>
           </div>
         </div>
 
-        {/* Date + going box */}
+        {/* Date box */}
         <div style={{ position: "absolute", top: "2rem", right: "2.5rem", background: "rgba(28,16,8,0.75)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-xl)", padding: "1.25rem", minWidth: "200px", zIndex: 2 }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "rgba(255,252,247,0.4)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "4px" }}>Date</div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "#FFFCF7", marginBottom: "2px" }}>{formatDate(quest.date)}</div>
@@ -131,12 +181,12 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
         {/* About */}
         <div style={{ marginBottom: "2rem" }}>
           <div className="section-label">About this event</div>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "18px", color: "var(--ink-2)", lineHeight: 1.8, maxWidth: "800px" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "17px", color: "var(--ink-2)", lineHeight: 1.8 }}>
             {quest.description}
           </p>
         </div>
 
-        {/* Info row */}
+        {/* Info cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginBottom: "2rem" }}>
           <div className="card" style={{ cursor: "default" }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "6px" }}>Cost</div>
@@ -171,6 +221,22 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
             <div className="section-label">Where it's at</div>
             <div style={{ height: "300px", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "2rem", border: "1.5px solid var(--border)" }}>
               <MapView spawnPoints={[quest.spawn_point]} onSelectSpawnPoint={() => {}} singlePin />
+            </div>
+          </>
+        )}
+
+        {/* Related events */}
+        {relatedQuests.length > 0 && (
+          <>
+            <div className="section-label">More at {quest.spawn_point?.name}</div>
+            <div className="grid-2" style={{ marginBottom: "2rem" }}>
+              {relatedQuests.slice(0, 4).map((q) => (
+                <SideQuestCard
+                  key={q.id}
+                  sideQuest={{ ...q, spawn_point: quest.spawn_point }}
+                  onClick={(clicked) => { setSelectedSideQuest(clicked); setCurrentPage("side-quest-detail"); }}
+                />
+              ))}
             </div>
           </>
         )}

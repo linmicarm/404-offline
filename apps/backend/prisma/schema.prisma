@@ -22,6 +22,7 @@ model SpawnPoint {
   checkin_count       Int         @default(0)
   suggestions         Suggestion[]
   image_url           String?
+  description         String?
 
   @@map("spawn_points")
 }
