@@ -20,12 +20,7 @@ const CATEGORY_GRADIENTS = {
   Other: "linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%)",
 };
 
-export default function SideQuestCard({
-  sideQuest,
-  onClick,
-  onTagClick,
-  searchQuery,
-}) {
+export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQuery }) {
   const [goingCount, setGoingCount] = useState(sideQuest.going_count || 0);
   const [isGoing, setIsGoing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,8 +41,7 @@ export default function SideQuestCard({
     }
   }
 
-  const gradient =
-    CATEGORY_GRADIENTS[sideQuest.category] || CATEGORY_GRADIENTS.Other;
+  const gradient = CATEGORY_GRADIENTS[sideQuest.category] || CATEGORY_GRADIENTS.Other;
 
   return (
     <div
@@ -55,165 +49,77 @@ export default function SideQuestCard({
       onClick={() => onClick && onClick(sideQuest)}
       style={{ padding: 0, overflow: "hidden" }}
     >
-      <div
-        style={{
-          height: "160px",
-          background: sideQuest.image_url
-            ? `url(${sideQuest.image_url}) center/cover`
-            : gradient,
-          position: "relative",
-          display: "flex",
-          alignItems: "flex-end",
-          padding: "0.75rem",
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to top, rgba(44,24,16,0.85) 0%, rgba(44,24,16,0.0) 60%)",
-          }}
-        />
+      <div style={{
+        height: "160px",
+        background: sideQuest.image_url ? `url(${sideQuest.image_url}) center/cover` : gradient,
+        position: "relative",
+        display: "flex",
+        alignItems: "flex-end",
+        padding: "0.75rem",
+      }}>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.85) 0%, rgba(44,24,16,0.0) 60%)" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
-          <div
-            style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: "9px",
-              color: "rgba(255,252,247,0.7)",
-              textTransform: "uppercase",
-              letterSpacing: "2px",
-            }}
-          >
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.7)", textTransform: "uppercase", letterSpacing: "2px" }}>
             {sideQuest.category}
           </div>
         </div>
         {sideQuest.is_recurring && sideQuest.recurrence && (
-          <span
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              fontFamily: "'Space Mono', monospace",
-              fontSize: "9px",
-              fontWeight: "700",
-              background: "rgba(255,170,127,0.9)",
-              color: "#6B3218",
-              padding: "3px 8px",
-              borderRadius: "100px",
-            }}
-          >
+          <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,170,127,0.9)", color: "#6B3218", padding: "4px 10px", borderRadius: "100px" }}>
             {RECURRENCE_LABELS[sideQuest.recurrence]}
           </span>
         )}
       </div>
 
-      <div style={{ padding: "1rem" }}>
-        <div
-          style={{
-            fontSize: "15px",
-            fontWeight: "700",
-            color: "var(--ink)",
-            marginBottom: "6px",
-            lineHeight: 1.3,
-          }}
-        >
-          {searchQuery
-            ? highlight(sideQuest.name, searchQuery)
-            : sideQuest.name}
+      <div style={{ padding: "1.125rem" }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: "18px", color: "var(--ink)", marginBottom: "8px", lineHeight: 1.3 }}>
+          {searchQuery ? highlight(sideQuest.name, searchQuery) : sideQuest.name}
         </div>
 
-        <div
-          style={{
-            fontSize: "13px",
-            color: "var(--ink-2)",
-            marginBottom: "10px",
-            lineHeight: "1.5",
-          }}
-        >
-          {searchQuery
-            ? highlight(sideQuest.description, searchQuery)
-            : sideQuest.description}
+        <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--ink-2)", marginBottom: "12px", lineHeight: "1.6" }}>
+          {searchQuery ? highlight(sideQuest.description, searchQuery) : sideQuest.description}
         </div>
 
         {sideQuest.spawn_point && (
-          <div
-            className="mono"
-            style={{
-              fontSize: "10px",
-              color: "var(--ink-3)",
-              marginBottom: "8px",
-            }}
-          >
-            📍{" "}
-            {searchQuery
-              ? highlight(sideQuest.spawn_point.name, searchQuery)
-              : sideQuest.spawn_point.name}{" "}
-            · {sideQuest.spawn_point.neighborhood}
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)", marginBottom: "8px" }}>
+            📍 {searchQuery ? highlight(sideQuest.spawn_point.name, searchQuery) : sideQuest.spawn_point.name} · {sideQuest.spawn_point.neighborhood}
           </div>
         )}
 
-        <div
-          className="mono"
-          style={{
-            fontSize: "10px",
-            color: "var(--ink-3)",
-            marginBottom: "12px",
-          }}
-        >
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)", marginBottom: "14px" }}>
           🗓 {formatDateShort(sideQuest.date)} · {sideQuest.time}
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "6px",
-          }}
-        >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" }}>
           <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-            <span
-              className={`tag ${sideQuest.is_free ? "tag-sage" : "tag-neutral"}`}
-            >
+            <span className={`tag ${sideQuest.is_free ? "tag-sage" : "tag-neutral"}`}>
               {sideQuest.is_free ? "Free" : `$${sideQuest.cost}`}
             </span>
             {sideQuest.is_beginner_friendly && (
               <span className="tag tag-sage">Beginner ok</span>
             )}
-            {sideQuest.tags &&
-              sideQuest.tags
-                .split(",")
-                .slice(0, 2)
-                .map((tag) => (
-                  <span
-                    key={tag}
-                    className="tag tag-neutral"
-                    style={{ cursor: "pointer" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onTagClick && onTagClick(tag.trim());
-                    }}
-                  >
-                    {searchQuery
-                      ? highlight(tag.trim(), searchQuery)
-                      : tag.trim()}
-                  </span>
-                ))}
+            {sideQuest.tags && sideQuest.tags.split(",").slice(0, 2).map((tag) => (
+              <span
+                key={tag}
+                className="tag tag-neutral"
+                style={{ cursor: "pointer" }}
+                onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag.trim()); }}
+              >
+                {searchQuery ? highlight(tag.trim(), searchQuery) : tag.trim()}
+              </span>
+            ))}
           </div>
 
           <button
             onClick={handleGoing}
             disabled={loading}
             style={{
-              fontFamily: "'Space Mono', monospace",
-              fontSize: "10px",
+              fontFamily: "var(--font-mono)",
+              fontSize: "11px",
               fontWeight: "700",
               background: isGoing ? "var(--sage-light)" : "var(--peach-light)",
               color: isGoing ? "var(--sage-dark)" : "var(--peach-dark)",
               border: `1.5px solid ${isGoing ? "var(--sage)" : "var(--peach)"}`,
-              padding: "5px 12px",
+              padding: "6px 14px",
               borderRadius: "100px",
               cursor: loading ? "default" : "pointer",
               whiteSpace: "nowrap",

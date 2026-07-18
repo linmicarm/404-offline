@@ -71,24 +71,24 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
       }}>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.88) 0%, rgba(44,24,16,0.05) 60%)" }} />
         <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
-          <div style={{ fontSize: "16px", fontWeight: "800", color: "#FFFCF7", marginBottom: "2px", lineHeight: 1.2 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "#FFFCF7", marginBottom: "3px", lineHeight: 1.2 }}>
             {searchQuery ? highlight(spawnPoint.name, searchQuery) : spawnPoint.name}
           </div>
-          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "rgba(255,252,247,0.7)" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "rgba(255,252,247,0.7)" }}>
             {searchQuery ? highlight(spawnPoint.neighborhood, searchQuery) : spawnPoint.neighborhood}
           </div>
         </div>
-        <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "'Space Mono', monospace", fontSize: "9px", fontWeight: "700", background: "rgba(255,252,247,0.15)", backdropFilter: "blur(4px)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.2)", padding: "3px 8px", borderRadius: "100px" }}>
+        <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,252,247,0.15)", backdropFilter: "blur(4px)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.2)", padding: "4px 10px", borderRadius: "100px" }}>
           {spawnPoint.category}
         </span>
       </div>
 
-      <div style={{ padding: "1rem" }}>
-        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "var(--ink-3)", marginBottom: "10px" }}>
+      <div style={{ padding: "1.125rem" }}>
+        <div style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--ink-3)", marginBottom: "12px" }}>
           {spawnPoint.address}
         </div>
 
-        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: upcomingQuests.length > 0 ? "10px" : "0" }}>
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: upcomingQuests.length > 0 ? "12px" : "0" }}>
           {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
           {openStatus === false && <span className="tag tag-neutral">🔴 Closed</span>}
           {spawnPoint.is_marta_accessible && <span className="tag tag-sage">🚇 MARTA</span>}
@@ -96,7 +96,7 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
             <span className="tag tag-neutral" style={{ display: "flex", alignItems: "center", gap: "3px" }}>
               <span style={{ color: "#FFAA7F" }}>★</span>
               {(spawnPoint.rating_sum / spawnPoint.rating_count).toFixed(1)}
-              <span style={{ color: "var(--ink-3)", fontSize: "9px" }}>({spawnPoint.rating_count})</span>
+              <span style={{ color: "var(--ink-3)", fontSize: "10px" }}>({spawnPoint.rating_count})</span>
             </span>
           )}
           {spawnPoint._count && (
@@ -107,20 +107,22 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
         </div>
 
         {upcomingQuests.length > 0 && (
-          <div style={{ borderTop: "1px solid var(--border)", paddingTop: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
-            <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "2px" }}>Upcoming</div>
+          <div style={{ borderTop: "1px solid var(--border)", paddingTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "2px" }}>
+              Upcoming
+            </div>
             {upcomingQuests.map((quest) => (
               <div key={quest.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                <div style={{ fontSize: "12px", fontWeight: "600", color: "var(--ink)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "600", color: "var(--ink)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {quest.name}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
                   {quest.is_recurring && quest.recurrence && (
-                    <span style={{ fontFamily: "monospace", fontSize: "9px", color: "var(--peach-dark)", background: "var(--peach-light)", border: "1.5px solid var(--peach)", borderRadius: "100px", padding: "1px 6px" }}>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", background: "var(--peach-light)", border: "1.5px solid var(--peach)", borderRadius: "100px", padding: "2px 8px" }}>
                       {RECURRENCE_LABELS[quest.recurrence] || "🔁"}
                     </span>
                   )}
-                  <span className="mono" style={{ fontSize: "9px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)}</span>
                 </div>
               </div>
             ))}

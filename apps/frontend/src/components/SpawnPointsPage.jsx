@@ -67,7 +67,7 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
           <h1 className="page-title">Spawn Points</h1>
-          <p className="page-sub">Local venues, game bars, boba spots, and more.</p>
+        <p className="page-sub">Discover the places where Atlanta's nerd community comes together. From cozy cafés and game bars to card shops, arcades, and hidden gems, your next favorite hangout is just a click away.</p>
         </div>
         <button className="btn-primary" onClick={() => setCurrentPage("spawn-point-form")}>+ Add spawn point</button>
       </div>

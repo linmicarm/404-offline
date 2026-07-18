@@ -239,6 +239,8 @@ body {
   transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   position: relative;
   overflow: hidden;
+    font-size: 15px;
+  line-height: 1.6;
 }
 
 .card::before {

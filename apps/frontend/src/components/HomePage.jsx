@@ -33,7 +33,10 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
   }, []);
 
   const featuredQuest = sideQuests.find((q) => q.is_featured);
-  const heroSpawn = spawnPoints.find((s) => s.image_url) || spawnPoints[0];
+  const spawnsWithImages = spawnPoints.filter((s) => s.image_url);
+  const heroSpawn = spawnsWithImages.length > 0
+    ? spawnsWithImages[Math.floor(Math.random() * spawnsWithImages.length)]
+    : spawnPoints[0];
 
   const filteredQuests = sideQuests.filter((q) =>
     normalize(q.name).includes(normalize(search)) ||
@@ -60,10 +63,10 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
   return (
     <div>
-      {/* Hero — always dark, never inherits theme */}
+      {/* Hero */}
       <div style={{ background: "#1C1008", minHeight: "580px", display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
 
-        {/* Left — copy, locked dark */}
+        {/* Left */}
         <div style={{ background: "#1C1008", padding: "4rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "58px", fontWeight: "400", color: "#FFFCF7", lineHeight: 1.05, marginBottom: "0.4rem" }}>
             404:
@@ -109,13 +112,13 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
           </div>
         </div>
 
-        {/* Right — hero image */}
-        <div style={{ position: "relative", overflow: "hidden", background: "#1C1008" }}>
+        {/* Right — fixed height, consistent crop */}
+        <div style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "580px" }}>
           {heroSpawn?.image_url ? (
             <img
               src={heroSpawn.image_url}
               alt={heroSpawn.name}
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }}
             />
           ) : (
             <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #2C1810 0%, #6B3218 100%)" }} />
