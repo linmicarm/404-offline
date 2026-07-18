@@ -53,7 +53,6 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
   return (
     <div className="page">
       <div className="page-header">
-        <div className="page-eyebrow">Atlanta, GA · 404</div>
         <h1 className="page-title">Neighborhoods</h1>
         <p className="page-sub">Discover which Atlanta neighborhoods have the most going on.</p>
       </div>

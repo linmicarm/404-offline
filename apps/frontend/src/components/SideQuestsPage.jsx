@@ -108,7 +108,6 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
     <div className="page">
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <div className="page-eyebrow">Atlanta, GA · 404</div>
           <h1 className="page-title">Side Quests</h1>
           <p className="page-sub">Local events, meetups, and happenings between con season.</p>
         </div>

@@ -66,7 +66,6 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
     <div className="page">
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <div className="page-eyebrow">Atlanta, GA · 404</div>
           <h1 className="page-title">Spawn Points</h1>
           <p className="page-sub">Local venues, game bars, boba spots, and more.</p>
         </div>

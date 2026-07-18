@@ -45,7 +45,6 @@ export default function SuggestionsPage({ showToast }) {
   return (
     <div className="page">
       <div className="page-header">
-        <div className="page-eyebrow">Admin · 404 Offline</div>
         <h1 className="page-title">Suggestions</h1>
         <p className="page-sub">Community edits and corrections submitted by users.</p>
       </div>

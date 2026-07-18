@@ -67,7 +67,6 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
     <div className="page">
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
-          <div className="page-eyebrow">Atlanta, GA · 404</div>
           <h1 className="page-title">Con Calendar</h1>
           <p className="page-sub">Atlanta's convention season, all in one place.</p>
         </div>
