@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
 import { getCons, deleteCon } from "../api/index.js";
 import { SkeletonList } from "./Skeleton.jsx";
-import { formatDateRange, formatDateShort } from "../utils/formatDate.js";
+import { formatDateRange } from "../utils/formatDate.js";
+
+const CON_IMAGES = {
+  "MomoCon 2026": "https://images.unsplash.com/photo-1608889335941-32ac5f2041b9?w=1200&q=90",
+  "DragonCon 2026": "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=1200&q=90",
+  "Anime Weekend Atlanta 2026": "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&q=90",
+  "HeroesCon Atlanta 2026": "https://images.unsplash.com/photo-1535615615570-3b839f4359be?w=1200&q=90",
+};
 
 const SIZE_COLORS = {
-  Massive: "tag-peach",
-  Large: "tag-peach",
-  "Mid-size": "tag-sage",
-  Small: "tag-neutral",
+  Massive: { bg: "rgba(255,170,127,0.35)", color: "#FFCBA4", border: "rgba(255,170,127,0.5)" },
+  Large: { bg: "rgba(255,170,127,0.35)", color: "#FFCBA4", border: "rgba(255,170,127,0.5)" },
+  "Mid-size": { bg: "rgba(133,201,160,0.35)", color: "#A8E4BC", border: "rgba(133,201,160,0.5)" },
+  Small: { bg: "rgba(255,252,247,0.2)", color: "rgba(255,252,247,0.9)", border: "rgba(255,252,247,0.3)" },
 };
 
 function daysUntil(dateStr) {
@@ -68,9 +75,9 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
           <h1 className="page-title">Con Calendar</h1>
-          <p className="page-sub">Atlanta's convention season, all in one place.</p>
+          <p className="page-sub">The main quests live here. Explore Atlanta's biggest conventions, expos, and fan celebrations.</p>
         </div>
-        <button className="btn-primary" onClick={() => { setEditingCon(null); setCurrentPage("con-form"); }}>+ Add con</button>
+        <button className="btn-primary" onClick={() => { setEditingCon(null); setCurrentPage("con-form"); }}>+ Add a convention</button>
       </div>
 
       {loading && <SkeletonList count={3} />}
@@ -83,42 +90,54 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
       {!loading && !error && upcoming.length > 0 && (
         <>
           <div className="section-label">Upcoming</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "2rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "2rem" }}>
             {upcoming.map((con) => {
               const countdown = daysUntil(con.start_date);
+              const image = CON_IMAGES[con.name];
+              const sizeStyle = SIZE_COLORS[con.size] || SIZE_COLORS.Small;
+
               return (
-                <div key={con.id} className="card" style={{ display: "flex", alignItems: "stretch", padding: 0, overflow: "hidden" }}>
-                  <div style={{ background: "var(--surface2)", borderRight: "1.5px solid var(--border)", padding: "1.25rem", minWidth: "120px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                    <div className="mono" style={{ fontSize: "11px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "1px" }}>
-                      {new Date(con.start_date + "T00:00:00").toLocaleString("default", { month: "short" })}
+                <div key={con.id} style={{ borderRadius: "var(--radius-xl)", overflow: "hidden", border: "1.5px solid var(--border)", background: "var(--surface)" }}>
+                  <div style={{
+                    height: "220px",
+                    background: image ? `url(${image}) center/cover` : "linear-gradient(135deg, #2C1810 0%, #6B3218 100%)",
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "flex-end",
+                  }}>
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(28,16,8,0.98) 0%, rgba(28,16,8,0.7) 50%, rgba(28,16,8,0.4) 100%)" }} />
+
+                    {countdown && (
+                      <div style={{ position: "absolute", top: "1rem", right: "1rem", fontFamily: "var(--font-mono)", fontSize: "11px", fontWeight: "700", background: "rgba(255,170,127,0.95)", color: "#1C1008", padding: "5px 12px", borderRadius: "100px" }}>
+                        {countdown}
+                      </div>
+                    )}
+
+                    <div style={{ position: "relative", zIndex: 1, padding: "1.25rem 1.5rem", width: "100%" }}>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "10px", flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: sizeStyle.bg, color: sizeStyle.color, border: `1px solid ${sizeStyle.border}`, padding: "4px 12px", borderRadius: "100px" }}>
+                          {con.size}
+                        </span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,252,247,0.2)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.3)", padding: "4px 12px", borderRadius: "100px" }}>
+                          {con.type}
+                        </span>
+                      </div>
+                      <div style={{ fontFamily: "var(--font-display)", fontSize: "32px", color: "#FFFCF7", lineHeight: 1.1, marginBottom: "8px" }}>
+                        {con.name}
+                      </div>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "rgba(255,252,247,0.75)", display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                        <span>📅 {formatDateRange(con.start_date, con.end_date)}</span>
+                        <span>📍 {con.venue} · {con.neighborhood}</span>
+                      </div>
                     </div>
-                    <div style={{ fontSize: "28px", fontWeight: "800", color: "var(--ink)", lineHeight: 1 }}>
-                      {new Date(con.start_date + "T00:00:00").getDate()}
-                    </div>
-                    <div className="mono" style={{ fontSize: "9px", color: "var(--ink-3)" }}>– {new Date(con.end_date + "T00:00:00").getDate()}</div>
                   </div>
-                  <div style={{ flex: 1, padding: "1.125rem" }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "6px" }}>
-                      <div style={{ fontSize: "16px", fontWeight: "800", color: "var(--ink)" }}>{con.name}</div>
-                      {countdown && <span className="tag tag-peach" style={{ whiteSpace: "nowrap", marginLeft: "8px" }}>{countdown}</span>}
-                    </div>
-                    <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", marginBottom: "6px" }}>
-                      📅 {formatDateRange(con.start_date, con.end_date)}
-                    </div>
-                    <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)", marginBottom: "8px" }}>
-                      📍 {con.venue} · {con.neighborhood}
-                    </div>
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
-                      <span className={`tag ${SIZE_COLORS[con.size] || "tag-neutral"}`}>{con.size}</span>
-                      <span className="tag tag-neutral">{con.type}</span>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                      {con.ticket_url && (
-                        <a href={con.ticket_url} target="_blank" rel="noreferrer" className="btn-primary" style={{ textDecoration: "none", fontSize: "11px" }}>Get tickets →</a>
-                      )}
-                      <button className="btn-secondary" onClick={() => { setEditingCon(con); setCurrentPage("con-form"); }}>Edit</button>
-                      <button className="btn-danger" onClick={() => handleDelete(con.id)}>Delete</button>
-                    </div>
+
+                  <div style={{ padding: "1rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "8px", flexWrap: "wrap" }}>
+                    {con.ticket_url && (
+                      <a href={con.ticket_url} target="_blank" rel="noreferrer" className="btn-primary" style={{ textDecoration: "none", fontSize: "12px" }}>Get tickets →</a>
+                    )}
+                    <button className="btn-secondary" onClick={() => { setEditingCon(con); setCurrentPage("con-form"); }}>Edit</button>
+                    <button className="btn-danger" onClick={() => handleDelete(con.id)}>Delete</button>
                   </div>
                 </div>
               );
@@ -132,14 +151,14 @@ export default function ConsPage({ setCurrentPage, setEditingCon, showModal, sho
           <div className="section-label">Past cons</div>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             {past.map((con) => (
-              <div key={con.id} className="card" style={{ opacity: 0.6, display: "flex", alignItems: "center", gap: "14px" }}>
-                <div>
-                  <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--ink)" }}>{con.name}</div>
-                  <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>
+              <div key={con.id} className="card" style={{ opacity: 0.6, display: "flex", alignItems: "center", gap: "14px", cursor: "default" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: "16px", color: "var(--ink)" }}>{con.name}</div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)" }}>
                     {formatDateRange(con.start_date, con.end_date)} · {con.venue}
                   </div>
                 </div>
-                <div style={{ marginLeft: "auto", display: "flex", gap: "6px" }}>
+                <div style={{ display: "flex", gap: "6px" }}>
                   <button className="btn-secondary" onClick={() => { setEditingCon(con); setCurrentPage("con-form"); }}>Edit</button>
                   <button className="btn-danger" onClick={() => handleDelete(con.id)}>Delete</button>
                 </div>
