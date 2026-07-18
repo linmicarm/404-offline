@@ -13,10 +13,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
   useEffect(() => {
     async function fetchData() {
       try {
-        const [spawns, quests] = await Promise.all([
-          getSpawnPoints(),
-          getSideQuests(),
-        ]);
+        const [spawns, quests] = await Promise.all([getSpawnPoints(), getSideQuests()]);
         setSpawnPoints(spawns);
         setSideQuests(quests);
       } catch (err) {
@@ -54,7 +51,7 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
     <div className="page">
       <div className="page-header">
         <h1 className="page-title">Neighborhoods</h1>
-        <p className="page-sub">Discover which Atlanta neighborhoods have the most going on.</p>
+        <p className="page-sub">Every neighborhood has its own story. Explore the places, events, and communities that make each corner of Atlanta uniquely nerdy.</p>
       </div>
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "1.5rem" }}>
@@ -63,70 +60,119 @@ export default function NeighborhoodPage({ setCurrentPage, setSelectedSpawnPoint
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {sorted.map(([neighborhood, data], index) => (
-          <div key={neighborhood} className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <div
-              style={{ display: "flex", alignItems: "center", gap: "14px", padding: "1.125rem", cursor: "pointer" }}
-              onClick={() => setExpanded(expanded === neighborhood ? null : neighborhood)}
-            >
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "18px", fontWeight: "700", color: sortBy === "activity" && index < 3 ? "var(--peach)" : "var(--border)", minWidth: "32px" }}>
-                {String(index + 1).padStart(2, "0")}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "15px", fontWeight: "700", color: "var(--ink)", marginBottom: "4px" }}>{neighborhood}</div>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  <span className="tag tag-peach">{data.spawnPoints.length} spawn point{data.spawnPoints.length !== 1 ? "s" : ""}</span>
-                  <span className="tag tag-sage">{data.sideQuests.length} side quest{data.sideQuests.length !== 1 ? "s" : ""}</span>
-                </div>
-              </div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "20px", color: "var(--ink-3)", transition: "transform 0.2s", transform: expanded === neighborhood ? "rotate(180deg)" : "rotate(0deg)" }}>
-                ↓
-              </div>
-            </div>
+        {sorted.map(([neighborhood, data], index) => {
+          const heroImage = data.spawnPoints.find((s) => s.image_url)?.image_url;
+          const isExpanded = expanded === neighborhood;
 
-            {expanded === neighborhood && (
-              <div style={{ borderTop: "1.5px solid var(--border)", padding: "1.125rem", background: "var(--surface2)" }}>
-                <div className="section-label" style={{ marginBottom: "0.75rem" }}>Spawn Points</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "1rem" }}>
-                  {data.spawnPoints.map((spawn) => (
-                    <div
-                      key={spawn.id}
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "var(--surface)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", cursor: "pointer" }}
-                      onClick={() => { setSelectedSpawnPoint(spawn); setCurrentPage("spawn-point-detail"); }}
-                    >
-                      <div>
-                        <div style={{ fontSize: "13px", fontWeight: "700", color: "var(--ink)" }}>{spawn.name}</div>
-                        <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>{spawn.category}</div>
+          return (
+            <div key={neighborhood} className="card" style={{ padding: 0, overflow: "hidden" }}>
+              {/* Header with background image */}
+              <div
+                style={{
+                  position: "relative",
+                  height: isExpanded ? "160px" : "100px",
+                  background: heroImage ? `url(${heroImage}) center/cover` : "linear-gradient(135deg, #2C1810 0%, #6B3218 100%)",
+                  cursor: "pointer",
+                  transition: "height 0.3s ease",
+                  display: "flex",
+                  alignItems: "flex-end",
+                }}
+                onClick={() => setExpanded(isExpanded ? null : neighborhood)}
+              >
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(28,16,8,0.92) 0%, rgba(28,16,8,0.4) 60%, rgba(28,16,8,0.1) 100%)" }} />
+
+                <div style={{ position: "relative", zIndex: 1, padding: "1rem 1.25rem", width: "100%", display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    {sortBy === "activity" && (
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: "20px", fontWeight: "700", color: index < 3 ? "var(--peach)" : "rgba(255,252,247,0.2)", minWidth: "36px" }}>
+                        {String(index + 1).padStart(2, "0")}
                       </div>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", color: "var(--ink-3)" }}>→</span>
+                    )}
+                    <div>
+                      <div style={{ fontFamily: "var(--font-display)", fontSize: "22px", color: "#FFFCF7", marginBottom: "4px" }}>
+                        {neighborhood}
+                      </div>
+                      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", background: "rgba(255,170,127,0.2)", color: "#FFCBA4", border: "1px solid rgba(255,170,127,0.3)", padding: "2px 8px", borderRadius: "100px" }}>
+                          {data.spawnPoints.length} spawn point{data.spawnPoints.length !== 1 ? "s" : ""}
+                        </span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", background: "rgba(133,201,160,0.2)", color: "#A8E4BC", border: "1px solid rgba(133,201,160,0.3)", padding: "2px 8px", borderRadius: "100px" }}>
+                          {data.sideQuests.length} side quest{data.sideQuests.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
                     </div>
-                  ))}
+                  </div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "20px", color: "rgba(255,252,247,0.5)", transition: "transform 0.2s", transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+                    ↓
+                  </div>
                 </div>
+              </div>
 
-                {data.sideQuests.length > 0 && (
-                  <>
-                    <div className="section-label" style={{ marginBottom: "0.75rem" }}>Upcoming Side Quests</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                      {data.sideQuests.slice(0, 3).map((quest) => (
+              {/* Expanded content */}
+              {isExpanded && (
+                <div style={{ padding: "1.25rem", background: "var(--surface2)" }}>
+
+                  {/* Spawn point image strip */}
+                  {data.spawnPoints.some((s) => s.image_url) && (
+                    <div style={{ display: "flex", gap: "8px", marginBottom: "1.25rem", overflowX: "auto", paddingBottom: "4px" }}>
+                      {data.spawnPoints.filter((s) => s.image_url).map((spawn) => (
                         <div
-                          key={quest.id}
-                          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", background: "var(--surface)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", cursor: "pointer" }}
-                          onClick={() => { setSelectedSideQuest(quest); setCurrentPage("side-quest-detail"); }}
+                          key={spawn.id}
+                          onClick={() => { setSelectedSpawnPoint(spawn); setCurrentPage("spawn-point-detail"); }}
+                          style={{ flexShrink: 0, width: "140px", height: "90px", borderRadius: "var(--radius-md)", overflow: "hidden", cursor: "pointer", position: "relative", border: "1.5px solid var(--border)" }}
                         >
-                          <div>
-                            <div style={{ fontSize: "13px", fontWeight: "700", color: "var(--ink)" }}>{quest.name}</div>
-                            <div className="mono" style={{ fontSize: "10px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)} · {quest.time}</div>
+                          <img src={spawn.image_url} alt={spawn.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(28,16,8,0.8) 0%, transparent 50%)" }} />
+                          <div style={{ position: "absolute", bottom: "6px", left: "8px", fontFamily: "var(--font-display)", fontSize: "11px", color: "#FFFCF7", lineHeight: 1.2 }}>
+                            {spawn.name}
                           </div>
-                          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", color: "var(--ink-3)" }}>→</span>
                         </div>
                       ))}
                     </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+                  )}
+
+                  <div className="section-label" style={{ marginBottom: "0.75rem" }}>Spawn Points</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "1rem" }}>
+                    {data.spawnPoints.map((spawn) => (
+                      <div
+                        key={spawn.id}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "var(--surface)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", cursor: "pointer" }}
+                        onClick={() => { setSelectedSpawnPoint(spawn); setCurrentPage("spawn-point-detail"); }}
+                      >
+                        <div>
+                          <div style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--ink)" }}>{spawn.name}</div>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)" }}>{spawn.category}</div>
+                        </div>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--ink-3)" }}>→</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {data.sideQuests.length > 0 && (
+                    <>
+                      <div className="section-label" style={{ marginBottom: "0.75rem" }}>Upcoming Side Quests</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        {data.sideQuests.slice(0, 3).map((quest) => (
+                          <div
+                            key={quest.id}
+                            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "var(--surface)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)", cursor: "pointer" }}
+                            onClick={() => { setSelectedSideQuest(quest); setCurrentPage("side-quest-detail"); }}
+                          >
+                            <div>
+                              <div style={{ fontFamily: "var(--font-display)", fontSize: "15px", color: "var(--ink)" }}>{quest.name}</div>
+                              <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)} · {quest.time}</div>
+                            </div>
+                            <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--ink-3)" }}>→</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

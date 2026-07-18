@@ -109,7 +109,7 @@ export default function SideQuestsPage({ setCurrentPage, setSelectedSideQuest, s
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
           <h1 className="page-title">Side Quests</h1>
-          <p className="page-sub">Local events, meetups, and happenings between con season.</p>
+          <p className="page-sub">Con season may end, but the adventure doesn't. Discover local events, meetups, tournaments, and community gatherings across Atlanta.</p>
         </div>
         <button className="btn-primary" onClick={() => setCurrentPage("side-quest-form")}>+ Add side quest</button>
       </div>
