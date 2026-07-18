@@ -106,16 +106,17 @@ export default function App() {
             showToast={showToast}
           />
         );
-      case "side-quest-detail":
-        return (
-          <SideQuestDetail
-            sideQuest={selectedSideQuest}
-            setCurrentPage={handleSetPage}
-            setEditingSideQuest={setEditingSideQuest}
-            showModal={showModal}
-            showToast={showToast}
-          />
-        );
+     case "side-quest-detail":
+  return (
+    <SideQuestDetail
+      sideQuest={selectedSideQuest}
+      setCurrentPage={handleSetPage}
+      setEditingSideQuest={setEditingSideQuest}
+      showModal={showModal}
+      showToast={showToast}
+      setSelectedSpawnPoint={setSelectedSpawnPoint}
+    />
+  );
       case "side-quest-form":
         return (
           <SideQuestForm

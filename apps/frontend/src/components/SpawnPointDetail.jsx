@@ -82,77 +82,82 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
 
   return (
     <div>
-      {/* Hero image */}
+      {/* Hero */}
       <div style={{
-        height: "320px",
+        height: "360px",
         background: spawn.image_url ? `url(${spawn.image_url}) center/cover` : gradient,
         position: "relative",
         display: "flex",
         alignItems: "flex-end",
       }}>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.92) 0%, rgba(44,24,16,0.2) 50%, rgba(44,24,16,0.0) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(28,16,8,0.98) 0%, rgba(28,16,8,0.5) 50%, rgba(28,16,8,0.1) 100%)" }} />
         <div style={{ position: "relative", zIndex: 1, padding: "2rem 2.5rem", maxWidth: "1400px", width: "100%" }}>
           <button
             onClick={() => setCurrentPage("spawn-points")}
-            style={{ fontFamily: "var(--font-mono)", fontSize: "11px", background: "rgba(255,252,247,0.15)", backdropFilter: "blur(4px)", border: "1px solid rgba(255,252,247,0.2)", color: "#FFFCF7", padding: "6px 14px", borderRadius: "100px", cursor: "pointer", marginBottom: "1rem", display: "block" }}
+            style={{ fontFamily: "var(--font-mono)", fontSize: "11px", background: "rgba(255,252,247,0.12)", backdropFilter: "blur(4px)", border: "1px solid rgba(255,252,247,0.2)", color: "#FFFCF7", padding: "6px 14px", borderRadius: "100px", cursor: "pointer", marginBottom: "1.25rem", display: "inline-block" }}
           >
             ← Back to spawn points
           </button>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", color: "rgba(255,252,247,0.6)", marginBottom: "8px" }}>
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", color: "rgba(255,252,247,0.5)", marginBottom: "8px" }}>
             {spawn.category}
           </div>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "48px", fontWeight: "900", color: "#FFFCF7", lineHeight: 1.05, letterSpacing: "-1px", marginBottom: "6px" }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "52px", fontWeight: "400", color: "#FFFCF7", lineHeight: 1.05, marginBottom: "6px" }}>
             {spawn.name}
           </h1>
-          <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "rgba(255,252,247,0.75)" }}>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "rgba(255,252,247,0.65)" }}>
             {spawn.neighborhood} · {spawn.address}
           </p>
         </div>
       </div>
 
       <div className="page">
+        {/* Status tags */}
         <div style={{ display: "flex", gap: "6px", marginBottom: "1.5rem", flexWrap: "wrap" }}>
           {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
           {openStatus === false && <span className="tag tag-neutral">🔴 Closed</span>}
           {spawn.is_marta_accessible && <span className="tag tag-sage">🚇 MARTA accessible</span>}
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "1.5rem" }}>
+        {/* Three cards: hours, rating, check-in */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "1.5rem" }}>
           <div className="card" style={{ cursor: "default" }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>
-              Community Rating
-            </div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Hours</div>
+            {spawn.hours ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                {spawn.hours.split(", ").map((segment, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0", borderBottom: i < spawn.hours.split(", ").length - 1 ? "1px solid var(--border)" : "none" }}>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-2)" }}>{segment.split(" ")[0]}</span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink)", fontWeight: "700" }}>{segment.split(" ")[1]}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)" }}>Hours not listed</div>
+            )}
+          </div>
+
+          <div className="card" style={{ cursor: "default" }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Community Rating</div>
             <StarRating spawnPoint={spawn} onRated={(updated) => setSpawn({ ...spawn, ...updated })} />
           </div>
+
           <div className="card" style={{ cursor: "default" }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>
-              Check In
-            </div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Check In</div>
             <CheckInButton spawnPoint={spawn} onCheckedIn={(updated) => setSpawn({ ...spawn, ...updated })} />
           </div>
         </div>
 
+        {/* Map */}
         {spawn.latitude && spawn.longitude && (
           <>
             <div className="section-label">Find it</div>
-            <MapView spawnPoints={[spawn]} onSelectSpawnPoint={() => {}} singlePin />
+            <div style={{ height: "320px", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "1.5rem", border: "1.5px solid var(--border)" }}>
+              <MapView spawnPoints={[spawn]} onSelectSpawnPoint={() => {}} singlePin />
+            </div>
           </>
         )}
 
-        {spawn.hours && (
-          <div className="card" style={{ marginBottom: "1.5rem", cursor: "default" }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "8px" }}>Hours</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              {spawn.hours.split(", ").map((segment, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: i < spawn.hours.split(", ").length - 1 ? "1px solid var(--border)" : "none" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--ink-2)" }}>{segment.split(" ")[0]}</span>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--ink)", fontWeight: "700" }}>{segment.split(" ")[1]}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+        {/* Side quests */}
         {spawn.side_quests && spawn.side_quests.length > 0 && (
           <>
             <div className="section-label">Side quests here</div>
