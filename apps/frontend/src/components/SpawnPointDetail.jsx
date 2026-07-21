@@ -90,6 +90,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
 
   return (
     <div>
+      {/* Hero */}
       <div style={{
         height: "380px",
         background: spawn.image_url ? `url(${spawn.image_url}) center/cover` : gradient,
@@ -108,7 +109,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "3px", textTransform: "uppercase", color: "rgba(255,252,247,0.5)", marginBottom: "8px" }}>
             {spawn.category}
           </div>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "52px", fontWeight: "400", color: "#FFFCF7", lineHeight: 1.05, marginBottom: "6px" }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 5vw, 64px)", color: "#FFFCF7", lineHeight: 1.05, marginBottom: "6px" }}>
             {spawn.name}
           </h1>
           <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "rgba(255,252,247,0.65)" }}>
@@ -118,6 +119,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
       </div>
 
       <div className="page">
+        {/* Status + share */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "8px" }}>
           <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
             {openStatus === true && <span className="tag tag-sage">🟢 Open now</span>}
@@ -132,6 +134,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
           </button>
         </div>
 
+        {/* Description */}
         {spawn.description && (
           <div style={{ marginBottom: "2rem" }}>
             <div className="section-label">About this place</div>
@@ -141,6 +144,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
           </div>
         )}
 
+        {/* Three cards: hours, rating, check-in */}
         <div className="three-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "1.5rem" }}>
           <div className="card" style={{ cursor: "default" }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Hours</div>
@@ -169,15 +173,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
           </div>
         </div>
 
-        {spawn.latitude && spawn.longitude && (
-          <>
-            <div className="section-label">Find it</div>
-            <div style={{ height: "320px", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "1.5rem", border: "1.5px solid var(--border)" }}>
-              <MapView spawnPoints={[spawn]} onSelectSpawnPoint={() => {}} singlePin />
-            </div>
-          </>
-        )}
-
+        {/* Side quests */}
         {spawn.side_quests && spawn.side_quests.length > 0 && (
           <>
             <div className="section-label">Side quests here</div>
@@ -195,6 +191,16 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
 
         {spawn.side_quests && spawn.side_quests.length === 0 && (
           <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests here yet. Know of an event at this spot? Add it.</div>
+        )}
+
+        {/* Map — after side quests */}
+        {spawn.latitude && spawn.longitude && (
+          <>
+            <div className="section-label">Find it</div>
+            <div style={{ height: "320px", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "1.5rem", border: "1.5px solid var(--border)" }}>
+              <MapView spawnPoints={[spawn]} onSelectSpawnPoint={() => {}} singlePin />
+            </div>
+          </>
         )}
 
         <div style={{ display: "flex", gap: "10px", marginBottom: "0.5rem" }}>

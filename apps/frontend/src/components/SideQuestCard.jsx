@@ -56,8 +56,8 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
       onClick={() => onClick && onClick(sideQuest)}
       style={{ padding: 0, overflow: "hidden" }}
     >
+      {/* Image header */}
       <div style={{ height: "160px", position: "relative", display: "flex", alignItems: "flex-end", padding: "0.75rem", overflow: "hidden" }}>
-        {/* Gradient placeholder — always visible, image fades in over it */}
         <div style={{ position: "absolute", inset: 0, background: gradient }} />
         {sideQuest.image_url && (
           <img
@@ -67,7 +67,7 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: imageLoaded ? 1 : 0, transition: "opacity 0.3s ease" }}
           />
         )}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.85) 0%, rgba(44,24,16,0.0) 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,16,8,0.85) 0%, rgba(44,16,8,0.0) 60%)" }} />
         <div style={{ position: "relative", zIndex: 1 }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.7)", textTransform: "uppercase", letterSpacing: "2px" }}>
             {sideQuest.category}
@@ -80,12 +80,23 @@ export default function SideQuestCard({ sideQuest, onClick, onTagClick, searchQu
         )}
       </div>
 
+      {/* Card body */}
       <div style={{ padding: "1.125rem" }}>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: "18px", color: "var(--ink)", marginBottom: "8px", lineHeight: 1.3 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: "18px", color: "var(--ink)", marginBottom: "6px", lineHeight: 1.3 }}>
           {searchQuery ? highlight(sideQuest.name, searchQuery) : sideQuest.name}
         </div>
 
-        <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", color: "var(--ink-2)", marginBottom: "12px", lineHeight: "1.6" }}>
+        <div style={{
+          fontFamily: "var(--font-body)",
+          fontSize: "14px",
+          color: "var(--ink-2)",
+          marginBottom: "12px",
+          lineHeight: "1.6",
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}>
           {searchQuery ? highlight(sideQuest.description, searchQuery) : sideQuest.description}
         </div>
 
