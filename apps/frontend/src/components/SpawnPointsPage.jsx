@@ -9,17 +9,26 @@ function normalize(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 3959;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint, setEditingSpawnPoint, showModal, showToast }) {
   const [spawnPoints, setSpawnPoints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [martaOnly, setMartaOnly] = useState(false);
+  const [nearMe, setNearMe] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetchSpawnPoints();
-  }, []);
+  useEffect(() => { fetchSpawnPoints(); }, []);
 
   async function fetchSpawnPoints() {
     setLoading(true);
@@ -52,9 +61,25 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
     });
   }
 
+  function handleNearMe() {
+    if (nearMe) { setNearMe(false); setUserLocation(null); return; }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setNearMe(true);
+        setLocationLoading(false);
+      },
+      () => {
+        showToast("Couldn't get your location. Please allow location access.", "error");
+        setLocationLoading(false);
+      }
+    );
+  }
+
   const neighborhoods = [...new Set(spawnPoints.map((s) => s.neighborhood))];
 
-  const filtered = spawnPoints.filter((s) =>
+  let filtered = spawnPoints.filter((s) =>
     (activeCategory === "All" || s.category === activeCategory) &&
     (!martaOnly || s.is_marta_accessible) &&
     (normalize(s.name).includes(normalize(search)) ||
@@ -62,11 +87,20 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
       normalize(s.category).includes(normalize(search)))
   );
 
-  const grouped = neighborhoods.reduce((acc, hood) => {
-    const spots = filtered.filter((s) => s.neighborhood === hood);
-    if (spots.length > 0) acc[hood] = spots;
-    return acc;
-  }, {});
+  if (nearMe && userLocation) {
+    filtered = filtered
+      .filter((s) => s.latitude && s.longitude)
+      .map((s) => ({ ...s, distance: getDistance(userLocation.lat, userLocation.lng, s.latitude, s.longitude) }))
+      .sort((a, b) => a.distance - b.distance);
+  }
+
+  const grouped = nearMe && userLocation
+    ? { "Nearest to you": filtered }
+    : neighborhoods.reduce((acc, hood) => {
+        const spots = filtered.filter((s) => s.neighborhood === hood);
+        if (spots.length > 0) acc[hood] = spots;
+        return acc;
+      }, {});
 
   return (
     <div className="page">
@@ -92,7 +126,14 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
         {CATEGORIES.map((cat) => (
           <button key={cat} className={`filter-pill ${activeCategory === cat ? "active" : ""}`} onClick={() => setActiveCategory(cat)}>{cat}</button>
         ))}
-        <button className={`filter-pill ${martaOnly ? "active" : ""}`} onClick={() => setMartaOnly(!martaOnly)}>🚇 MARTA accessible</button>
+        <button className={`filter-pill ${martaOnly ? "active" : ""}`} onClick={() => setMartaOnly(!martaOnly)}>🚇 MARTA</button>
+        <button
+          className={`filter-pill ${nearMe ? "active" : ""}`}
+          onClick={handleNearMe}
+          disabled={locationLoading}
+        >
+          {locationLoading ? "Locating..." : nearMe ? "📍 Near me ✓" : "📍 Near me"}
+        </button>
       </div>
 
       {loading && <SkeletonGrid count={6} />}
@@ -105,12 +146,17 @@ export default function SpawnPointsPage({ setCurrentPage, setSelectedSpawnPoint,
         <div key={neighborhood} style={{ marginBottom: "2rem" }}>
           <div className="section-label">{neighborhood}</div>
           <div className="grid-2">
-            {spots.map((spawn) => (
-              <div key={spawn.id}>
+            {spots.map((spawn, i) => (
+              <div key={spawn.id} className="fade-in-up" style={{ animationDelay: `${i * 0.04}s` }}>
                 <SpawnPointCard
                   spawnPoint={spawn}
                   onClick={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
                 />
+                {nearMe && spawn.distance && (
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", marginTop: "4px", textAlign: "center" }}>
+                    {spawn.distance.toFixed(1)} miles away
+                  </div>
+                )}
                 <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                   <button className="btn-secondary" style={{ flex: 1 }} onClick={() => { setEditingSpawnPoint(spawn); setCurrentPage("spawn-point-form"); }}>Edit</button>
                   <button className="btn-danger" style={{ flex: 1 }} onClick={() => handleDelete(spawn.id)}>Delete</button>

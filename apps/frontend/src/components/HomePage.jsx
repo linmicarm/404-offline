@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSideQuests, getSpawnPoints } from "../api/index.js";
+import { getSideQuests, getSpawnPoints, getCons } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 import SpawnPointCard from "./SpawnPointCard.jsx";
 import MapView from "./MapView.jsx";
@@ -10,19 +10,34 @@ function normalize(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSelectedSpawnPoint }) {
+function daysUntil(dateStr) {
+  const today = new Date();
+  const target = new Date(dateStr + "T00:00:00");
+  return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+}
+
+export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSelectedSpawnPoint, initialSearch = "", onSearchHandled }) {
   const [sideQuests, setSideQuests] = useState([]);
   const [spawnPoints, setSpawnPoints] = useState([]);
+  const [cons, setCons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
+
+  useEffect(() => {
+    if (initialSearch) {
+      setSearch(initialSearch);
+      if (onSearchHandled) onSearchHandled();
+    }
+  }, [initialSearch]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [quests, spawns] = await Promise.all([getSideQuests(), getSpawnPoints()]);
+        const [quests, spawns, conData] = await Promise.all([getSideQuests(), getSpawnPoints(), getCons()]);
         setSideQuests(quests);
         setSpawnPoints(spawns);
+        setCons(conData);
       } catch (err) {
         setError("Failed to load data. Is the server running?");
       } finally {
@@ -37,6 +52,10 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
   const heroSpawn = spawnsWithImages.length > 0
     ? spawnsWithImages[Math.floor(Math.random() * spawnsWithImages.length)]
     : spawnPoints[0];
+
+  const nextCon = cons
+    .filter((c) => daysUntil(c.start_date) > 0)
+    .sort((a, b) => daysUntil(a.start_date) - daysUntil(b.start_date))[0];
 
   const filteredQuests = sideQuests.filter((q) =>
     normalize(q.name).includes(normalize(search)) ||
@@ -64,9 +83,9 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
   return (
     <div>
       {/* Hero */}
-      <div className="hero hero-grid" style={{ minHeight: "580px", display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
+      <div className="hero hero-grid" style={{ height: "580px", display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden", position: "relative" }}>
 
-        {/* Left */}
+        {/* Left — copy */}
         <div style={{ background: "#1C1008", padding: "4rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "58px", fontWeight: "400", color: "#FFFCF7", lineHeight: 1.05, marginBottom: "0.4rem" }}>
             404:
@@ -77,15 +96,12 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
           <h1 style={{ fontFamily: "var(--font-display)", fontSize: "58px", fontWeight: "400", color: "var(--peach)", lineHeight: 1.05, marginBottom: "1rem" }}>
             We fixed that.
           </h1>
-
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,252,247,0.35)", letterSpacing: "2px", marginBottom: "1.5rem" }}>
             CONNECTION RESTORED ✓
           </div>
-
           <p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "rgba(255,252,247,0.65)", lineHeight: 1.8, marginBottom: "2rem", maxWidth: "420px" }}>
             Discover Atlanta's nerd community through cafés, arcades, game nights, cosplay meetups, conventions, card shops, and more.
           </p>
-
           <div style={{ display: "flex", alignItems: "center", gap: "10px", maxWidth: "460px", background: "rgba(255,252,247,0.08)", border: "1.5px solid rgba(255,252,247,0.15)", borderRadius: "100px", padding: "10px 10px 10px 18px" }}>
             <span style={{ color: "rgba(255,252,247,0.4)", fontSize: "16px" }}>🔍</span>
             <input
@@ -98,7 +114,6 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,252,247,0.4)", fontSize: "14px", padding: "0 8px" }}>✕</button>
             )}
           </div>
-
           <div style={{ display: "flex", gap: "12px", marginTop: "1.5rem" }}>
             <button className="btn-primary" onClick={() => setCurrentPage("side-quests")}>Find side quests</button>
             <button
@@ -111,7 +126,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         </div>
 
         {/* Right — hero image */}
-        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "580px" }}>
+        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "100%" }}>
           {heroSpawn?.image_url ? (
             <img
               src={heroSpawn.image_url}
@@ -122,22 +137,57 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
             <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #2C1810 0%, #6B3218 100%)" }} />
           )}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, #1C1008 0%, transparent 35%)" }} />
-          {heroSpawn && (
-            <div
-              style={{ position: "absolute", bottom: "1.5rem", right: "1.5rem", background: "rgba(28,16,8,0.7)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-md)", padding: "10px 14px", cursor: "pointer" }}
-              onClick={() => { setSelectedSpawnPoint(heroSpawn); setCurrentPage("spawn-point-detail"); }}
-            >
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "rgba(255,252,247,0.5)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "3px" }}>Featuring</div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: "14px", color: "#FFFCF7" }}>{heroSpawn.name}</div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.5)" }}>{heroSpawn.neighborhood}</div>
-            </div>
-          )}
         </div>
+
+        {/* Featuring card — outside image col so it's never clipped */}
+        {heroSpawn && (
+          <div
+            style={{ position: "absolute", bottom: "1.5rem", right: "1.5rem", background: "rgba(28,16,8,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-md)", padding: "10px 14px", cursor: "pointer", zIndex: 10, maxWidth: "200px" }}
+            onClick={() => { setSelectedSpawnPoint(heroSpawn); setCurrentPage("spawn-point-detail"); }}
+          >
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "rgba(255,252,247,0.5)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "3px" }}>Featuring</div>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: "14px", color: "#FFFCF7" }}>{heroSpawn.name}</div>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.5)" }}>{heroSpawn.neighborhood}</div>
+          </div>
+        )}
       </div>
 
       <div className="page">
+        {/* Next con banner */}
+        {!search && nextCon && (
+          <div
+            className="fade-in-up"
+            style={{ background: "#1C1008", border: "1.5px solid #352C24", borderRadius: "var(--radius-xl)", padding: "1.25rem 1.75rem", marginBottom: "2rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", cursor: "pointer" }}
+            onClick={() => setCurrentPage("cons")}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "36px", color: "var(--peach)", lineHeight: 1, minWidth: "60px" }}>
+                {daysUntil(nextCon.start_date)}
+              </div>
+              <div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "rgba(255,252,247,0.4)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "3px" }}>Days until the next con</div>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "18px", color: "#FFFCF7" }}>{nextCon.name}</div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "rgba(255,252,247,0.5)" }}>{nextCon.venue} · {nextCon.neighborhood}</div>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              {nextCon.ticket_url && (
+                <button
+                  className="btn-primary"
+                  style={{ fontSize: "12px" }}
+                  onClick={(e) => { e.stopPropagation(); window.open(nextCon.ticket_url, "_blank"); }}
+                >
+                  Get tickets →
+                </button>
+              )}
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,252,247,0.4)" }}>View all cons →</span>
+            </div>
+          </div>
+        )}
+
+        {/* Map */}
         {!search && spawnPoints.length > 0 && (
-          <div style={{ width: "100%", marginBottom: "2rem", marginTop: "0.5rem" }}>
+          <div className="fade-in-up" style={{ width: "100%", marginBottom: "2rem" }}>
             <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "8px" }}>
               <div>
                 <div className="section-label" style={{ marginBottom: "4px" }}>Atlanta Spawn Points</div>
@@ -182,7 +232,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         ) : (
           <>
             {featuredQuest && (
-              <div style={{ marginBottom: "2rem" }}>
+              <div className="fade-in-up" style={{ marginBottom: "2rem" }}>
                 <div className="section-label">Featured</div>
                 <div
                   style={{ background: "linear-gradient(135deg, var(--peach-light) 0%, var(--bg) 100%)", border: "2px solid var(--peach)", borderRadius: "var(--radius-xl)", padding: "1.75rem", position: "relative", cursor: "pointer", transition: "box-shadow 0.15s" }}
@@ -191,15 +241,9 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
                   onMouseLeave={(e) => e.currentTarget.style.boxShadow = "none"}
                 >
                   <div style={{ position: "absolute", top: "1.25rem", right: "1.25rem", fontSize: "20px", color: "var(--peach)" }}>★</div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "8px" }}>
-                    {featuredQuest.category}
-                  </div>
-                  <div style={{ fontFamily: "var(--font-display)", fontSize: "28px", color: "var(--ink)", marginBottom: "8px" }}>
-                    {featuredQuest.name}
-                  </div>
-                  <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", marginBottom: "14px", lineHeight: "1.6" }}>
-                    {featuredQuest.description}
-                  </div>
+                  <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "8px" }}>{featuredQuest.category}</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: "28px", color: "var(--ink)", marginBottom: "8px" }}>{featuredQuest.name}</div>
+                  <div style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", marginBottom: "14px", lineHeight: "1.6" }}>{featuredQuest.description}</div>
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
                     <span className="tag tag-peach">{featuredQuest.is_free ? "Free" : `$${featuredQuest.cost}`}</span>
                     {featuredQuest.spawn_point && (
@@ -220,8 +264,13 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               <div className="empty">No quests logged yet. The adventure is out there — add the first one.</div>
             ) : (
               <div className="grid-2" style={{ marginBottom: "2rem" }}>
-                {sideQuests.slice(0, 4).map((quest) => (
-                  <SideQuestCard key={quest.id} sideQuest={quest} onClick={(q) => { setSelectedSideQuest(q); setCurrentPage("side-quest-detail"); }} />
+                {sideQuests.slice(0, 4).map((quest, i) => (
+                  <div key={quest.id} className="fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
+                    <SideQuestCard
+                      sideQuest={quest}
+                      onClick={(q) => { setSelectedSideQuest(q); setCurrentPage("side-quest-detail"); }}
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -235,8 +284,13 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               <div className="empty">No spawn points yet. Know a great spot? Add it to the map.</div>
             ) : (
               <div className="grid-2">
-                {spawnPoints.slice(0, 4).map((spawn) => (
-                  <SpawnPointCard key={spawn.id} spawnPoint={spawn} onClick={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }} />
+                {spawnPoints.slice(0, 4).map((spawn, i) => (
+                  <div key={spawn.id} className="fade-in-up" style={{ animationDelay: `${i * 0.05}s` }}>
+                    <SpawnPointCard
+                      spawnPoint={spawn}
+                      onClick={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
+                    />
+                  </div>
                 ))}
               </div>
             )}

@@ -77,11 +77,6 @@ body {
 }
 
 .navbar-logo-title {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: 1px;
   line-height: 1;
 }
 
@@ -419,6 +414,30 @@ body {
 [data-theme="dark"] .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(0.75) contrast(0.9); }
 [data-theme="dark"] .leaflet-container { background: #12100E; }
 [data-theme="dark"] mark { background: var(--peach); color: #12100E; }
+
+
+/* ── Skeleton ─────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Entrance animations ──────────────── */
+.fade-in-up {
+  animation: fadeInUp 0.4s ease both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ── Mobile ───────────────────────────── */
 @media (max-width: 900px) {

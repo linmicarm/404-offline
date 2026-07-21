@@ -25,6 +25,7 @@ export default function App() {
   const [editingCon, setEditingCon] = useState(null);
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState(null);
+  const [globalSearch, setGlobalSearch] = useState("");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -72,7 +73,7 @@ export default function App() {
   function renderPage() {
     switch (currentPage) {
       case "home":
-        return <HomePage setCurrentPage={handleSetPage} setSelectedSideQuest={setSelectedSideQuest} setSelectedSpawnPoint={setSelectedSpawnPoint} />;
+  return <HomePage setCurrentPage={handleSetPage} setSelectedSideQuest={setSelectedSideQuest} setSelectedSpawnPoint={setSelectedSpawnPoint} initialSearch={globalSearch} onSearchHandled={() => setGlobalSearch("")} />;
       case "spawn-points":
         return <SpawnPointsPage setCurrentPage={handleSetPage} setSelectedSpawnPoint={setSelectedSpawnPoint} setEditingSpawnPoint={setEditingSpawnPoint} showModal={showModal} showToast={showToast} />;
       case "spawn-point-detail":
@@ -100,7 +101,7 @@ export default function App() {
 
   return (
     <div>
-      <Navbar currentPage={currentPage} setCurrentPage={handleSetPage} />
+      <Navbar currentPage={currentPage} setCurrentPage={handleSetPage} onSearch={(term) => { setGlobalSearch(term); handleSetPage("home"); }} />
       {renderPage()}
       <Footer setCurrentPage={handleSetPage} />
       {modal && (

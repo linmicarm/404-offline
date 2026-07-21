@@ -63,32 +63,32 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
 
   return (
     <div className="card" onClick={() => onClick && onClick(spawnPoint)} style={{ padding: 0, overflow: "hidden" }}>
-      <div style={{ height: "180px", position: "relative", display: "flex", alignItems: "flex-end", padding: "0.875rem", overflow: "hidden" }}>
+      <div style={{ height: "280px", position: "relative", display: "flex", alignItems: "flex-end", padding: "0.875rem", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, background: gradient }} />
         {spawnPoint.image_url && (
           <img
             src={spawnPoint.image_url}
             alt={spawnPoint.name}
             onLoad={() => setImageLoaded(true)}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", opacity: imageLoaded ? 1 : 0, transition: "opacity 0.3s ease" }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: imageLoaded ? 1 : 0, transition: "opacity 0.3s ease" }}
           />
         )}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(44,24,16,0.88) 0%, rgba(44,24,16,0.05) 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(28,16,8,0.85) 0%, rgba(28,16,8,0.0) 55%)" }} />
         <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: "20px", color: "#FFFCF7", marginBottom: "3px", lineHeight: 1.2 }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "20px", fontWeight: "700", color: "#FFFCF7", marginBottom: "3px", lineHeight: 1.2 }}>
             {searchQuery ? highlight(spawnPoint.name, searchQuery) : spawnPoint.name}
           </div>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "rgba(255,252,247,0.7)" }}>
+          <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", color: "rgba(255,252,247,0.7)" }}>
             {searchQuery ? highlight(spawnPoint.neighborhood, searchQuery) : spawnPoint.neighborhood}
           </div>
         </div>
-        <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "700", background: "rgba(255,252,247,0.15)", backdropFilter: "blur(4px)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.2)", padding: "4px 10px", borderRadius: "100px" }}>
+        <span style={{ position: "absolute", top: "10px", right: "10px", fontFamily: "'Space Mono', monospace", fontSize: "10px", fontWeight: "700", background: "rgba(255,252,247,0.15)", backdropFilter: "blur(4px)", color: "#FFFCF7", border: "1px solid rgba(255,252,247,0.2)", padding: "4px 10px", borderRadius: "100px" }}>
           {spawnPoint.category}
         </span>
       </div>
 
       <div style={{ padding: "1.125rem" }}>
-        <div style={{ fontFamily: "var(--font-body)", fontSize: "13px", color: "var(--ink-3)", marginBottom: "12px" }}>
+        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: "var(--ink-3)", marginBottom: "12px" }}>
           {spawnPoint.address}
         </div>
 
@@ -112,7 +112,9 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
 
         {upcomingQuests.length > 0 && (
           <div style={{ borderTop: "1px solid var(--border)", paddingTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "2px" }}>Upcoming</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "2px" }}>
+              Upcoming
+            </div>
             {upcomingQuests.map((quest) => (
               <div key={quest.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                 <div style={{ fontFamily: "var(--font-body)", fontSize: "14px", fontWeight: "600", color: "var(--ink)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -120,11 +122,11 @@ export default function SpawnPointCard({ spawnPoint, onClick, searchQuery }) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
                   {quest.is_recurring && quest.recurrence && (
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", background: "var(--peach-light)", border: "1.5px solid var(--peach)", borderRadius: "100px", padding: "2px 8px" }}>
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "10px", color: "var(--peach-dark)", background: "var(--peach-light)", border: "1.5px solid var(--peach)", borderRadius: "100px", padding: "2px 8px" }}>
                       {RECURRENCE_LABELS[quest.recurrence] || "🔁"}
                     </span>
                   )}
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)}</span>
+                  <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: "var(--ink-3)" }}>{formatDateShort(quest.date)}</span>
                 </div>
               </div>
             ))}
