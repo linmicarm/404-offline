@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSideQuests, getSpawnPoints, getCons } from "../api/index.js";
+import { getSideQuests, getSpawnPoints } from "../api/index.js";
 import SideQuestCard from "./SideQuestCard.jsx";
 import SpawnPointCard from "./SpawnPointCard.jsx";
 import MapView from "./MapView.jsx";
@@ -10,18 +10,9 @@ function normalize(str) {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-function daysUntil(dateStr) {
-  const today = new Date();
-  const target = new Date(dateStr + "T00:00:00");
-  return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
-}
-
-const GRAIN_URL = `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='512' height='512' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E")`;
-
 export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSelectedSpawnPoint, initialSearch = "", onSearchHandled }) {
   const [sideQuests, setSideQuests] = useState([]);
   const [spawnPoints, setSpawnPoints] = useState([]);
-  const [cons, setCons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState(initialSearch);
@@ -36,10 +27,9 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
   useEffect(() => {
     async function fetchData() {
       try {
-        const [quests, spawns, conData] = await Promise.all([getSideQuests(), getSpawnPoints(), getCons()]);
+        const [quests, spawns] = await Promise.all([getSideQuests(), getSpawnPoints()]);
         setSideQuests(quests);
         setSpawnPoints(spawns);
-        setCons(conData);
       } catch (err) {
         setError("Failed to load data. Is the server running?");
       } finally {
@@ -55,10 +45,6 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
     ? spawnsWithImages[Math.floor(Math.random() * spawnsWithImages.length)]
     : spawnPoints[0];
 
-  const nextCon = cons
-    .filter((c) => daysUntil(c.start_date) > 0)
-    .sort((a, b) => daysUntil(a.start_date) - daysUntil(b.start_date))[0];
-
   const filteredQuests = sideQuests.filter((q) =>
     normalize(q.name).includes(normalize(search)) ||
     normalize(q.category).includes(normalize(search)) ||
@@ -73,7 +59,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
   if (loading) return (
     <div>
-      <div className="grain" style={{ background: "#1C1008", height: "580px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div className="grain" style={{ background: "#1C1008", height: "100vh", minHeight: "600px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "rgba(255,252,247,0.4)", letterSpacing: "2px" }}>LOADING...</div>
       </div>
       <div className="page"><SkeletonGrid count={4} /></div>
@@ -84,37 +70,28 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
   return (
     <div>
-      {/* ── Hero ── */}
-      <div className="hero hero-grid grain" style={{ height: "580px", display: "grid", gridTemplateColumns: "1fr 1fr", position: "relative" }}>
+      {/* Hero */}
+      <div className="hero hero-grid grain" style={{ height: "100vh", minHeight: "600px", display: "grid", gridTemplateColumns: "1fr 1fr", position: "relative" }}>
 
         {/* Left */}
-        <div style={{ background: "#1C1008", padding: "4rem 3rem 4rem 2.5rem", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", zIndex: 2 }}>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(52px, 7vw, 88px)", color: "#FFFCF7", lineHeight: 0.9, letterSpacing: "-3px", marginBottom: "0.15rem" }}>
-            404:
-          </h1>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(52px, 7vw, 88px)", color: "#FFFCF7", lineHeight: 0.9, letterSpacing: "-3px", marginBottom: "0.15rem" }}>
-            Friends
-          </h1>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(52px, 7vw, 88px)", color: "#FFFCF7", lineHeight: 0.9, letterSpacing: "-3px", marginBottom: "0.15rem" }}>
-            not found.
-          </h1>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(52px, 7vw, 88px)", color: "var(--peach)", lineHeight: 0.9, letterSpacing: "-3px", marginBottom: "2rem" }}>
-            We fixed that.
-          </h1>
+        <div style={{ background: "#1C1008", padding: "5rem 3rem 5rem 3rem", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", zIndex: 2, overflow: "hidden" }}>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>404:</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>Friends</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>not found.</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "var(--peach)", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "1.75rem" }}>We fixed that.</h1>
 
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,252,247,0.35)", letterSpacing: "2px", marginBottom: "1rem" }}>
+            CONNECTION RESTORED ✓
+          </div>
 
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,252,247,0.35)", letterSpacing: "2px", marginBottom: "1.5rem" }}>
-  CONNECTION RESTORED ✓
-</div>
+          <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "rgba(255,252,247,0.65)", lineHeight: 1.8, marginBottom: "1.5rem" }}>
+            Discover Atlanta's nerd community through cafés, arcades, game nights, cosplay meetups, conventions, card shops, and more.
+          </p>
 
-<p style={{ fontFamily: "var(--font-body)", fontSize: "16px", color: "rgba(255,252,247,0.65)", lineHeight: 1.8, marginBottom: "2rem", maxWidth: "420px" }}>
-  Discover Atlanta's nerd community through cafés, arcades, game nights, cosplay meetups, conventions, card shops, and more.
-</p>
-
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", maxWidth: "460px", background: "rgba(255,252,247,0.08)", border: "1.5px solid rgba(255,252,247,0.15)", borderRadius: "100px", padding: "10px 10px 10px 18px" }}>
-            <span style={{ color: "rgba(255,252,247,0.4)", fontSize: "16px" }}>🔍</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,252,247,0.08)", border: "1.5px solid rgba(255,252,247,0.15)", borderRadius: "100px", padding: "8px 8px 8px 16px", marginBottom: "1rem" }}>
+            <span style={{ color: "rgba(255,252,247,0.4)", fontSize: "14px" }}>🔍</span>
             <input
-              style={{ flex: 1, border: "none", background: "transparent", fontFamily: "var(--font-mono)", fontSize: "14px", color: "#FFFCF7", outline: "none" }}
+              style={{ flex: 1, border: "none", background: "transparent", fontFamily: "var(--font-mono)", fontSize: "12px", color: "#FFFCF7", outline: "none" }}
               placeholder="Search spawn points, side quests..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -122,19 +99,19 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
             {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,252,247,0.4)", fontSize: "14px", padding: "0 8px" }}>✕</button>}
           </div>
 
-          <div style={{ display: "flex", gap: "12px", marginTop: "1.5rem" }}>
-            <button className="btn-primary" onClick={() => setCurrentPage("side-quests")}>Find side quests</button>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button className="btn-primary" onClick={() => setCurrentPage("side-quests")} style={{ fontSize: "12px", padding: "9px 18px" }}>Find side quests</button>
             <button
               onClick={() => setCurrentPage("spawn-points")}
-              style={{ fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: "700", background: "transparent", color: "rgba(255,252,247,0.6)", border: "1.5px solid rgba(255,252,247,0.2)", padding: "11px 22px", borderRadius: "100px", cursor: "pointer" }}
+              style={{ fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: "700", background: "transparent", color: "rgba(255,252,247,0.6)", border: "1.5px solid rgba(255,252,247,0.2)", padding: "9px 18px", borderRadius: "100px", cursor: "pointer" }}
             >
               Spawn Points →
             </button>
           </div>
         </div>
 
-        {/* Right — image */}
-        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "100%", zIndex: 1 }}>
+        {/* Right image */}
+        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "100vh", minHeight: "600px", zIndex: 1 }}>
           {heroSpawn?.image_url ? (
             <img src={heroSpawn.image_url} alt={heroSpawn.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
           ) : (
@@ -146,7 +123,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         {/* Featuring card */}
         {heroSpawn && (
           <div
-            style={{ position: "absolute", bottom: "1.5rem", right: "1.5rem", background: "rgba(28,16,8,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-md)", padding: "10px 14px", cursor: "pointer", zIndex: 10, maxWidth: "200px" }}
+            style={{ position: "absolute", bottom: "4rem", right: "1.5rem", background: "rgba(28,16,8,0.75)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,252,247,0.15)", borderRadius: "var(--radius-md)", padding: "10px 14px", cursor: "pointer", zIndex: 10, maxWidth: "200px" }}
             onClick={() => { setSelectedSpawnPoint(heroSpawn); setCurrentPage("spawn-point-detail"); }}
           >
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "rgba(255,252,247,0.5)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "3px" }}>Featuring</div>
@@ -157,7 +134,6 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
       </div>
 
       <div className="page">
-        
         {/* Map */}
         {!search && spawnPoints.length > 0 && (
           <div className="fade-in-up" style={{ width: "100%", marginBottom: "2rem" }}>
@@ -221,13 +197,11 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               </div>
             )}
 
-            {/* Happening soon — featured first card */}
             <div className="section-label">Happening soon</div>
             {sideQuests.length === 0 ? (
               <div className="empty">No quests logged yet. The adventure is out there — add the first one.</div>
             ) : (
               <>
-                {/* First card — full width featured */}
                 {sideQuests[0] && (
                   <div className="fade-in-up" style={{ marginBottom: "12px" }}>
                     <div
@@ -261,7 +235,6 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
                     </div>
                   </div>
                 )}
-                {/* Rest in grid */}
                 {sideQuests.slice(1, 4).length > 0 && (
                   <div className="grid-2" style={{ marginBottom: "2rem" }}>
                     {sideQuests.slice(1, 4).map((quest, i) => (
@@ -281,21 +254,19 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         )}
       </div>
 
-      {/* ── Manifesto section ── */}
+      {/* Manifesto */}
       {!search && (
-        <div
-          className="grain manifesto-section"
-          style={{ background: "#1C1008", padding: "6rem 2.5rem", margin: "0", overflow: "hidden", position: "relative" }}
-        >
-          <div style={{ maxWidth: "1400px", margin: "0 auto", position: "relative", zIndex: 2 }}>
-            <p style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px, 5vw, 64px)", color: "#FFFCF7", lineHeight: 1.05, letterSpacing: "-1px", marginBottom: "2rem" }}>
-  The main quest may be<br />the convention.<br /><span style={{ color: "var(--peach)" }}>But the best adventures<br />happen between them.</span>
-</p>
-<div style={{ display: "flex", gap: "2rem", alignItems: "center", flexWrap: "wrap" }}>
-  <p style={{ fontFamily: "var(--font-body)", fontSize: "18px", color: "rgba(255,252,247,0.6)", lineHeight: 1.8, maxWidth: "560px" }}>
-    From local tournaments and café meetups to cosplay shoots and game nights, Atlanta's nerd community never logs off.
-  </p>
-              <button className="btn-primary" onClick={() => setCurrentPage("side-quests")} style={{ flexShrink: 0, fontSize: "14px", padding: "14px 28px" }}>
+        <div className="grain manifesto-section" style={{ background: "#1C1008", padding: "8rem 2.5rem", margin: "0", overflow: "hidden", position: "relative" }}>
+          <div style={{ maxWidth: "1400px", margin: "0 auto", position: "relative", zIndex: 2, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
+            <p style={{ fontFamily: "var(--font-display)", fontSize: "clamp(28px, 4vw, 52px)", color: "#FFFCF7", lineHeight: 1.15, letterSpacing: "-0.5px" }}>
+              The main quest may be the convention.<br />
+              <span style={{ color: "var(--peach)" }}>But the best adventures happen between them.</span>
+            </p>
+            <div>
+              <p style={{ fontFamily: "var(--font-body)", fontSize: "18px", color: "rgba(255,252,247,0.6)", lineHeight: 1.8, marginBottom: "2rem" }}>
+                From local tournaments and café meetups to cosplay shoots and game nights, Atlanta's nerd community never logs off.
+              </p>
+              <button className="btn-primary" onClick={() => setCurrentPage("side-quests")} style={{ fontSize: "14px", padding: "14px 28px" }}>
                 Find your side quest →
               </button>
             </div>
@@ -303,7 +274,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         </div>
       )}
 
-      {/* ── Spawn Points section ── */}
+      {/* Spawn Points */}
       {!search && (
         <div className="page">
           <div className="section-label">Spawn Points</div>
@@ -311,17 +282,11 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
             <div className="empty">No spawn points yet. Know a great spot? Add it to the map.</div>
           ) : (
             <>
-              {/* First card full width */}
               {spawnPoints[0] && (
                 <div className="fade-in-up" style={{ marginBottom: "12px" }}>
-                  <SpawnPointCard
-                    spawnPoint={spawnPoints[0]}
-                    onClick={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
-                    featured
-                  />
+                  <SpawnPointCard spawnPoint={spawnPoints[0]} onClick={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }} featured />
                 </div>
               )}
-              {/* Rest in grid */}
               {spawnPoints.slice(1, 4).length > 0 && (
                 <div className="grid-2" style={{ marginBottom: "2rem" }}>
                   {spawnPoints.slice(1, 4).map((spawn, i) => (
@@ -333,7 +298,6 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
               )}
             </>
           )}
-
           <div style={{ textAlign: "right" }}>
             <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")}>View all spawn points →</button>
           </div>
