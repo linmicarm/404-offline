@@ -53,7 +53,7 @@ const CATEGORY_GRADIENTS = {
   "Other": "linear-gradient(135deg, #1A1A1A 0%, #3A3A3A 100%)",
 };
 
-export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelectedSideQuest, setEditingSpawnPoint, showModal, showToast }) {
+export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelectedSideQuest, setEditingSpawnPoint, setEditingSideQuest, showModal, showToast }) {
   const [spawn, setSpawn] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -144,7 +144,7 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
           </div>
         )}
 
-        {/* Three cards: hours, rating, check-in */}
+        {/* Three cards */}
         <div className="three-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "1.5rem" }}>
           <div className="card" style={{ cursor: "default" }}>
             <div style={{ fontFamily: "var(--font-mono)", fontSize: "9px", color: "var(--ink-3)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "10px" }}>Hours</div>
@@ -174,26 +174,32 @@ export default function SpawnPointDetail({ spawnPoint, setCurrentPage, setSelect
         </div>
 
         {/* Side quests */}
-        {spawn.side_quests && spawn.side_quests.length > 0 && (
-          <>
-            <div className="section-label">Side quests here</div>
-            <div className="grid-2" style={{ marginBottom: "1.5rem" }}>
-              {spawn.side_quests.map((quest) => (
-                <SideQuestCard
-                  key={quest.id}
-                  sideQuest={{ ...quest, spawn_point: spawn }}
-                  onClick={(q) => { setSelectedSideQuest(q); setCurrentPage("side-quest-detail"); }}
-                />
-              ))}
-            </div>
-          </>
-        )}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: "8px" }}>
+          <div className="section-label" style={{ marginBottom: 0 }}>Side quests here</div>
+          <button
+            className="btn-primary"
+            style={{ fontSize: "12px", padding: "8px 16px" }}
+            onClick={() => { setEditingSideQuest({ spawn_point_id: spawn.id }); setCurrentPage("side-quest-form"); }}
+          >
+            + Add side quest here
+          </button>
+        </div>
 
-        {spawn.side_quests && spawn.side_quests.length === 0 && (
+        {spawn.side_quests && spawn.side_quests.length > 0 ? (
+          <div className="grid-2" style={{ marginBottom: "1.5rem" }}>
+            {spawn.side_quests.map((quest) => (
+              <SideQuestCard
+                key={quest.id}
+                sideQuest={{ ...quest, spawn_point: spawn }}
+                onClick={(q) => { setSelectedSideQuest(q); setCurrentPage("side-quest-detail"); }}
+              />
+            ))}
+          </div>
+        ) : (
           <div className="empty" style={{ marginBottom: "1.5rem" }}>No side quests here yet. Know of an event at this spot? Add it.</div>
         )}
 
-        {/* Map — after side quests */}
+        {/* Map */}
         {spawn.latitude && spawn.longitude && (
           <>
             <div className="section-label">Find it</div>

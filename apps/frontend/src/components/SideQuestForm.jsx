@@ -41,24 +41,24 @@ export default function SideQuestForm({ editingSideQuest, setCurrentPage, showTo
   }, []);
 
   useEffect(() => {
-    if (editingSideQuest) {
-      setForm({
-        spawn_point_id: editingSideQuest.spawn_point_id || "",
-        name: editingSideQuest.name || "",
-        description: editingSideQuest.description || "",
-        date: editingSideQuest.date || "",
-        time: editingSideQuest.time || "",
-        cost: editingSideQuest.cost || "",
-        is_free: editingSideQuest.is_free ?? true,
-        is_beginner_friendly: editingSideQuest.is_beginner_friendly || false,
-        is_recurring: editingSideQuest.is_recurring || false,
-        recurrence: editingSideQuest.recurrence || "",
-        category: editingSideQuest.category || "Gaming",
-        tags: editingSideQuest.tags || "",
-        image_url: editingSideQuest.image_url || "",
-      });
-    }
-  }, [editingSideQuest]);
+  if (editingSideQuest) {
+    setForm({
+      spawn_point_id: editingSideQuest.spawn_point_id || "",
+      name: editingSideQuest.name || "",
+      description: editingSideQuest.description || "",
+      date: editingSideQuest.date || "",
+      time: editingSideQuest.time || "",
+      cost: editingSideQuest.cost || "",
+      is_free: editingSideQuest.is_free ?? true,
+      is_beginner_friendly: editingSideQuest.is_beginner_friendly || false,
+      is_recurring: editingSideQuest.is_recurring || false,
+      recurrence: editingSideQuest.recurrence || "",
+      category: editingSideQuest.category || "Gaming",
+      tags: editingSideQuest.tags || "",
+      image_url: editingSideQuest.image_url || "",
+    });
+  }
+}, [editingSideQuest]);
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;

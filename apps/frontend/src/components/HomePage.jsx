@@ -59,7 +59,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
   if (loading) return (
     <div>
-      <div className="grain" style={{ background: "#1C1008", height: "100vh", minHeight: "600px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div className="grain" style={{ background: "#1C1008", height: "680px", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "rgba(255,252,247,0.4)", letterSpacing: "2px" }}>LOADING...</div>
       </div>
       <div className="page"><SkeletonGrid count={4} /></div>
@@ -71,7 +71,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
   return (
     <div>
       {/* Hero */}
-      <div className="hero hero-grid grain" style={{ height: "100vh", minHeight: "600px", display: "grid", gridTemplateColumns: "1fr 1fr", position: "relative" }}>
+      <div className="hero hero-grid grain" style={{ height: "680px", display: "grid", gridTemplateColumns: "1fr 1fr", position: "relative" }}>
 
         {/* Left */}
         <div style={{ background: "#1C1008", padding: "5rem 3rem 5rem 3rem", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", zIndex: 2, overflow: "hidden" }}>
@@ -111,7 +111,7 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
         </div>
 
         {/* Right image */}
-        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "100vh", minHeight: "600px", zIndex: 1 }}>
+        <div className="hero-image-col" style={{ position: "relative", overflow: "hidden", background: "#1C1008", height: "680px", zIndex: 1 }}>
           {heroSpawn?.image_url ? (
             <img src={heroSpawn.image_url} alt={heroSpawn.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top" }} />
           ) : (
@@ -136,25 +136,23 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
       <div className="page">
         {/* Map */}
         {!search && spawnPoints.length > 0 && (
-  <div className="fade-in-up" style={{ width: "100%", marginBottom: "2rem", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "4rem" }}>
-    <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "8px" }}>
-      <div>
-        <div className="section-label" style={{ marginBottom: "4px" }}>Atlanta Spawn Points</div>
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6 }}>
-          Your next side quest starts here. Roll initiative and discover where Atlanta's nerd community comes together.
-        </p>
-      </div>
-      <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")} style={{ whiteSpace: "nowrap" }}>View all →</button>
-    </div>
-    <div style={{ flex: 1, minHeight: "70vh" }}>
-     <MapView
-  spawnPoints={spawnPoints}
-  onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
-  height="75vh"
-/>
-    </div>
-  </div>
-)}
+          <div className="fade-in-up" style={{ width: "100%", marginBottom: "2rem", paddingTop: "4rem" }}>
+            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "8px" }}>
+              <div>
+                <div className="section-label" style={{ marginBottom: "4px" }}>Atlanta Spawn Points</div>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6 }}>
+                  Your next side quest starts here. Roll initiative and discover where Atlanta's nerd community comes together.
+                </p>
+              </div>
+              <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")} style={{ whiteSpace: "nowrap" }}>View all →</button>
+            </div>
+            <MapView
+              spawnPoints={spawnPoints}
+              onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
+              height="480px"
+            />
+          </div>
+        )}
 
         {search ? (
           <>
