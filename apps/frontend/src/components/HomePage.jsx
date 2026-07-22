@@ -136,19 +136,25 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
       <div className="page">
         {/* Map */}
         {!search && spawnPoints.length > 0 && (
-          <div className="fade-in-up" style={{ width: "100%", marginBottom: "2rem" }}>
-            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "8px" }}>
-              <div>
-                <div className="section-label" style={{ marginBottom: "4px" }}>Atlanta Spawn Points</div>
-                <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6 }}>
-                  Your next side quest starts here. Roll initiative and discover where Atlanta's nerd community comes together.
-                </p>
-              </div>
-              <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")} style={{ whiteSpace: "nowrap" }}>View all →</button>
-            </div>
-            <MapView spawnPoints={spawnPoints} onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }} />
-          </div>
-        )}
+  <div className="fade-in-up" style={{ width: "100%", marginBottom: "2rem", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "4rem" }}>
+    <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "8px" }}>
+      <div>
+        <div className="section-label" style={{ marginBottom: "4px" }}>Atlanta Spawn Points</div>
+        <p style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6 }}>
+          Your next side quest starts here. Roll initiative and discover where Atlanta's nerd community comes together.
+        </p>
+      </div>
+      <button className="btn-secondary" onClick={() => setCurrentPage("spawn-points")} style={{ whiteSpace: "nowrap" }}>View all →</button>
+    </div>
+    <div style={{ flex: 1, minHeight: "70vh" }}>
+     <MapView
+  spawnPoints={spawnPoints}
+  onSelectSpawnPoint={(s) => { setSelectedSpawnPoint(s); setCurrentPage("spawn-point-detail"); }}
+  height="75vh"
+/>
+    </div>
+  </div>
+)}
 
         {search ? (
           <>

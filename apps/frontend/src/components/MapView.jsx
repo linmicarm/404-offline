@@ -43,14 +43,14 @@ function createCustomIcon(category) {
   });
 }
 
-export default function MapView({ spawnPoints, onSelectSpawnPoint, singlePin = false }) {
+export default function MapView({ spawnPoints, onSelectSpawnPoint, singlePin = false, height = "420px" }) {
   const validPoints = spawnPoints.filter((s) => s.latitude && s.longitude);
   const center = validPoints.length > 0
     ? [validPoints[0].latitude, validPoints[0].longitude]
     : [33.749, -84.388];
 
   return (
-    <div style={{ height: "420px", width: "100%", borderRadius: "24px", overflow: "hidden", border: "1.5px solid #EAD9C8", marginBottom: "1.5rem", position: "relative", zIndex: 1 }}>
+    <div style={{ height, width: "100%", borderRadius: "24px", overflow: "hidden", border: "1.5px solid #EAD9C8", marginBottom: "1.5rem", position: "relative", zIndex: 1 }}>
       <MapContainer
         center={center}
         zoom={singlePin ? 15 : 11}
