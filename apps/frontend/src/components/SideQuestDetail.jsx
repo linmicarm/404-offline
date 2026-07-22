@@ -287,14 +287,19 @@ export default function SideQuestDetail({ sideQuest, setCurrentPage, setEditingS
         )}
 
         {/* Map — moved to bottom */}
-        {quest.spawn_point?.latitude && quest.spawn_point?.longitude && (
-          <>
-            <div className="section-label">Where it's at</div>
-            <div style={{ height: "300px", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "2rem", border: "1.5px solid var(--border)" }}>
-              <MapView spawnPoints={[quest.spawn_point]} onSelectSpawnPoint={() => {}} singlePin />
-            </div>
-          </>
-        )}
+    {quest.spawn_point?.latitude && quest.spawn_point?.longitude && (
+  <>
+    <div className="section-label">Where it's at</div>
+    {quest.spawn_point.address && (
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "var(--ink-3)", marginBottom: "10px" }}>
+        📍 {quest.spawn_point.address}
+      </div>
+    )}
+    <div style={{ height: "300px", borderRadius: "var(--radius-lg)", overflow: "hidden", marginBottom: "2rem", border: "1.5px solid var(--border)" }}>
+      <MapView spawnPoints={[quest.spawn_point]} onSelectSpawnPoint={() => {}} singlePin />
+    </div>
+  </>
+)}
 
         <CommentSection sideQuestId={quest.id} showToast={showToast} />
 
