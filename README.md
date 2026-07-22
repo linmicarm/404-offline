@@ -2,7 +2,7 @@
 
 > **Logged off. Went outside.**
 
-404 Offline is a full-stack community platform for Atlanta's nerd, anime, gaming, and kawaii community. It maps the local spots, events, and conventions that keep the scene alive between con seasons — because the main quest may be the convention, but the best adventures happen between them.
+404 Offline is a full-stack community platform for Atlanta's nerd, anime, and gaming community. It maps the local spots, events, and conventions that keep the scene alive between con seasons — because the main quest may be the convention, but the best adventures happen between them.
 
 <img width="1896" height="951" alt="image" src="https://github.com/user-attachments/assets/ad8f7022-4c23-43df-8a2a-37970c8ab71f" />
 
