@@ -54,11 +54,7 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
   async function handleSubmit(e) {
     e.preventDefault();
     const newErrors = validate();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
     setLoading(true);
     try {
       const payload = {
@@ -66,7 +62,6 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
         latitude: form.latitude ? parseFloat(form.latitude) : null,
         longitude: form.longitude ? parseFloat(form.longitude) : null,
       };
-
       if (isEditing) {
         await updateSpawnPoint(editingSpawnPoint.id, payload);
         showToast("Spawn point updated! 🍑", "success");
@@ -85,13 +80,7 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
   return (
     <div className="page">
       <div style={{ marginBottom: "2rem" }}>
-        <button
-          className="btn-secondary"
-          style={{ marginBottom: "1.5rem" }}
-          onClick={() => setCurrentPage("spawn-points")}
-        >
-          ← Cancel
-        </button>
+        <button className="btn-secondary" style={{ marginBottom: "1.5rem" }} onClick={() => setCurrentPage("spawn-points")}>← Cancel</button>
         <h1 className="page-title">{isEditing ? `Edit ${editingSpawnPoint.name}` : "Add a Spawn Point"}</h1>
         <p className="page-sub">{isEditing ? "Update the details for this spawn point." : "Add a new venue, shop, or hangout spot to the map."}</p>
       </div>
@@ -100,13 +89,11 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
         {/* Basic info */}
         <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Basic Info</div>
-
           <div className="form-group" style={{ marginBottom: "1rem" }}>
             <label className="form-label">Name *</label>
             <input className="form-input" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Battle & Brew" />
             {errors.name && <span className="form-error">{errors.name}</span>}
           </div>
-
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "1rem" }}>
             <div className="form-group">
               <label className="form-label">Category *</label>
@@ -120,7 +107,6 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
               {errors.neighborhood && <span className="form-error">{errors.neighborhood}</span>}
             </div>
           </div>
-
           <div className="form-group">
             <label className="form-label">Address *</label>
             <input className="form-input" name="address" value={form.address} onChange={handleChange} placeholder="e.g. 427 Edgewood Ave SE, Atlanta, GA 30312" />
@@ -131,65 +117,53 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
         {/* Description */}
         <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>About this place</div>
-
           <div className="form-group">
             <label className="form-label">Description</label>
-            <textarea
-              className="form-input"
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              placeholder="Tell people what makes this spot special — the vibe, what to expect, who hangs out here..."
-              rows={5}
-              style={{ resize: "vertical" }}
-            />
+            <textarea className="form-input" name="description" value={form.description} onChange={handleChange} placeholder="Tell people what makes this spot special — the vibe, what to expect, who hangs out here..." rows={5} style={{ resize: "vertical" }} />
           </div>
         </div>
 
         {/* Hours & access */}
         <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Hours & Access</div>
-
           <div className="form-group" style={{ marginBottom: "1rem" }}>
             <label className="form-label">Hours</label>
             <input className="form-input" name="hours" value={form.hours} onChange={handleChange} placeholder="e.g. Mon-Thu 4pm-12am, Fri 4pm-2am, Sat 12pm-2am" />
             <span style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--ink-3)", marginTop: "4px", display: "block" }}>Format: Day-Day HHam/pm-HHam/pm, separated by commas</span>
           </div>
-
           <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px", background: "var(--surface2)", borderRadius: "var(--radius-md)", border: "1.5px solid var(--border)" }}>
-            <input
-              type="checkbox"
-              id="marta"
-              name="is_marta_accessible"
-              checked={form.is_marta_accessible}
-              onChange={handleChange}
-              style={{ width: "16px", height: "16px", accentColor: "var(--sage)", cursor: "pointer" }}
-            />
-            <label htmlFor="marta" style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink)", cursor: "pointer" }}>
-              🚇 MARTA accessible
-            </label>
+            <input type="checkbox" id="marta" name="is_marta_accessible" checked={form.is_marta_accessible} onChange={handleChange} style={{ width: "16px", height: "16px", accentColor: "var(--sage)", cursor: "pointer" }} />
+            <label htmlFor="marta" style={{ fontFamily: "var(--font-body)", fontSize: "15px", color: "var(--ink)", cursor: "pointer" }}>🚇 MARTA accessible</label>
           </div>
         </div>
 
         {/* Media */}
         <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1rem" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Media</div>
-
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Cover Image</div>
           <div className="form-group">
             <label className="form-label">Image URL</label>
-            <input className="form-input" name="image_url" value={form.image_url} onChange={handleChange} placeholder="https://images.unsplash.com/..." />
+            <input className="form-input" name="image_url" value={form.image_url} onChange={handleChange} placeholder="https://res.cloudinary.com/..." />
             {form.image_url && (
-              <div style={{ marginTop: "8px", height: "120px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "1.5px solid var(--border)" }}>
-                <img src={form.image_url} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => e.target.style.display = "none"} />
+              <div style={{ marginTop: "8px", height: "160px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "1.5px solid var(--border)", position: "relative" }}>
+                <img
+                  src={form.image_url}
+                  alt="Preview"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+                />
+                <div style={{ display: "none", position: "absolute", inset: 0, alignItems: "center", justifyContent: "center", background: "var(--surface2)", fontFamily: "var(--font-mono)", fontSize: "11px", color: "var(--ink-3)" }}>
+                  ⚠️ Image failed to load — check the URL
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Location */}
+        {/* Coordinates */}
         <div style={{ background: "var(--surface)", border: "1.5px solid var(--border)", borderRadius: "var(--radius-lg)", padding: "1.5rem", marginBottom: "1.5rem" }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>Map Coordinates <span style={{ color: "var(--ink-3)", fontSize: "9px" }}>(optional — needed to show on map)</span></div>
-
+          <div style={{ fontFamily: "var(--font-mono)", fontSize: "10px", color: "var(--peach-dark)", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "1.25rem" }}>
+            Map Coordinates <span style={{ color: "var(--ink-3)", fontSize: "9px" }}>(optional — needed to show on map)</span>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
             <div className="form-group">
               <label className="form-label">Latitude</label>
@@ -206,9 +180,7 @@ export default function SpawnPointForm({ editingSpawnPoint, setCurrentPage, show
           <button className="btn-primary" type="submit" disabled={loading} style={{ fontSize: "13px", padding: "12px 28px" }}>
             {loading ? "Saving..." : isEditing ? "Save changes" : "Add spawn point"}
           </button>
-          <button className="btn-secondary" type="button" onClick={() => setCurrentPage("spawn-points")}>
-            Cancel
-          </button>
+          <button className="btn-secondary" type="button" onClick={() => setCurrentPage("spawn-points")}>Cancel</button>
         </div>
       </form>
     </div>
