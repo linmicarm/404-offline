@@ -75,10 +75,10 @@ export default function HomePage({ setCurrentPage, setSelectedSideQuest, setSele
 
         {/* Left */}
         <div style={{ background: "#1C1008", padding: "5rem 3rem 5rem 3rem", display: "flex", flexDirection: "column", justifyContent: "center", position: "relative", zIndex: 2, overflow: "hidden" }}>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>404:</h1>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>Friends</h1>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>not found.</h1>
-          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(48px, 6.5vw, 96px)", color: "var(--peach)", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "1.75rem" }}>We fixed that.</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>404:</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>Friends</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 5vw, 96px)", color: "#FFFCF7", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "0.1rem" }}>not found.</h1>
+          <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(36px, 5vw, 96px)", color: "var(--peach)", lineHeight: 0.95, letterSpacing: "-2px", marginBottom: "1.75rem" }}>We fixed that.</h1>
 
           <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,252,247,0.35)", letterSpacing: "2px", marginBottom: "1rem" }}>
             CONNECTION RESTORED ✓

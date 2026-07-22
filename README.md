@@ -1,319 +1,443 @@
-# Full Stack Application Template
+# [404] Offline · Atlanta's Nerd Scene
 
-This repository is a student-friendly starter template for a full stack application using:
+> **Logged on. Went outside.**
 
-- React
-- Vite
-- JavaScript
-- Node.js
-- Express
-- PostgreSQL
-- Prisma ORM
-- REST API endpoints
-- Docker Compose
-- Git and GitHub
-- Environment variables with `.env`
+404 Offline is a full-stack community platform for Atlanta's nerd, anime, gaming, and kawaii community. It maps the local spots, events, and conventions that keep the scene alive between con seasons — because the main quest may be the convention, but the best adventures happen between them.
 
-## Project structure
+---
 
-```text
-.
-├── README.md
-├── .gitignore
-├── docker-compose.yml
-└── apps/
-    ├── frontend/
-    │   ├── package.json
-    │   ├── index.html
-    │   ├── vite.config.js
-    │   └── src/
-    │       ├── App.jsx
-    │       ├── main.jsx
-    │       ├── styles.css
-    │       ├── api/
-    │       │   └── items.js
-    │       └── components/
-    │           └── ItemList.jsx
-    └── backend/
-        ├── package.json
-        ├── .env.example
-        ├── prisma.config.ts
-        ├── prisma/
-        │   ├── schema.prisma
-        │   ├── migrations/
-        │   └── seed.js
-        ├── database/
-        │   ├── schema.sql
-        │   └── seed.sql
-        └── server/
-            ├── db/
-            │   └── prisma.js
-            ├── controllers/
-            │   └── itemController.js
-            ├── routes/
-            │   └── items.js
-            └── server.js
+## Problem Statement
+
+Atlanta has a thriving nerd community spread across dozens of game bars, boba cafés, card shops, esports lounges, and kawaii boutiques — but there's no single place to find them all, discover what's happening at them, or stay connected between major conventions. Community members rely on scattered Discord servers, Instagram posts, and word of mouth to find events. 404 Offline solves this by centralizing Atlanta's nerd scene into one platform: a living map of spawn points, a calendar of side quests, and a countdown to the next con.
+
+---
+
+## Target User
+
+- Atlanta-area anime fans, gamers, cosplayers, and tabletop players
+- Convention attendees looking for community between con seasons
+- New residents looking to break into Atlanta's nerd scene
+- Local venue owners and event organizers wanting visibility
+- Anyone who has ever googled "anime club Atlanta" and gotten nowhere
+
+---
+
+## Features
+
+**Spawn Points**
+- Browse and search Atlanta's nerd venues: game bars, boba cafés, card shops, kawaii boutiques, esports lounges, and more
+- Filter by category, neighborhood, and MARTA accessibility
+- Near me sorting using browser geolocation
+- Open/closed status based on live hours
+- Community star ratings and check-in counts (persisted via localStorage)
+- Full detail pages with description, hours, map, and upcoming side quests
+- Add a side quest directly from a spawn point's detail page
+- Suggest an edit to any spawn point's info
+
+**Side Quests**
+- Browse and search local events: tournaments, meetups, language exchanges, cosplay hangouts, anime clubs, D&D sessions, and more
+- Filter by category, cost (free only), skill level, and weekend dates
+- Tag-based filtering with active tag indicator
+- Going count toggle (persisted via localStorage)
+- Add to calendar (.ics download)
+- Share button (copies event info to clipboard)
+- Related events at the same spawn point
+- Threaded comments with inline editing and name-based ownership
+- Featured event pinning (displayed on home page)
+
+**Con Calendar**
+- Track upcoming Atlanta conventions with countdown badges
+- Filter by size (Massive, Large, Mid-size, Small) and type (Anime, Gaming, etc.)
+- Search by name, venue, or neighborhood
+- Direct ticket links
+- Past cons archived separately
+
+**Neighborhoods**
+- Browse spawn points and side quests organized by Atlanta neighborhood
+- Expandable accordion layout with image strips and activity rankings
+
+**Home Page**
+- Full-viewport editorial hero with dynamic featured spawn point
+- Live map of all Atlanta spawn points
+- Happening soon side quest cards
+- Manifesto section
+- Featured side quest banner (when pinned)
+
+**Admin / Moderation**
+- Suggestions page (accessible from footer) for reviewing community edits
+- Mark suggestions as applied or dismissed
+- Feature/unfeature side quests from the list page
+
+**UI/UX**
+- Dark mode with localStorage persistence and grain texture on dark surfaces
+- Skeleton loading states on all async content
+- Toast notifications for all user actions
+- Modal confirmations with keyboard shortcuts (Enter / Esc)
+- Scroll to top button
+- Entrance animations on cards
+- Full error boundary to prevent crashes from taking down the app
+- Mobile responsive layout
+- Dynamic page titles per route
+- Proper meta and Open Graph tags
+
+---
+
+## Technology
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, Vite |
+| Styling | Custom CSS with CSS variables, no framework |
+| Maps | Leaflet.js, react-leaflet |
+| Backend | Node.js, Express |
+| Database | PostgreSQL (via Docker) |
+| ORM | Prisma 7 |
+| Image hosting | Cloudinary |
+| Dev tools | Thunder Client, Beekeeper Studio, Nodemon |
+
+---
+
+## Database Design
+
+### Tables
+
+**SpawnPoint**
+The core venue table. Represents a physical location in Atlanta's nerd scene.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | Int | Primary key |
+| name | String | Venue name |
+| category | String | Gaming venue, Comics & cards, Boba & matcha, etc. |
+| neighborhood | String | Atlanta neighborhood |
+| address | String | Full street address |
+| latitude | Float? | For map rendering |
+| longitude | Float? | For map rendering |
+| hours | String? | Formatted hours string |
+| description | String? | About this place |
+| image_url | String? | Cloudinary URL |
+| rating_sum | Int | Sum of all star ratings |
+| rating_count | Int | Number of ratings |
+| checkin_count | Int | Number of check-ins |
+| is_marta_accessible | Boolean | MARTA transit access |
+| created_at | DateTime | Auto-set on creation |
+
+**SideQuest**
+An event hosted at a spawn point.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | Int | Primary key |
+| spawn_point_id | Int | Foreign key → SpawnPoint |
+| name | String | Event name |
+| description | String | Full event description |
+| date | String | Event date |
+| time | String | Event time |
+| cost | Float? | null if free |
+| is_free | Boolean | |
+| is_beginner_friendly | Boolean | |
+| is_recurring | Boolean | |
+| recurrence | String? | weekly, biweekly, monthly |
+| category | String | Gaming, Social, Cosplay, Language, Tabletop |
+| tags | String | Comma-separated lowercase tags |
+| going_count | Int | Number of interested attendees |
+| is_featured | Boolean | Pinned to home page |
+| image_url | String? | Cloudinary URL |
+| created_at | DateTime | Auto-set on creation |
+
+**Con**
+A convention entry for the con calendar.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | Int | Primary key |
+| name | String | Convention name |
+| start_date | String | |
+| end_date | String | |
+| venue | String | |
+| neighborhood | String | |
+| size | String | Small, Mid-size, Large, Massive |
+| type | String | Anime, Gaming, etc. |
+| ticket_url | String? | Link to tickets |
+| created_at | DateTime | Auto-set on creation |
+
+**Comment**
+A threaded comment on a side quest.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | Int | Primary key |
+| side_quest_id | Int | Foreign key → SideQuest |
+| author_name | String | Display name |
+| body | String | Comment text |
+| parent_id | Int? | Self-referential FK for threading |
+| created_at | DateTime | Auto-set on creation |
+
+**Suggestion**
+A community-submitted edit suggestion for a spawn point.
+
+| Column | Type | Notes |
+|---|---|---|
+| id | Int | Primary key |
+| spawn_point_id | Int | Foreign key → SpawnPoint |
+| author_name | String | Submitter name |
+| field | String | Which field to edit |
+| current_value | String? | Existing value |
+| suggested_value | String | Proposed new value |
+| note | String? | Optional context |
+| status | String | pending, applied, dismissed |
+| created_at | DateTime | Auto-set on creation |
+
+### Relationships
+
+- `SpawnPoint` has many `SideQuests` (one-to-many)
+- `SpawnPoint` has many `Suggestions` (one-to-many)
+- `SideQuest` has many `Comments` (one-to-many)
+- `Comment` optionally belongs to a parent `Comment` (self-referential, for threading)
+
+---
+
+## API Endpoints
+
+### Spawn Points
+| Method | Route | Description |
+|---|---|---|
+| GET | `/api/spawn-points` | Get all spawn points with side quests |
+| GET | `/api/spawn-points/:id` | Get a single spawn point by ID |
+| POST | `/api/spawn-points` | Create a new spawn point |
+| PUT | `/api/spawn-points/:id` | Update a spawn point |
+| DELETE | `/api/spawn-points/:id` | Delete a spawn point |
+| PATCH | `/api/spawn-points/:id/rate` | Submit a star rating |
+| PATCH | `/api/spawn-points/:id/checkin` | Increment check-in count |
+
+### Side Quests
+| Method | Route | Description |
+|---|---|---|
+| GET | `/api/side-quests` | Get all side quests (supports `?category=` and `?free=true`) |
+| GET | `/api/side-quests/:id` | Get a single side quest with comments and spawn point |
+| POST | `/api/side-quests` | Create a new side quest |
+| PUT | `/api/side-quests/:id` | Update a side quest |
+| DELETE | `/api/side-quests/:id` | Delete a side quest |
+| PATCH | `/api/side-quests/:id/going` | Increment or decrement going count |
+| PATCH | `/api/side-quests/:id/feature` | Toggle featured status |
+
+### Cons
+| Method | Route | Description |
+|---|---|---|
+| GET | `/api/cons` | Get all conventions |
+| GET | `/api/cons/:id` | Get a single con |
+| POST | `/api/cons` | Create a new con |
+| PUT | `/api/cons/:id` | Update a con |
+| DELETE | `/api/cons/:id` | Delete a con |
+
+### Comments
+| Method | Route | Description |
+|---|---|---|
+| GET | `/api/comments/:sideQuestId` | Get all comments for a side quest |
+| POST | `/api/comments` | Create a new comment or reply |
+| PUT | `/api/comments/:id` | Edit a comment |
+| DELETE | `/api/comments/:id` | Delete a comment |
+
+### Suggestions
+| Method | Route | Description |
+|---|---|---|
+| GET | `/api/suggestions` | Get all suggestions |
+| POST | `/api/suggestions` | Submit a new suggestion |
+| PATCH | `/api/suggestions/:id/status` | Update suggestion status (applied/dismissed) |
+
+---
+
+## Installation Instructions
+
+### Prerequisites
+- Node.js v18+
+- Docker Desktop (for PostgreSQL)
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/linmicarm/404-offline.git
+cd 404-offline
 ```
 
+### 2. Install dependencies
 
+Install backend dependencies:
+```bash
+cd apps/backend
+npm install
+```
 
-## Example application
+Install frontend dependencies:
+```bash
+cd ../frontend
+npm install
+```
 
-This template uses two related tables:
+### 3. Set up environment variables
 
-- `categories`
-- `items`
-
-The `items` table has a foreign key to `categories`, which gives students a simple example of relational database design.
-
-In Prisma code, the models are named `Category` and `Item`, but the actual PostgreSQL tables are lowercase: `categories` and `items`.
-
-## Requirements
-
-Before starting, make sure you have these installed:
-
-- Node.js
-- npm
-- Docker Desktop
-- PostgreSQL client tools if you want to use `psql` commands directly
-
-
-
-## Environment variables
-
-All secret values should stay in a `.env` file.
-
-1. Go to `apps/backend`
-2. Copy `.env.example` to `.env`
-3. Update the values if needed
-
-Example:
+In `apps/backend`, create a `.env` file:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5433/backend-db?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/404_offline"
 PORT=3001
 ```
 
-The root `.gitignore` already includes `.env` so it will not be committed.
+In `apps/frontend`, create a `.env` file:
 
-## How to create the PostgreSQL database
-
-This project uses Docker Compose for PostgreSQL.
-
-From `apps/backend`, run:
-
-```bash
-npm run db:up
+```env
+VITE_API_URL=http://localhost:3001
 ```
 
-This starts the PostgreSQL container defined in the root `docker-compose.yml` file.
+### 4. Start PostgreSQL with Docker
 
-Prisma 7 reads its CLI database configuration from `apps/backend/prisma.config.ts`.
-
-To stop the database:
+From the `apps/backend` directory:
 
 ```bash
-npm run db:down
+docker compose up -d
 ```
 
-To view database logs:
+This starts a PostgreSQL instance on port 5432. Verify it's running:
 
 ```bash
-npm run db:logs
+docker ps
 ```
 
+### 5. Set up the database with Prisma
 
-
-## Backend setup
-
-Open a terminal in `apps/backend` and run:
+Generate the Prisma client:
 
 ```bash
-npm install
-cp .env.example .env
-npm run db:up
-npm run prisma:generate
+npx prisma generate
+```
+
+Run migrations to create all tables:
+
+```bash
 npm run prisma:migrate -- --name init
+```
+
+Or if migrations already exist, just apply them:
+
+```bash
+npx prisma migrate deploy
+```
+
+### 6. Seed the database
+
+```bash
 npm run db:seed
 ```
 
-Then start the backend:
+This creates:
+- 9 spawn points (Battle & Brew, Oxford Comics, Matcha Cafe Maiko, Fluffy Fluffy, Tokyo Kuma, Giga-Bites, Joystick Game Bar, My Parent's Basement, 404 Esports)
+- 9 side quests (FNM, Pokemon League, Matcha Manga Morning, Cosplay Meetup, Tekken 8 Weekly, Japanese Language Exchange, D&D One Shot, Pokemon Go Community Day, Anime Club)
+- 4 cons (MomoCon, DragonCon, AWA, HeroesCon)
 
-```bash
-npm run dev
-```
-
-The backend will run at:
-
-```text
-http://localhost:3001
-```
-
-Available example REST API endpoints:
-
-- `GET /api/health`
-- `GET /api/categories`
-- `GET /api/items`
-- `POST /api/items`
-
-
-
-## Frontend setup
-
-Open a second terminal in `apps/frontend` and run:
-
-```bash
-npm install
-npm run dev
-```
-
-The frontend will run at:
-
-```text
-http://localhost:5173
-```
-
-
-
-## How to run `schema.sql`
-
-The raw SQL files are included in `apps/backend/database` for teaching and testing.
-
-Use this option on a fresh database if you want to set up the tables manually with SQL instead of using Prisma migrations.
-
-From `apps/backend`, after your `.env` is configured and PostgreSQL is running, run:
-
-```bash
-npm run sql:schema
-```
-
-This executes:
-
-```text
-database/schema.sql
-```
-
-
-
-## How to run `seed.sql`
-
-Run this after `schema.sql` if you are following the raw SQL setup path.
-
-From `apps/backend`, run:
-
-```bash
-npm run sql:seed
-```
-
-This executes:
-
-```text
-database/seed.sql
-```
-
-
-
-## Prisma workflow
-
-This template uses the current Prisma 7 setup:
-
-- `prisma.config.ts` configures Prisma CLI commands
-- `schema.prisma` defines the models
-- `@prisma/adapter-pg` connects Prisma Client to PostgreSQL at runtime
-- `prisma-client-js` keeps the generated client plain JavaScript-friendly for this class template
-- Prisma maps `Category` and `Item` to lowercase PostgreSQL tables so students can query `categories` and `items` directly in `psql`
-
-Useful Prisma commands from `apps/backend`:
-
-```bash
-npm run prisma:generate
-npm run prisma:migrate -- --name init
-npm run prisma:studio
-npm run db:seed
-npm run db:reset
-```
-
-
-
-### When you want to change the database schema
-
-Do not create the migration file by hand first.
-
-#### Instead:
-
-- Edit `apps/backend/prisma/schema.prisma`
-
-Run:
-
-- `npm run prisma:migrate -- --name describe-your-change`
-
-Prisma will:
-
-- compare the current schema to the last migration
-- generate the new migration SQL file for you
-- apply it to your local database
-
-Example:
-
-- If you add a new column or model:
-- `npm run prisma:migrate -- --name add-user-table`
-
-
-
-## Helpful backend scripts
+### 7. Start the backend
 
 From `apps/backend`:
 
 ```bash
 npm run dev
-npm run start
-npm run db:up
-npm run db:down
-npm run db:logs
-npm run db:psql
-npm run prisma:generate
-npm run prisma:migrate -- --name init
-npm run prisma:deploy
-npm run prisma:studio
-npm run db:seed
-npm run db:reset
-npm run sql:schema
-npm run sql:seed
 ```
 
-`db:psql` requires PostgreSQL client tools to be installed on your machine.
+The backend runs on `http://localhost:3001`.
 
-## Git and GitHub workflow
+### 8. Start the frontend
 
-Suggested student workflow:
+From `apps/frontend`:
 
-1. Create a new GitHub repository from this template.
-2. Clone the repository.
-3. Create a new branch for your work.
-4. Commit your changes regularly.
-5. Push your branch to GitHub.
+```bash
+npm run dev
+```
 
+The frontend runs on `http://localhost:5173`.
 
+### 9. Open the app
 
-## Suggested startup order
+Navigate to `http://localhost:5173` in your browser.
 
-1. In `apps/backend`, run `npm install`.
-2. In `apps/frontend`, run `npm install`.
-3. In `apps/backend`, copy `.env.example` to `.env`.
-4. In `apps/backend`, run `npm run db:up`.
-5. In `apps/backend`, run `npm run prisma:generate`.
-6. In `apps/backend`, run `npm run prisma:migrate -- --name init`.
-7. In `apps/backend`, run `npm run db:seed`.
-8. In `apps/backend`, run `npm run dev`.
-9. In `apps/frontend`, run `npm run dev`.
+---
 
+## Folder Structure
 
+```
+404-offline/
+├── apps/
+│   ├── backend/
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma       ← Database schema
+│   │   │   ├── seed.js             ← Seed data
+│   │   │   └── migrations/         ← Prisma migration history
+│   │   └── server/
+│   │       ├── server.js           ← Express entry point
+│   │       ├── db/
+│   │       │   └── prisma.js       ← Prisma client instance
+│   │       ├── routes/             ← Express route definitions
+│   │       └── controllers/        ← Route handler logic
+│   └── frontend/
+│       ├── public/
+│       │   └── robots.txt
+│       └── src/
+│           ├── api/
+│           │   └── index.js        ← All API calls
+│           ├── components/         ← All React components
+│           ├── utils/
+│           │   ├── formatDate.js   ← Date formatting helpers
+│           │   └── highlight.jsx   ← Search result highlighting
+│           ├── App.jsx             ← Root component and routing
+│           ├── main.jsx            ← Entry point with ErrorBoundary
+│           └── styles.css          ← Global design system
+```
 
-## Notes for students
+---
 
-- Keep your backend code inside `apps/backend`.
-- Keep your frontend code inside `apps/frontend`.
-- Keep secrets in `.env` files only.
-- Use Prisma models to represent your database tables.
-- Use REST routes in Express to connect the frontend to PostgreSQL.
+## Design System
 
+404 Offline uses a custom CSS variable-based design system with no UI framework.
+
+**Fonts**
+- `Dela Gothic One` — display headlines
+- `Outfit` — body text
+- `Space Mono` — labels, tags, and metadata
+
+**Color palette**
+- `--bg: #FFFCF7` — warm off-white background
+- `--peach: #FFAA7F` — primary accent
+- `--sage: #85C9A0` — secondary accent (social/language)
+- `--ink: #1C1008` — near-black text
+
+**Dark mode** is toggled via `data-theme="dark"` on the document root and persisted in localStorage.
+
+---
+
+## Known Limitations
+
+- Authentication is not implemented — all CRUD operations are open. This is intentional for the current scope (community platform prototype).
+- Star ratings and check-ins are deduplicated via localStorage only, not server-side sessions.
+- Going counts are persisted in localStorage per browser session.
+- Image uploads use Cloudinary URLs pasted manually — no direct file upload flow.
+
+---
+
+## Future Roadmap
+
+- User authentication (JWT or session-based)
+- User profiles and event RSVPs
+- Email notifications for upcoming side quests
+- Admin dashboard for content moderation
+- Mobile app (React Native)
+- Peachiban manga kissa integration (sister concept brand)
+
+---
+
+## Author
+
+Built by **Michelle** ([@linmicarm](https://github.com/linmicarm)) as a full-stack capstone project.  
+Per Scholas · Color Coded Labs · Atlanta, GA
+
+---
+
+*404 Offline · Logged on. Went outside.*
