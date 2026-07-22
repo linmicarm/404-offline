@@ -11,7 +11,7 @@
 
 ## Problem Statement
 
-Atlanta has a thriving nerd community spread across dozens of game bars, boba cafés, card shops, esports lounges, and kawaii boutiques — but there's no single place to find them all, discover what's happening at them, or stay connected between major conventions. Community members rely on scattered Discord servers, Instagram posts, and word of mouth to find events. 404 Offline solves this by centralizing Atlanta's nerd scene into one platform: a living map of spawn points, a calendar of side quests, and a countdown to the next con.
+Atlanta has a thriving nerd community spread across dozens of game bars, boba cafés, card shops, esports lounges, and character good boutiques — but there's no single place to find them all, discover what's happening at them, or stay connected between major conventions. Community members rely on scattered Discord servers, Instagram posts, and word of mouth to find events. 404 Offline solves this by centralizing Atlanta's nerd scene into one platform: a living map of spawn points, a calendar of side quests, and a countdown to the next con.
 
 ---
 
@@ -28,7 +28,7 @@ Atlanta has a thriving nerd community spread across dozens of game bars, boba ca
 ## Features
 
 **Spawn Points**
-- Browse and search Atlanta's nerd venues: game bars, boba cafés, card shops, kawaii boutiques, esports lounges, and more
+- Browse and search Atlanta's nerd venues: game bars, boba cafés, card shops, character goods boutiques, esports lounges, and more
 - Filter by category, neighborhood, and MARTA accessibility
 - Near me sorting using browser geolocation
 - Open/closed status based on live hours
