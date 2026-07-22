@@ -1,6 +1,6 @@
 # [404] Offline · Atlanta's Nerd Scene
 
-> **Logged on. Went outside.**
+> **Logged off. Went outside.**
 
 404 Offline is a full-stack community platform for Atlanta's nerd, anime, gaming, and kawaii community. It maps the local spots, events, and conventions that keep the scene alive between con seasons — because the main quest may be the convention, but the best adventures happen between them.
 
@@ -429,14 +429,12 @@ Navigate to `http://localhost:5173` in your browser.
 - Email notifications for upcoming side quests
 - Admin dashboard for content moderation
 - Mobile app (React Native)
-- Peachiban manga kissa integration (sister concept brand)
 
 ---
 
 ## Author
 
 Built by **Michelle** ([@linmicarm](https://github.com/linmicarm)) as a full-stack capstone project.  
-Per Scholas · Color Coded Labs · Atlanta, GA
 
 ---
 
