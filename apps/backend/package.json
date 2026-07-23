@@ -19,6 +19,7 @@
     "db:reset": "prisma migrate reset --force && prisma db seed",
     "sql:schema": "psql \"$DATABASE_URL\" -f database/schema.sql",
     "sql:seed": "psql \"$DATABASE_URL\" -f database/seed.sql"
+
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -29,5 +30,8 @@
   },
   "devDependencies": {
     "prisma": "^7.8.0"
-  }
+  },
+  "prisma": {
+  "seed": "node prisma/seed.js"
+}
 }
