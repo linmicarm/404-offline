@@ -22,7 +22,6 @@ app.use("/api/cons", conRoutes);
 app.use("/api/side-quests", commentRoutes);
 app.use("/api/suggestions", suggestionRoutes);
 
-const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
