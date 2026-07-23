@@ -5,6 +5,7 @@ export default defineConfig({
   earlyAccess: true,
   schema: "prisma/schema.prisma",
   migrate: {
+    url: process.env.DATABASE_URL!,
     async adapter(env) {
       const { Pool } = await import("pg");
       const pool = new Pool({
@@ -13,6 +14,5 @@ export default defineConfig({
       });
       return new PrismaPg(pool);
     },
-    url: process.env.DATABASE_URL,
   },
 });
