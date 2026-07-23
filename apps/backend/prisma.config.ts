@@ -13,5 +13,6 @@ export default defineConfig({
       });
       return new PrismaPg(pool);
     },
+    url: process.env.DATABASE_URL,
   },
 });
