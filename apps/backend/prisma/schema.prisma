@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
+
 model SpawnPoint {
   id                  Int         @id @default(autoincrement())
   name                String
@@ -47,21 +47,22 @@ model SideQuest {
   spawn_point          SpawnPoint @relation(fields: [spawn_point_id], references: [id])
   comments             Comment[]
   is_featured          Boolean    @default(false)
-  image_url           String?
+  image_url            String?
 
   @@map("side_quests")
 }
+
 model Con {
-  id          Int      @id @default(autoincrement())
-  name        String
-  start_date  String
-  end_date    String
-  venue       String
+  id           Int      @id @default(autoincrement())
+  name         String
+  start_date   String
+  end_date     String
+  venue        String
   neighborhood String
-  size        String
-  type        String
-  ticket_url  String?
-  created_at  DateTime @default(now())
+  size         String
+  type         String
+  ticket_url   String?
+  created_at   DateTime @default(now())
 
   @@map("cons")
 }
@@ -81,17 +82,16 @@ model Comment {
 }
 
 model Suggestion {
-  id             Int        @id @default(autoincrement())
-  spawn_point_id Int
-  author_name    String
-  field          String
-  current_value  String?
+  id              Int        @id @default(autoincrement())
+  spawn_point_id  Int
+  author_name     String
+  field           String
+  current_value   String?
   suggested_value String
-  note           String?
-  status         String     @default("pending")
-  created_at     DateTime   @default(now())
-  spawn_point    SpawnPoint @relation(fields: [spawn_point_id], references: [id], onDelete: Cascade)
+  note            String?
+  status          String     @default("pending")
+  created_at      DateTime   @default(now())
+  spawn_point     SpawnPoint @relation(fields: [spawn_point_id], references: [id], onDelete: Cascade)
 
   @@map("suggestions")
 }
-
