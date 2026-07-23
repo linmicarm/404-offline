@@ -6,6 +6,7 @@
 
 <img width="1896" height="951" alt="image" src="https://github.com/user-attachments/assets/ad8f7022-4c23-43df-8a2a-37970c8ab71f" />
 
+
 🔗 **Live Site:** https://404-offline.vercel.app  
 🔗 **API:** https://four04-offline-backend.onrender.com/api/health
 
