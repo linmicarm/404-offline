@@ -1,4 +1,4 @@
-# [404] Offline · Atlanta's Nerd Scene
+# [404] Offline · Atlanta's Nerd Scene Found
 
 > **Logged off. Went outside.**
 
