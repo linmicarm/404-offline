@@ -446,4 +446,4 @@ Built by **Michelle** ([@linmicarm](https://github.com/linmicarm)) as a full-sta
 
 ---
 
-*404 Offline · Logged on. Went outside.*
+*404 Offline · Logged off. Went outside.*
