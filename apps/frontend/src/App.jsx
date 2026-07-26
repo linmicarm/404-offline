@@ -33,7 +33,7 @@ export default function App() {
 
   useEffect(() => {
     const titles = {
-      home: "404 Offline · Atlanta's Nerd Scene",
+      home: "404 Offline · Atlanta's Nerd Scene, Found",
       "spawn-points": "Spawn Points · 404 Offline",
       "spawn-point-detail": selectedSpawnPoint ? `${selectedSpawnPoint.name} · 404 Offline` : "404 Offline",
       "spawn-point-form": editingSpawnPoint ? `Edit ${editingSpawnPoint.name} · 404 Offline` : "Add Spawn Point · 404 Offline",
